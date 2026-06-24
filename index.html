@@ -1,0 +1,4790 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>מערכת נוכחות · מחלקת הרדמה</title>
+    <style>
+      :root {
+        --ink: #eef2f9;
+        --ink2: rgba(238, 242, 249, 0.66);
+        --ink3: rgba(238, 242, 249, 0.4);
+        --glass: rgba(255, 255, 255, 0.07);
+        --glass2: rgba(255, 255, 255, 0.045);
+        --stroke: rgba(255, 255, 255, 0.14);
+        --stroke2: rgba(255, 255, 255, 0.08);
+        --green: #34d399;
+        --amber: #fbbf24;
+        --blue: #60a5fa;
+        --red: #f87171;
+        --violet: #a78bfa;
+        --pink: #f472b6;
+        --teal: #2dd4bf;
+        --radius: 22px;
+        --radius-sm: 14px;
+      }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, "SF Pro Display", "Segoe UI", "Heebo", Arial, sans-serif;
+        color: var(--ink);
+        min-height: 100vh;
+        overflow-x: hidden;
+        background: #0b1020;
+        -webkit-text-size-adjust: 100%;
+      }
+      .bg {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background:
+          radial-gradient(60% 55% at 78% 12%, rgba(45, 212, 191, 0.2), transparent 60%),
+          radial-gradient(55% 50% at 12% 18%, rgba(167, 139, 250, 0.22), transparent 60%),
+          radial-gradient(70% 60% at 50% 110%, rgba(96, 165, 250, 0.18), transparent 60%),
+          linear-gradient(160deg, #0d1224 0%, #0b0f1f 50%, #0a0d1a 100%);
+      }
+      .bg::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        opacity: 0.5;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 46px 46px;
+        -webkit-mask: linear-gradient(#000, transparent 70%);
+        mask: linear-gradient(#000, transparent 70%);
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: max(18px, env(safe-area-inset-top)) 18px 60px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+      }
+      .logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        flex: none;
+        background: linear-gradient(150deg, var(--teal), var(--blue));
+        box-shadow: 0 6px 20px rgba(45, 212, 191, 0.35);
+      }
+      .logo svg {
+        width: 20px;
+        height: 20px;
+        stroke: #06121f;
+        stroke-width: 2.2;
+        fill: none;
+      }
+      .demo-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 8px;
+        background: rgba(251, 191, 36, 0.18);
+        color: #fcd577;
+      }
+      .date {
+        font-size: 13.5px;
+        color: var(--ink2);
+      }
+
+      .glass {
+        background: var(--glass);
+        -webkit-backdrop-filter: blur(24px) saturate(150%);
+        backdrop-filter: blur(24px) saturate(150%);
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius);
+        box-shadow:
+          0 10px 36px rgba(0, 0, 0, 0.32),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      .seg {
+        display: inline-flex;
+        padding: 5px;
+        gap: 4px;
+        border-radius: 16px;
+      }
+      .seg button {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: var(--ink2);
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.22s;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 42px;
+      }
+      .seg button.active {
+        color: #06121f;
+        background: linear-gradient(150deg, #eef2f9, #cdd6e6);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      }
+      .seg button[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .seg .dot {
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        background: var(--amber);
+        color: #3a2a00;
+        font-size: 11px;
+        font-weight: 700;
+        display: grid;
+        place-items: center;
+      }
+      .seg button.active .dot {
+        background: #3a2a00;
+        color: var(--amber);
+      }
+      .seg .soon {
+        font-size: 9.5px;
+        font-weight: 700;
+        padding: 1px 5px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        color: var(--ink2);
+      }
+
+      .hint {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--ink2);
+        padding: 11px 16px;
+        margin-bottom: 16px;
+        border-radius: 16px;
+        background: var(--glass2);
+        border: 1px solid var(--stroke2);
+      }
+      .hint b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .hint .x {
+        margin-inline-start: auto;
+        cursor: pointer;
+        color: var(--ink3);
+        font-size: 20px;
+        line-height: 1;
+        padding: 0 4px;
+      }
+
+      section[hidden] {
+        display: none;
+      }
+
+      /* ---- control bar ---- */
+      .controlbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 12px 14px;
+        margin-bottom: 16px;
+      }
+      .ctl-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .ctl-lab {
+        font-size: 12px;
+        color: var(--ink3);
+        font-weight: 600;
+      }
+      .miniseg {
+        display: inline-flex;
+        gap: 3px;
+        padding: 4px;
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--stroke2);
+      }
+      .miniseg button {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: var(--ink2);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.18s;
+        min-height: 36px;
+      }
+      .miniseg button.on {
+        color: #06121f;
+        background: linear-gradient(150deg, #eef2f9, #cdd6e6);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
+      }
+      .miniseg.metric button.on {
+        background: linear-gradient(150deg, var(--green), var(--teal));
+        color: #06241b;
+      }
+      .miniseg.metric button.on.abs {
+        background: linear-gradient(150deg, var(--violet), var(--blue));
+        color: #0b0820;
+      }
+      .period {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px;
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--stroke2);
+      }
+      .period .lab {
+        font-size: 13.5px;
+        font-weight: 600;
+        padding: 0 12px;
+        min-width: 118px;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .period button {
+        appearance: none;
+        border: 0;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink);
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 17px;
+        display: grid;
+        place-items: center;
+        transition: 0.16s;
+      }
+      .period button:active {
+        transform: scale(0.92);
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .rolepill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-inline-start: auto;
+        font-size: 12px;
+        color: var(--ink2);
+      }
+      .rolepill .miniseg button {
+        font-size: 12px;
+        padding: 7px 11px;
+        min-height: 32px;
+      }
+
+      /* ---- console grid ---- */
+      .console-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 14px;
+        align-items: start;
+      }
+      .col {
+        display: grid;
+        gap: 14px;
+        align-content: start;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+      .kpis {
+        grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+      }
+      .kpi {
+        padding: 16px 17px;
+      }
+      .kpi.click {
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .kpi.click:active {
+        transform: scale(0.98);
+      }
+      .kpi .lab {
+        font-size: 12.5px;
+        color: var(--ink2);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .kpi .num {
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.5px;
+      }
+      .two {
+        grid-template-columns: 1fr 1fr;
+      }
+      .panel {
+        padding: 20px;
+      }
+      .panel h3 {
+        margin: 0 0 16px;
+        font-size: 15.5px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .panel h3 .sub {
+        font-size: 12.5px;
+        color: var(--ink3);
+        font-weight: 500;
+      }
+
+      .bar {
+        margin-bottom: 13px;
+      }
+      .bar:last-child {
+        margin-bottom: 0;
+      }
+      .bar.click {
+        cursor: pointer;
+        padding: 4px;
+        margin: -4px -4px 9px;
+        border-radius: 10px;
+        transition: 0.16s;
+      }
+      .bar.click:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .bar .top {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13.5px;
+        margin-bottom: 6px;
+        gap: 8px;
+      }
+      .bar .top .v {
+        color: var(--ink2);
+        white-space: nowrap;
+      }
+      .track {
+        height: 9px;
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.07);
+        overflow: hidden;
+        display: flex;
+        justify-content: flex-start;
+      }
+      .fill {
+        height: 100%;
+        border-radius: 7px;
+        background: linear-gradient(90deg, var(--blue), var(--teal));
+        transition: width 0.7s cubic-bezier(0.4, 1.3, 0.5, 1);
+      }
+      .fill.g {
+        background: linear-gradient(90deg, var(--teal), var(--green));
+      }
+      .fill.v {
+        background: linear-gradient(90deg, var(--violet), var(--blue));
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 14px;
+      }
+      .chip {
+        font-size: 12.5px;
+        padding: 8px 14px;
+        border-radius: 11px;
+        cursor: pointer;
+        color: var(--ink2);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--stroke2);
+        transition: 0.18s;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .chip:active {
+        color: var(--ink);
+      }
+      .chip.on {
+        color: #06121f;
+        background: var(--ink);
+        border-color: transparent;
+        font-weight: 600;
+      }
+      .crumb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12.5px;
+        color: var(--ink2);
+        margin-bottom: 14px;
+      }
+      .crumb .back {
+        cursor: pointer;
+        color: var(--teal);
+        font-weight: 600;
+      }
+      .crumb .sep {
+        color: var(--ink3);
+      }
+
+      .fc {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        height: 110px;
+        padding-top: 6px;
+      }
+      .fc .col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 7px;
+      }
+      .fc .stk {
+        width: 100%;
+        max-width: 34px;
+        border-radius: 7px 7px 4px 4px;
+        background: linear-gradient(180deg, var(--violet), rgba(96, 165, 250, 0.35));
+        transition: height 0.7s;
+      }
+      .fc .stk.g {
+        background: linear-gradient(180deg, var(--green), rgba(45, 212, 191, 0.35));
+      }
+      .fc .d {
+        font-size: 11px;
+        color: var(--ink3);
+        text-align: center;
+      }
+      .fc .n {
+        font-size: 11.5px;
+        color: var(--ink2);
+      }
+
+      .arow {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--stroke2);
+        flex-wrap: wrap;
+      }
+      .arow:last-child {
+        border-bottom: 0;
+      }
+      .nm {
+        font-weight: 600;
+        min-width: 86px;
+      }
+      .meta {
+        color: var(--ink2);
+        font-size: 12.5px;
+        flex: 1;
+        min-width: 90px;
+      }
+      .tag {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 10px;
+        white-space: nowrap;
+      }
+      .t-info {
+        background: rgba(96, 165, 250, 0.16);
+        color: #9cc4fb;
+      }
+      .t-danger {
+        background: rgba(248, 113, 113, 0.16);
+        color: #fcaaaa;
+      }
+      .t-warning {
+        background: rgba(251, 191, 36, 0.16);
+        color: #fcd577;
+      }
+      .t-success {
+        background: rgba(52, 211, 153, 0.16);
+        color: #86e9c4;
+      }
+      .t-violet {
+        background: rgba(167, 139, 250, 0.16);
+        color: #c7b6fb;
+      }
+      .t-pink {
+        background: rgba(244, 114, 182, 0.16);
+        color: #f7a8d0;
+      }
+
+      .req {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 14px 4px;
+        border-bottom: 1px solid var(--stroke2);
+        flex-wrap: wrap;
+      }
+      .req:last-child {
+        border-bottom: 0;
+      }
+      .av {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: 14px;
+        background: linear-gradient(150deg, rgba(167, 139, 250, 0.5), rgba(96, 165, 250, 0.4));
+        color: #fff;
+        flex: none;
+      }
+      .req .info {
+        flex: 1;
+        min-width: 120px;
+      }
+      .req .info .l1 {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .req .info .l2 {
+        font-size: 12.5px;
+        color: var(--ink2);
+        margin-top: 2px;
+      }
+      .datechip {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 9px;
+        border-radius: 9px;
+        background: rgba(96, 165, 250, 0.16);
+        color: #9cc4fb;
+        cursor: pointer;
+        border: 1px solid rgba(96, 165, 250, 0.25);
+        transition: 0.16s;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .datechip:active {
+        transform: scale(0.95);
+      }
+      .datechip svg {
+        width: 12px;
+        height: 12px;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        fill: none;
+      }
+      .act {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink);
+        font: inherit;
+        font-size: 13.5px;
+        font-weight: 600;
+        padding: 10px 15px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.18s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 42px;
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn.ok {
+        background: linear-gradient(150deg, var(--green), var(--teal));
+        color: #06241b;
+        border-color: transparent;
+      }
+      .btn.no {
+        color: #fcaaaa;
+      }
+      .btn.primary {
+        background: linear-gradient(150deg, var(--teal), var(--blue));
+        color: #06121f;
+        border-color: transparent;
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+        font-size: 15px;
+      }
+      .btn[disabled] {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .btn svg {
+        width: 15px;
+        height: 15px;
+        stroke: currentColor;
+        stroke-width: 2.4;
+        fill: none;
+      }
+      .empty {
+        text-align: center;
+        color: var(--ink3);
+        font-size: 13.5px;
+        padding: 26px 0;
+      }
+
+      /* ---- teaser card ---- */
+      .teaser {
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .teaser .soonbadge {
+        position: absolute;
+        inset-block-start: 14px;
+        inset-inline-end: 14px;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 9px;
+        background: rgba(251, 191, 36, 0.18);
+        color: #fcd577;
+      }
+      .teaser h3 {
+        margin: 0 0 8px;
+        font-size: 15.5px;
+        font-weight: 600;
+      }
+      .teaser p {
+        margin: 0 0 16px;
+        font-size: 13px;
+        color: var(--ink2);
+        line-height: 1.55;
+        max-width: 92%;
+      }
+      .teaser-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      /* ---- modal ---- */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        background: rgba(6, 9, 18, 0.66);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.22s;
+      }
+      .overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal {
+        width: 100%;
+        max-width: 540px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 22px;
+        transform: translateY(16px) scale(0.98);
+        transition: 0.22s;
+      }
+      .overlay.show .modal {
+        transform: none;
+      }
+      .modal .mhead {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .modal .mtitle {
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .modal .msub {
+        font-size: 13px;
+        color: var(--ink2);
+        margin-top: 3px;
+      }
+      .modal .mx {
+        cursor: pointer;
+        color: var(--ink3);
+        font-size: 24px;
+        line-height: 1;
+        padding: 0 4px;
+        flex: none;
+      }
+      .cover-banner {
+        padding: 14px 16px;
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        line-height: 1.4;
+      }
+      .cover-banner svg {
+        width: 22px;
+        height: 22px;
+        stroke-width: 2.4;
+        fill: none;
+        flex: none;
+      }
+      .cover-banner.green {
+        background: rgba(52, 211, 153, 0.14);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        color: #86e9c4;
+      }
+      .cover-banner.green svg {
+        stroke: var(--green);
+      }
+      .cover-banner.orange {
+        background: rgba(251, 191, 36, 0.14);
+        border: 1px solid rgba(251, 191, 36, 0.3);
+        color: #fcd577;
+      }
+      .cover-banner.orange svg {
+        stroke: var(--amber);
+      }
+      .cover-banner.red {
+        background: rgba(248, 113, 113, 0.16);
+        border: 1px solid rgba(248, 113, 113, 0.35);
+        color: #fcaaaa;
+      }
+      .cover-banner.red svg {
+        stroke: var(--red);
+      }
+      .mkpis {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .mkpi {
+        padding: 14px 16px;
+        border-radius: var(--radius-sm);
+        background: var(--glass2);
+        border: 1px solid var(--stroke2);
+      }
+      .mkpi .lab {
+        font-size: 12px;
+        color: var(--ink2);
+        margin-bottom: 6px;
+      }
+      .mkpi .num {
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .msec-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink2);
+        margin: 0 0 10px;
+      }
+      .mlist {
+        max-height: 168px;
+        overflow-y: auto;
+        margin-bottom: 18px;
+      }
+      .mfoot {
+        display: flex;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .mfoot .btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      #toast {
+        position: fixed;
+        inset-block-end: 26px;
+        inset-inline: 0;
+        display: flex;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 70;
+        padding: 0 16px;
+      }
+      #toast .t {
+        background: rgba(20, 26, 44, 0.94);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+        border: 1px solid var(--stroke);
+        color: var(--ink);
+        padding: 13px 22px;
+        border-radius: 15px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transform: translateY(14px);
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        text-align: center;
+      }
+      #toast .t.show {
+        opacity: 1;
+        transform: none;
+      }
+      #toast .t svg {
+        width: 17px;
+        height: 17px;
+        stroke: var(--green);
+        stroke-width: 2.6;
+        fill: none;
+        flex: none;
+      }
+      .pulse {
+        animation: pulse 0.8s ease;
+      }
+      @keyframes pulse {
+        0% {
+          color: var(--amber);
+        }
+        50% {
+          color: #fff;
+          text-shadow: 0 0 22px var(--amber);
+        }
+        100% {
+        }
+      }
+
+      /* ---- doctor mobile ---- */
+      .phone {
+        max-width: 390px;
+        margin: 0 auto;
+        border-radius: 38px;
+        padding: 14px;
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+        border: 1px solid var(--stroke);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+      }
+      .screen {
+        border-radius: 26px;
+        background: rgba(10, 14, 28, 0.55);
+        padding: 20px 17px;
+        border: 1px solid var(--stroke2);
+      }
+      .hello {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 3px;
+      }
+      .sub2 {
+        font-size: 13px;
+        color: var(--ink2);
+        margin-bottom: 16px;
+      }
+      .status-card {
+        padding: 15px 16px;
+        border-radius: 16px;
+        background: rgba(52, 211, 153, 0.12);
+        border: 1px solid rgba(52, 211, 153, 0.25);
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin-bottom: 18px;
+      }
+      .status-card .ring {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: rgba(52, 211, 153, 0.2);
+        flex: none;
+      }
+      .status-card .ring svg {
+        width: 18px;
+        height: 18px;
+        stroke: var(--green);
+        stroke-width: 2.6;
+        fill: none;
+      }
+      label.fl {
+        display: block;
+        font-size: 13px;
+        color: var(--ink2);
+        margin: 13px 0 6px;
+      }
+      select,
+      input[type="text"] {
+        width: 100%;
+        font: inherit;
+        font-size: 16px;
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        padding: 12px 13px;
+        outline: none;
+      }
+      select option {
+        color: #000;
+      }
+      .dates {
+        display: flex;
+        gap: 9px;
+      }
+      .dates > div {
+        flex: 1;
+      }
+      .mine {
+        margin-top: 18px;
+      }
+      .mine .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--stroke2);
+        font-size: 13px;
+      }
+      .mine .row:last-child {
+        border-bottom: 0;
+      }
+
+      @media (max-width: 980px) {
+        .console-grid {
+          grid-template-columns: 1fr;
+        }
+        .two {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 640px) {
+        .wrap {
+          padding: max(14px, env(safe-area-inset-top)) 13px 50px;
+        }
+        header {
+          gap: 11px;
+        }
+        .brand {
+          font-size: 15.5px;
+          width: 100%;
+        }
+        .seg {
+          width: 100%;
+        }
+        .seg button {
+          flex: 1;
+          padding: 11px 6px;
+          font-size: 13px;
+        }
+        .date {
+          display: none;
+        }
+        .controlbar {
+          gap: 10px;
+        }
+        .ctl-group {
+          width: 100%;
+          justify-content: space-between;
+        }
+        .rolepill {
+          margin-inline-start: 0;
+          width: 100%;
+          justify-content: space-between;
+        }
+        .period .lab {
+          min-width: 90px;
+          font-size: 13px;
+        }
+        .kpis {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+        .kpi {
+          padding: 15px 16px;
+        }
+        .kpi .num {
+          font-size: 27px;
+        }
+        .kpi .lab {
+          font-size: 12px;
+          margin-bottom: 7px;
+        }
+        .panel {
+          padding: 17px 16px;
+        }
+        .hint {
+          font-size: 12.5px;
+          padding: 11px 13px;
+        }
+        .phone {
+          max-width: 100%;
+          padding: 0;
+          border: 0;
+          background: none;
+          box-shadow: none;
+        }
+        .screen {
+          border-radius: 20px;
+          padding: 18px 15px;
+        }
+        .act .btn {
+          padding: 10px 13px;
+        }
+        .mkpis {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 380px) {
+        .kpis {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ============================================================
+         v3 — רכיבים חדשים (טבלאות + פרופיל + כרטיסים).
+         מועתק-בסגנון מ-v2 (אותם tokens) · נוסף בסבב v3 בלבד.
+         ============================================================ */
+      .card {
+        padding: 16px 16px 18px;
+        border-radius: var(--radius);
+      }
+      .card.glass {
+        background: var(--glass);
+        border: 1px solid var(--stroke);
+        -webkit-backdrop-filter: blur(24px) saturate(150%);
+        backdrop-filter: blur(24px) saturate(150%);
+      }
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .card h3 .sub {
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--ink2);
+        margin-inline-start: 6px;
+      }
+
+      /* ----- פס-סיכום-כיסוי (לשונית-טבלאות) ----- */
+      .cover-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 22px;
+        padding: 14px 18px;
+        border-radius: var(--radius);
+        margin-bottom: 16px;
+        border: 1px solid var(--stroke);
+        background: var(--glass);
+      }
+      .cover-bar.green {
+        border-color: rgba(52, 211, 153, 0.4);
+      }
+      .cover-bar.orange {
+        border-color: rgba(251, 191, 36, 0.4);
+      }
+      .cover-bar.red {
+        border-color: rgba(248, 113, 113, 0.45);
+      }
+      .cb-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .cb-num {
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .cb-lab {
+        font-size: 12px;
+        color: var(--ink2);
+      }
+      .cb-risk {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .cb-tags {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      /* ----- טבלה ----- */
+      .tbl-scroll {
+        margin-top: 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      table.tbl {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+      table.tbl th,
+      table.tbl td {
+        padding: 9px 11px;
+        text-align: right;
+        border-bottom: 1px solid var(--stroke2);
+      }
+      table.tbl th {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ink2);
+        position: sticky;
+        top: 0;
+        background: rgba(13, 18, 36, 0.92);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+      }
+      table.tbl th.th-sort {
+        cursor: pointer;
+        user-select: none;
+      }
+      table.tbl th.th-sort:hover {
+        color: var(--ink);
+      }
+      table.tbl tbody tr:hover {
+        background: var(--glass2);
+      }
+      .c-name .lnk {
+        cursor: pointer;
+        font-weight: 600;
+        border-bottom: 1px dashed var(--stroke);
+      }
+      .c-name .lnk:hover {
+        color: var(--blue);
+        border-color: var(--blue);
+      }
+      .c-dim {
+        color: var(--ink2);
+      }
+      .c-disabled {
+        opacity: 0.4;
+      }
+      .c-warn {
+        color: var(--red);
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .row-warn {
+        background: rgba(248, 113, 113, 0.07);
+      }
+      .cell-sel {
+        width: auto;
+        min-width: 110px;
+        padding: 6px 9px;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 12.5px;
+        color: var(--ink);
+        background: var(--glass2);
+        border: 1px solid var(--stroke2);
+        outline: none;
+        direction: rtl;
+      }
+      .cell-sel:focus {
+        border-color: var(--blue);
+      }
+      .chip-demo {
+        font-size: 9.5px;
+        font-weight: 700;
+        padding: 1px 5px;
+        border-radius: 6px;
+        margin-inline-start: 4px;
+        color: var(--amber);
+        background: rgba(251, 191, 36, 0.14);
+      }
+
+</style>
+  </head>
+  <body dir="rtl">
+    <div class="bg"></div>
+    <div class="wrap">
+      <!-- ============== HEADER + NAV ============== -->
+      <header>
+        <div class="brand">
+          <span class="logo"
+            ><svg viewBox="0 0 24 24">
+              <path d="M4 7h16M4 12h16M4 17h10" />
+              <circle cx="18.5" cy="17" r="2.4" /></svg
+          ></span>
+          מחלקת הרדמה · מערכת נוכחות
+          <span class="demo-badge">הדגמה</span>
+        </div>
+        <div class="seg glass" id="seg">
+          <button data-v="console" class="active">נוכחות <span class="dot" id="segDot">0</span></button>
+          <button data-v="tables">טבלאות</button>
+          <button data-v="doctor">רופא</button>
+          <button data-v="schedule" disabled title="בקרוב">שיבוץ <span class="soon">בקרוב</span></button>
+        </div>
+        <div class="date">יום שני · 22.6.2026</div>
+      </header>
+
+      <div class="hint glass" id="hint">
+        <span>💡</span>
+        <span
+          ><b>איך זה עובד:</b> "נוכח" = פיזית במחלקה וזמין לשיבוץ. <b>כל</b> היעדרות (חופש, מילואים, מחלה, רוטציה…)
+          נספרת כ<b>לא נוכח</b>. עברו ל<b>רופא</b>, שִלחו בקשה, אשרו בקונסולה — וראו את הכותרת זזה בזמן אמת.</span
+        >
+        <span class="x" onclick="document.getElementById('hint').remove()">×</span>
+      </div>
+
+      <!-- ============== CONSOLE (1:1 מ-v2 + פאנל שיבוץ-היום) ============== -->
+      <section id="console">
+        <!-- control bar -->
+        <div class="controlbar glass">
+          <div class="ctl-group">
+            <span class="ctl-lab">טווח</span>
+            <div class="miniseg" id="modeSeg">
+              <button data-m="day" class="on">יום</button>
+              <button data-m="week">שבוע</button>
+              <button data-m="month">חודש</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <div class="period" id="periodPicker">
+              <button onclick="stepPeriod(-1)" aria-label="הקודם">‹</button>
+              <span class="lab" id="periodLab">—</span>
+              <button onclick="stepPeriod(1)" aria-label="הבא">›</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-lab">מציג</span>
+            <div class="miniseg metric" id="metricToggle">
+              <button data-x="present" class="on">נוכחים</button>
+              <button data-x="absent">חסרים</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="console-grid">
+          <!-- secretariat column -->
+          <div class="col col-sec">
+            <div class="panel glass">
+              <h3>תור בקשות לאישור <span class="sub" id="qCount">—</span></h3>
+              <div id="queue"></div>
+            </div>
+            <div class="panel glass">
+              <h3>עריכת סטטוס · <span class="sub" id="editDay">היום</span></h3>
+              <div id="editList"></div>
+            </div>
+          </div>
+
+          <!-- manager column -->
+          <div class="col col-mgr">
+            <div class="grid kpis">
+              <div class="kpi glass">
+                <div class="lab" id="kMainLab">נוכחים</div>
+                <div class="num" style="color: var(--green)" id="kMain">—</div>
+              </div>
+              <div class="kpi glass">
+                <div class="lab" id="kOtherLab">חסרים</div>
+                <div class="num" style="color: var(--amber)" id="kOther">—</div>
+              </div>
+              <div class="kpi glass">
+                <div class="lab">סה״כ רופאים</div>
+                <div class="num" id="kTotal">—</div>
+              </div>
+              <div class="kpi glass">
+                <div class="lab" id="kPctLab">אחוז נוכחות</div>
+                <div class="num" id="kPct">—</div>
+              </div>
+              <div class="kpi glass click" onclick="scrollQueue()">
+                <div class="lab">בקשות ממתינות</div>
+                <div class="num" style="color: var(--blue)" id="kPend">—</div>
+              </div>
+            </div>
+
+            <div class="grid two">
+              <div class="panel glass">
+                <h3 id="reasonsTitle">סיבות היעדרות <span class="sub" id="absSub">—</span></h3>
+                <div id="reasons"></div>
+              </div>
+              <div class="panel glass">
+                <h3 id="cutTitle">נוכחות לפי קבוצה</h3>
+                <div id="cutCrumb"></div>
+                <div id="cutBars"></div>
+                <div class="chips" id="cutChips"></div>
+              </div>
+            </div>
+
+            <div class="grid two">
+              <div class="panel glass">
+                <h3 id="fcTitle">תחזית <span class="sub" id="fcSub">נוכחים צפויים</span></h3>
+                <div class="fc" id="forecast"></div>
+              </div>
+              <div class="panel glass">
+                <h3 id="absTitle">חסרים <span class="sub" id="absCount">—</span></h3>
+                <div id="absTable"></div>
+              </div>
+            </div>
+
+            <!-- 🆕 פאנל "שיבוץ היום" (renderAssignSummary) -->
+            <div class="panel glass" id="assignSummary"></div>
+
+            <!-- deferred teasers (1:1 מ-v2) -->
+            <div class="grid teaser-grid">
+              <div class="teaser glass" onclick="toast('בפיתוח — יוצג בגרסה הבאה')">
+                <span class="soonbadge">בקרוב</span>
+                <h3>מנוע שיבוץ חכם</h3>
+                <p>שיבוץ-חדרים אוטומטי לפי זמינות, ותק וצוות — כפתור "הרץ שיבוץ" ימלא את הטבלה.</p>
+                <button class="btn" disabled>הרץ שיבוץ</button>
+              </div>
+              <div class="teaser glass" onclick="toast('בפיתוח — יוצג בגרסה הבאה')">
+                <span class="soonbadge">בקרוב</span>
+                <h3>הוגנות תורנות</h3>
+                <p>אריחי הוגנות פר-רופא — השוואת עומס תורנות מול ממוצע העמיתים באותו ותק וצוות.</p>
+                <button class="btn" disabled>הצג מדדים</button>
+              </div>
+              <div class="teaser glass" onclick="toast('בפיתוח — יוצג בגרסה הבאה')">
+                <span class="soonbadge">בקרוב</span>
+                <h3>גרירה ונעיצה</h3>
+                <p>גרירת רופאים בין חדרים ונעילת-שיבוץ ידנית — drag &amp; drop על-גבי טבלת השיבוץ.</p>
+                <button class="btn" disabled>פתח לוח</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== TABLES (🆕 לשונית-טבלאות) ============== -->
+      <section id="tables" hidden>
+        <div class="controlbar glass">
+          <div class="ctl-group">
+            <div class="period" id="tblDayPicker">
+              <button data-tblstep="-1" aria-label="הקודם">‹</button>
+              <span class="lab" id="tblDateLab">—</span>
+              <button data-tblstep="1" aria-label="הבא">›</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-lab">סינון</span>
+            <div class="miniseg" id="tblFilterSeg">
+              <button data-filter="present" class="on">נוכחים</button>
+              <button data-filter="absent">חסרים</button>
+              <button data-filter="all">הכל</button>
+            </div>
+          </div>
+          <div class="ctl-group" style="flex: 1; min-width: 180px">
+            <input type="text" id="tblSearch" placeholder="חיפוש לפי שם…" />
+          </div>
+        </div>
+
+        <!-- פס-סיכום-כיסוי-חדרים -->
+        <div class="glass cover-bar" id="tblCover"></div>
+
+        <!-- בורר-עמודות (צ'יפים) -->
+        <div class="panel glass">
+          <h3>טבלת נוכחות ושיבוץ <span class="sub" id="tblCount">—</span></h3>
+          <div class="chips" id="tblChips"></div>
+          <div class="tbl-scroll">
+            <table class="tbl">
+              <thead id="tblHead"></thead>
+              <tbody id="tblBody"></tbody>
+            </table>
+          </div>
+          <button class="btn" disabled style="margin-top: 14px">
+            <svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z" /></svg>
+            הרץ שיבוץ חכם <span class="soon">בקרוב</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============== PROFILE (🆕 drill-in, hidden) ============== -->
+      <section id="profile" hidden>
+        <div id="profileBody"></div>
+      </section>
+
+      <!-- ============== DOCTOR (mobile, 1:1 מ-v2) ============== -->
+      <section id="doctor" hidden>
+        <div class="phone glass">
+          <div class="screen">
+            <div class="hello">שלום, ד״ר כץ 👋</div>
+            <div class="sub2">מתמחה · שנה ג׳ · צוות ב</div>
+            <div class="status-card">
+              <span class="ring"
+                ><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg
+              ></span>
+              <div>
+                <div style="font-weight: 600; font-size: 14px">הסטטוס שלך היום: נוכח</div>
+                <div style="font-size: 12.5px; color: var(--ink2)">משובץ · חדר ניתוח 4</div>
+              </div>
+            </div>
+            <div style="font-weight: 600; font-size: 14.5px; margin-bottom: 4px">הגשת בקשה חדשה</div>
+            <label class="fl">סוג הבקשה</label>
+            <select id="rType"></select>
+            <div class="dates">
+              <div>
+                <label class="fl">מתאריך</label><input type="text" id="rFrom" value="22.6" inputmode="numeric" />
+              </div>
+              <div>
+                <label class="fl">עד תאריך</label><input type="text" id="rTo" value="22.6" inputmode="numeric" />
+              </div>
+            </div>
+            <label class="fl">הערה (לא חובה)</label>
+            <input type="text" id="rNote" placeholder="לדוגמה: אישור רופא מצורף" />
+            <div style="height: 16px"></div>
+            <button class="btn primary" onclick="submitReq()">
+              <svg
+                viewBox="0 0 24 24"
+                style="width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.4; fill: none"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+              שליחת בקשה
+            </button>
+            <div class="mine">
+              <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px">הבקשות שלי</div>
+              <div id="myReqs"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- day-coverage modal -->
+    <div class="overlay" id="dayOverlay" onclick="if (event.target === this) closeDayReport();">
+      <div class="modal glass" id="dayReport"></div>
+    </div>
+
+    <div id="toast"></div>
+
+    <!-- ============== SCRIPTS (סדר קבוע) ============== -->
+    <script>
+"use strict";
+
+/* ============================================================
+   מערכת נוכחות · מחלקת הרדמה — דמו v3
+   שכבת-נתונים + גזירה (data layer). node-runnable, ללא DOM.
+   מקור: attendance-demo-v2/index.html — מועבר 1:1 + תיקוני-חובה.
+   "נוכח" = פיזית במחלקה. כל היעדרות = לא נוכח.
+   נתונים מזויפים בלבד (דמו ציבורי).
+   ============================================================ */
+
+globalThis.Att = globalThis.Att || {};
+
+/* ---------- 1. constants (single source of truth) ---------- */
+
+// 12 קודי-סטטוס (1 נוכח + 11 היעדרות). countsAbsent=true → הרופא לא-נוכח באותו יום.
+const STATUS = [
+  { key: "present", label: "נוכח", tone: "success", countsAbsent: false },
+  { key: "vacation", label: "חופש", tone: "success", countsAbsent: true, bucket: "חופש" },
+  { key: "reserve", label: "מילואים", tone: "info", countsAbsent: true, bucket: "מילואים" },
+  { key: "rotation", label: "רוטציה", tone: "violet", countsAbsent: true, bucket: "רוטציה" },
+  { key: "sick", label: "מחלה", tone: "danger", countsAbsent: true, bucket: "מחלה" },
+  { key: "conf", label: "כנס", tone: "pink", countsAbsent: true, bucket: "כנס/השתלמות" },
+  { key: "study", label: "השתלמות", tone: "pink", countsAbsent: true, bucket: "כנס/השתלמות" },
+  { key: "examLeave", label: "חופשת בחינות", tone: "warning", countsAbsent: true, bucket: "שלב/בחינות" },
+  { key: "stage", label: "שלב", tone: "warning", countsAbsent: true, bucket: "שלב/בחינות" },
+  { key: "maternity", label: "חופשת לידה", tone: "pink", countsAbsent: true, bucket: "חופשת לידה" },
+  { key: "research", label: "מחקר", tone: "violet", countsAbsent: true, bucket: "רוטציה" },
+  { key: "pain", label: "כאב", tone: "violet", countsAbsent: true, bucket: "רוטציה" },
+];
+const STATUS_BY_KEY = Object.fromEntries(STATUS.map((s) => [s.key, s]));
+const STATUS_BY_LABEL = Object.fromEntries(STATUS.map((s) => [s.label, s]));
+
+// ----- COVERAGE THRESHOLDS — סף כיסוי (מספר מוחלט, קל לעריכה) -----
+// עריכה כאן בלבד משנה את צבע באנר-הכיסוי בכל הדמו.
+const COVER_GREEN = 78; //  >= 78 נוכחים  → ירוק  (תקין)
+const COVER_ORANGE = 75; //  75–77 נוכחים → כתום  (גבולי)
+//  < 75 נוכחים            → אדום  (תת-תקן)
+
+const TOTAL_DOCTORS = 110;
+
+// ממדי-קבוצה. רק ממדים שחלים על האוכלוסייה מוצגים (applies()).
+const DIMS = {
+  ותק: {
+    of: (d) => (d.kind === "מומחה" ? "מומחים" : "מתמחים"),
+    order: ["מומחים", "מתמחים"],
+    applies: () => true,
+  },
+  צוות: {
+    of: (d) => "צוות " + d.team,
+    order: ["צוות א", "צוות ב", "צוות ג"],
+    applies: () => true,
+  },
+  // שלב + שנת-התמחות חלים רק על מתמחים (למומחים אין שלב). מסננים אותם.
+  שלב: {
+    of: (d) => d.stage,
+    order: ["לפני שלב א׳", "אחרי שלב א׳", "שלב ב׳"],
+    applies: (d) => d.kind === "מתמחה",
+  },
+  "שנת התמחות": {
+    // d.year הוא 1..5 → ממירים לאות עברית כדי שהמפתח יתאים ל-order.
+    of: (d) => "שנה " + ["", "א׳", "ב׳", "ג׳", "ד׳", "ה׳"][d.year],
+    order: ["שנה א׳", "שנה ב׳", "שנה ג׳", "שנה ד׳", "שנה ה׳"],
+    applies: (d) => d.kind === "מתמחה",
+  },
+};
+
+/* ---------- 2. seeded PRNG (mulberry32) — roster יציב ---------- */
+function mulberry32(seed) {
+  return function () {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rnd = mulberry32(20260622); // זרע קבוע → אותו roster בכל reload
+const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
+const randInt = (lo, hi) => lo + Math.floor(rnd() * (hi - lo + 1));
+
+/* ---------- 3. build DOCTORS (~110, fake names) ---------- */
+const FAMILY = [
+  "כהן",
+  "לוי",
+  "מזרחי",
+  "פרץ",
+  "ביטון",
+  "אזולאי",
+  "דהן",
+  "אברהם",
+  "פרידמן",
+  "כץ",
+  "אוחיון",
+  "גבאי",
+  "חדד",
+  "מלכה",
+  "אסולין",
+  "שלום",
+  "ברק",
+  "נחום",
+  "סגל",
+  "רוזן",
+  "טל",
+  "שרון",
+  "בן דוד",
+  "וקנין",
+  "אלון",
+  "גולן",
+  "הרוש",
+  "יוסף",
+  "נוי",
+  "עמר",
+];
+const GIVEN_M = ["יוסי", "דני", "אבי", "רון", "עידו", "איתי", "תומר", "ניר", "גיא", "עמית", "נדב", "אסף"];
+const GIVEN_F = ["מיכל", "נועה", "שירה", "תמר", "יעל", "דנה", "ליאת", "רוני", "מאיה", "הילה", "אורית", "גלי"];
+
+const TEAMS = ["א", "ב", "ג"];
+const ROTATIONS = ["בלוקים", "לב", "נוירו", "ליס", 'טפנ"צ', "ילדים", "כאב", "חיצונית", "הרדמה כללית"];
+const ROOMS = ["חדר 1", "חדר 2", "חדר 3", "חדר 4", "חדר 5", "חדר 6", 'טנ"צ', "יולדות", "מרפאת כאב"];
+const STAGES = ["לפני שלב א׳", "אחרי שלב א׳", "שלב ב׳"];
+
+function buildDoctors() {
+  const list = [];
+  const usedNames = new Set();
+  for (let i = 0; i < TOTAL_DOCTORS; i++) {
+    // ~45% מומחים, ~55% מתמחים
+    const isSpec = rnd() < 0.45;
+    // שם ייחודי-ככל-האפשר
+    let nm;
+    for (let tries = 0; tries < 6; tries++) {
+      const fem = rnd() < 0.45;
+      nm = "ד״ר " + pick(fem ? GIVEN_F : GIVEN_M) + " " + pick(FAMILY);
+      if (!usedNames.has(nm)) break;
+    }
+    // נדיר: אם נשאר כפול, נוסיף אות
+    if (usedNames.has(nm)) nm += " " + String.fromCharCode(1488 + (i % 22));
+    usedNames.add(nm);
+
+    const year = isSpec ? 0 : randInt(1, 5);
+    const stage = isSpec ? "—" : year <= 1 ? "לפני שלב א׳" : year <= 3 ? "אחרי שלב א׳" : "שלב ב׳";
+    const startYear = isSpec ? randInt(2005, 2018) : 2026 - year;
+    list.push({
+      id: i + 1,
+      name: nm,
+      kind: isSpec ? "מומחה" : "מתמחה",
+      year,
+      team: pick(TEAMS),
+      stage,
+      subspec: pick(["כללי", "לב", "נוירו", "ילדים", "כאב", "מיילדות"]),
+      defaultRotation: pick(ROTATIONS),
+      room: pick(ROOMS),
+      startYear,
+      phone: "05" + randInt(0, 8) + "-" + randInt(100, 999) + "-" + randInt(1000, 9999),
+      onCallYTD: randInt(6, 22),
+      sessionsYTD: randInt(40, 130),
+      vacationUsed: randInt(2, 22),
+      vacationTotal: 26,
+    });
+  }
+  return list;
+}
+const DOCTORS = buildDoctors();
+const DOC_BY_ID = Object.fromEntries(DOCTORS.map((d) => [d.id, d]));
+
+/* ---------- 4. date utils (D.M comparison) ---------- */
+// תאריכי הדמו הם "D.M". ממירים למספר-בר-השוואה month*100+day.
+function parseDM(str) {
+  const [d, m] = String(str).split(".").map(Number);
+  return m * 100 + d;
+}
+const DAYS_IN_MONTH = [0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; // 2026 lite
+function addDays(dm, n) {
+  let m = Math.floor(dm / 100),
+    d = (dm % 100) + n;
+  while (d > DAYS_IN_MONTH[m]) {
+    d -= DAYS_IN_MONTH[m];
+    m++;
+    if (m > 12) m = 1;
+  }
+  while (d < 1) {
+    m--;
+    if (m < 1) m = 12;
+    d += DAYS_IN_MONTH[m];
+  }
+  return m * 100 + d;
+}
+const dmToStr = (dm) => (dm % 100) + "." + Math.floor(dm / 100);
+const HE_DOW = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+const HE_DOW_SHORT = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"]; // אותיות יום תקניות
+const HE_MONTH = [
+  "",
+  "ינואר",
+  "פברואר",
+  "מרץ",
+  "אפריל",
+  "מאי",
+  "יוני",
+  "יולי",
+  "אוגוסט",
+  "ספטמבר",
+  "אוקטובר",
+  "נובמבר",
+  "דצמבר",
+];
+// 22.6.2026 = יום שני (index 1). מחשבים יום-בשבוע יחסית לעוגן זה.
+const ANCHOR_DM = 622;
+const ANCHOR_DOW = 1;
+function dowOf(dm) {
+  // ספירת ימים מ-ANCHOR (טווח דמו קצר → לולאה פשוטה בטוחה)
+  let diff = 0,
+    cur = ANCHOR_DM;
+  if (dm >= ANCHOR_DM) {
+    while (cur < dm) {
+      cur = addDays(cur, 1);
+      diff++;
+    }
+  } else {
+    while (cur > dm) {
+      cur = addDays(cur, -1);
+      diff--;
+    }
+  }
+  return (((ANCHOR_DOW + diff) % 7) + 7) % 7;
+}
+
+const TODAY = ANCHOR_DM; // 22.6
+
+/* ---------- 5. seed sparse absences ---------- */
+// מכוילים כך ש-TODAY (22.6) ≈ 76–80 נוכחים מתוך 110.
+// כל אובייקט: {doctorId, status(key), from(D.M), to(D.M)}
+function buildAbsences() {
+  const out = [];
+  const add = (id, key, from, to) => out.push({ doctorId: id, status: key, from, to });
+  // היעדרויות שמכסות את TODAY (22.6) — ~32 רופאים → ~78 נוכחים
+  const todayAbs = [
+    ["vacation", "20.6", "26.6"],
+    ["vacation", "18.6", "24.6"],
+    ["vacation", "22.6", "29.6"],
+    ["vacation", "15.6", "23.6"],
+    ["vacation", "21.6", "25.6"],
+    ["vacation", "22.6", "28.6"],
+    ["vacation", "19.6", "30.6"],
+    ["vacation", "22.6", "22.6"],
+    ["vacation", "17.6", "24.6"],
+    ["reserve", "10.6", "24.6"],
+    ["reserve", "22.6", "5.7"],
+    ["reserve", "18.6", "28.6"],
+    ["reserve", "20.6", "30.6"],
+    ["reserve", "22.6", "26.6"],
+    ["rotation", "1.6", "30.6"],
+    ["rotation", "15.6", "15.7"],
+    ["rotation", "1.6", "30.6"],
+    ["rotation", "10.6", "10.7"],
+    ["rotation", "1.6", "30.6"],
+    ["sick", "22.6", "24.6"],
+    ["sick", "21.6", "23.6"],
+    ["sick", "22.6", "22.6"],
+    ["conf", "22.6", "24.6"],
+    ["study", "20.6", "25.6"],
+    ["examLeave", "22.6", "1.7"],
+    ["stage", "15.6", "27.6"],
+    ["maternity", "1.6", "1.9"],
+    ["maternity", "10.6", "10.9"],
+    ["research", "1.6", "31.7"],
+    ["pain", "1.6", "30.6"],
+    ["rotation", "1.6", "30.6"],
+    ["vacation", "22.6", "27.6"],
+  ];
+  // assign to distinct doctor ids (deterministic spread)
+  let cursor = 0;
+  const usedIds = new Set();
+  const nextId = () => {
+    // בחירת רופא חדש דטרמיניסטית
+    let id;
+    do {
+      cursor = (cursor + 7) % TOTAL_DOCTORS;
+      id = cursor + 1;
+    } while (usedIds.has(id));
+    usedIds.add(id);
+    return id;
+  };
+  todayAbs.forEach(([key, f, t]) => add(nextId(), key, f, t));
+
+  // היעדרויות עתידיות (לא מכסות את TODAY) — מזינות את התחזית קדימה
+  const futureAbs = [
+    ["vacation", "1.7", "8.7"],
+    ["vacation", "5.7", "12.7"],
+    ["vacation", "28.6", "3.7"],
+    ["vacation", "2.7", "9.7"],
+    ["vacation", "10.7", "17.7"],
+    ["vacation", "1.7", "5.7"],
+    ["reserve", "1.7", "15.7"],
+    ["reserve", "28.6", "10.7"],
+    ["conf", "30.6", "2.7"],
+    ["conf", "1.7", "3.7"],
+    ["study", "5.7", "9.7"],
+    ["examLeave", "1.7", "12.7"],
+    ["sick", "24.6", "26.6"],
+    ["vacation", "25.6", "1.7"],
+    ["vacation", "26.6", "2.7"],
+    ["reserve", "27.6", "8.7"],
+    ["rotation", "1.7", "31.7"],
+    ["rotation", "1.7", "31.7"],
+    ["vacation", "23.6", "28.6"],
+    ["vacation", "24.6", "30.6"],
+    ["conf", "23.6", "25.6"],
+  ];
+  futureAbs.forEach(([key, f, t]) => add(nextId(), key, f, t));
+
+  // יום-לחץ ייעודי (27.6) — מצמצם נוכחות ל-~73 כדי שבקשה לאותו יום
+  // תיכנס לבאנר אדום במודאל-הכיסוי (הדגמת אזהרת-הבטיחות). עתידי, לא נוגע ב-TODAY.
+  const tightDay = [
+    ["vacation", "27.6", "27.6"],
+    ["vacation", "27.6", "28.6"],
+    ["sick", "27.6", "27.6"],
+    ["reserve", "27.6", "29.6"],
+    ["conf", "27.6", "27.6"],
+    ["study", "26.6", "27.6"],
+    ["vacation", "27.6", "27.6"],
+    ["rotation", "27.6", "30.6"],
+    ["vacation", "25.6", "27.6"],
+    ["sick", "27.6", "28.6"],
+    ["reserve", "27.6", "27.6"],
+    ["conf", "27.6", "27.6"],
+    ["vacation", "27.6", "27.6"],
+  ];
+  tightDay.forEach(([key, f, t]) => add(nextId(), key, f, t));
+
+  // היעדרויות עתידיות-רחוקות (יולי–אוקטובר בלבד) — נותנות לתחזית-החודשית שונות
+  // ריאלית במקום "תקוע על 110". כולן מתחילות ב-1.7 ומאוחר → לא נוגעות ב-22.6/27.6/30.6
+  // (ה-snapshot 78/73/88 נשמר זהה). ~14 רשומות: חופש/מילואים/רוטציה.
+  const farFuture = [
+    ["vacation", "6.7", "20.7"],
+    ["vacation", "13.7", "27.7"],
+    ["reserve", "1.7", "21.7"],
+    ["rotation", "1.7", "31.8"],
+    ["rotation", "1.8", "30.9"],
+    ["vacation", "3.8", "17.8"],
+    ["vacation", "10.8", "24.8"],
+    ["reserve", "15.8", "5.9"],
+    ["rotation", "1.9", "31.10"],
+    ["vacation", "7.9", "21.9"],
+    ["vacation", "14.9", "28.9"],
+    ["reserve", "1.10", "22.10"],
+    ["vacation", "5.10", "19.10"],
+    ["rotation", "1.10", "31.10"],
+  ];
+  farFuture.forEach(([key, f, t]) => add(nextId(), key, f, t));
+  return out;
+}
+
+/* ---------- 6. live state ---------- */
+const state = {
+  absences: buildAbsences(),
+  // בקשות-בתור. req1 ב-27.6 (יום-לחץ → אדום), req2/req4 ב-22.6 (→ כתום), req3 ב-30.6 (→ ירוק).
+  // ה-doctorId מתוקן ב-remapRequestDoctors() כך שכל רופא נוכח ביום-הבקשה (אישור מוריד באמת ב-1).
+  requests: [
+    { id: 1, doctorId: 6, type: "חופש", from: "27.6", to: "27.6" },
+    { id: 2, doctorId: 2, type: "חופש", from: "22.6", to: "26.6" },
+    { id: 3, doctorId: 9, type: "כנס", from: "30.6", to: "2.7" },
+    { id: 4, doctorId: 14, type: "חופש", from: "22.6", to: "22.6" },
+  ],
+  myReqs: [{ type: "חופש", from: "10.7", to: "17.7", status: "אושר" }],
+  // 🆕 שיבוצי-חדר ידניים. כל רשומה: {doctorId, dm, kind:'room'|'outside', room?, place?, source}
+  assignments: [],
+};
+let nextReqId = 5;
+
+/* ---------- 6b. view-state משותף (data.js הוא הבעלים) ---------- */
+// ציר-הזמן/המתג. drill/dim/role/modalReqId *לא* כאן — הם מקומיים ל-attendance.js.
+const view = { anchor: 622, mode: "day", metric: "present" };
+function setAnchor(dm) {
+  view.anchor = dm;
+}
+function setMode(mode) {
+  view.mode = mode;
+}
+function setMetric(metric) {
+  view.metric = metric;
+}
+
+/* ---------- 7. DERIVE layer (pure-ish reads of state) ---------- */
+// היעדרות מכסה תאריך?
+function absenceCovers(a, dm) {
+  return parseDM(a.from) <= dm && dm <= parseDM(a.to);
+}
+// סטטוס רופא ביום נתון: 'present' אלא אם יש היעדרות מכסה.
+function dayStatusKey(doctorId, dm) {
+  for (const a of state.absences) {
+    if (a.doctorId === doctorId && absenceCovers(a, dm)) return a.status;
+  }
+  return "present";
+}
+// מאגר-זמינים: כל הרופאים הנוכחים ביום נתון.
+function rosterForDate(dm) {
+  return DOCTORS.filter((d) => dayStatusKey(d.id, dm) === "present");
+}
+// רשימת היעדרים-בפועל ליום (אובייקטים) — לוקח את ההיעדרות הראשונה לכל רופא.
+function absencesOnDate(dm) {
+  const seen = new Set();
+  const res = [];
+  for (const a of state.absences) {
+    if (seen.has(a.doctorId)) continue;
+    if (absenceCovers(a, dm)) {
+      seen.add(a.doctorId);
+      res.push(a);
+    }
+  }
+  return res;
+}
+// ספירות ליום: present/absent/pct + פירוק לפי סיבה.
+function countsForDate(dm) {
+  const absent = absencesOnDate(dm);
+  const present = TOTAL_DOCTORS - absent.length;
+  const byBucket = {};
+  absent.forEach((a) => {
+    const b = STATUS_BY_KEY[a.status].bucket || "אחר";
+    byBucket[b] = (byBucket[b] || 0) + 1;
+  });
+  return {
+    present,
+    absent: absent.length,
+    pct: Math.round((present / TOTAL_DOCTORS) * 100),
+    byBucket,
+    absentList: absent,
+  };
+}
+// פירוק נוכחות לפי ממד-קבוצה ליום.
+function groupBreakdown(dm, dimKey) {
+  const dim = DIMS[dimKey];
+  const buckets = {}; // value -> {present,total}
+  DOCTORS.forEach((d) => {
+    if (!dim.applies(d)) return;
+    const v = dim.of(d);
+    if (!buckets[v]) buckets[v] = { present: 0, total: 0 };
+    buckets[v].total++;
+    if (dayStatusKey(d.id, dm) === "present") buckets[v].present++;
+  });
+  const order = dim.order || Object.keys(buckets);
+  return order.filter((k) => buckets[k]).map((k) => ({ label: k, ...buckets[k] }));
+}
+// שמות בקבוצה ליום (drill רמה 2).
+function namesInGroup(dm, dimKey, value) {
+  const dim = DIMS[dimKey];
+  return DOCTORS.filter((d) => dim.applies(d) && dim.of(d) === value).map((d) => ({
+    doctor: d,
+    statusKey: dayStatusKey(d.id, dm),
+  }));
+}
+// סדרת-תחזית לפי mode+metric.
+function seriesForRange() {
+  const out = [];
+  if (view.mode === "day") {
+    // 7 ימים מ-anchor
+    let dm = view.anchor;
+    for (let i = 0; i < 7; i++) {
+      const c = countsForDate(dm);
+      out.push({
+        label: HE_DOW_SHORT[dowOf(dm)],
+        value: view.metric === "present" ? c.present : c.absent,
+      });
+      dm = addDays(dm, 1);
+    }
+  } else if (view.mode === "week") {
+    // 6 שבועות, ערך = ממוצע נוכחים/חסרים על 7 ימי השבוע
+    let start = view.anchor;
+    for (let w = 0; w < 6; w++) {
+      let sum = 0,
+        dd = start;
+      for (let i = 0; i < 7; i++) {
+        const c = countsForDate(dd);
+        sum += view.metric === "present" ? c.present : c.absent;
+        dd = addDays(dd, 1);
+      }
+      out.push({ label: "ש" + (w + 1), value: Math.round(sum / 7) });
+      start = addDays(start, 7);
+    }
+  } else {
+    // month: 6 חודשים, ערך = ממוצע-חודשי אמיתי על כל ימי החודש (לא דגימת ה-15)
+    let m = Math.floor(view.anchor / 100);
+    for (let i = 0; i < 6; i++) {
+      let sum = 0;
+      const days = DAYS_IN_MONTH[m];
+      for (let day = 1; day <= days; day++) {
+        const c = countsForDate(m * 100 + day);
+        sum += view.metric === "present" ? c.present : c.absent;
+      }
+      out.push({ label: HE_MONTH[m].slice(0, 3), value: Math.round(sum / days) });
+      m++;
+      if (m > 12) m = 1;
+    }
+  }
+  return out;
+}
+// כיסוי ליום בקשה — countsForDate + שמות + סף-באנר.
+function coverageBand(present) {
+  if (present >= COVER_GREEN) return "green";
+  if (present >= COVER_ORANGE) return "orange";
+  return "red";
+}
+// תחזית לרופא-בודד: present/absent עבור מזהה יחיד. דגימה (≈12 נק') ולא 365 לולאות.
+function seriesForDoctor(id, mode, anchor) {
+  const out = [];
+  const want = (dm) => (dayStatusKey(id, dm) === "present" ? "present" : "absent");
+  if (mode === "day") {
+    // 7 ימים מ-anchor
+    let dm = anchor;
+    for (let i = 0; i < 7; i++) {
+      out.push({ label: HE_DOW_SHORT[dowOf(dm)], value: want(dm) });
+      dm = addDays(dm, 1);
+    }
+  } else if (mode === "week") {
+    // ~12 נקודות-דגימה: כל 3 ימים על-פני ~5 שבועות
+    let dm = anchor;
+    for (let i = 0; i < 12; i++) {
+      out.push({ label: dmToStr(dm), value: want(dm) });
+      dm = addDays(dm, 3);
+    }
+  } else {
+    // month: ממוצע-חודשי אמיתי על כל ימי החודש (לא דגימת יום-בודד) = 6 נק'.
+    // נקודה אחת לכל חודש: 'present' אם הרופא נוכח ברוב ימי החודש, אחרת 'absent'.
+    let m = Math.floor(anchor / 100);
+    for (let i = 0; i < 6; i++) {
+      let presentDays = 0;
+      const days = DAYS_IN_MONTH[m];
+      for (let day = 1; day <= days; day++) {
+        if (dayStatusKey(id, m * 100 + day) === "present") presentDays++;
+      }
+      out.push({ label: HE_MONTH[m].slice(0, 3), value: presentDays * 2 >= days ? "present" : "absent" });
+      m++;
+      if (m > 12) m = 1;
+    }
+  }
+  return out;
+}
+
+/* ---------- 8. OR scheduling (PRNG ייעודי לפי dm) ---------- */
+// חדרי-ניתוח = ROOMS בדיוק (אותו מערך). שיבוץ מחוץ-לחדר + תחומי-ניתוח.
+const OR_ROOMS = ROOMS;
+const OUTSIDE_PLACES = ["ליס", 'טפנ"צ', "NORA", "מרפאה"];
+const SURGERY_DOMAINS = ["כירורגיה כללית", "נוירוכירורגיה", "אורתופדיה", "כלי-דם", "אורולוגיה", "גינקולוגיה"];
+
+// hash יציב מ-dm → seed ל-PRNG-ייעודי. שונה מ-rnd הגלובלי כדי לא לזהם את ה-roster.
+function hashDM(dm) {
+  let h = (dm | 0) ^ 0x9e3779b9;
+  h = Math.imul(h ^ (h >>> 16), 0x45d9f3b);
+  h = Math.imul(h ^ (h >>> 16), 0x45d9f3b);
+  return (h ^ (h >>> 16)) >>> 0;
+}
+// לוח-ניתוחים ליום: לכל חדר ב-OR_ROOMS {room, surgeryCount(1-4), domain}. דטרמיניסטי פר-dm.
+function orScheduleFor(dm) {
+  const r = mulberry32(hashDM(dm)); // PRNG ייעודי — לא ה-rnd הגלובלי!
+  return OR_ROOMS.map((room) => ({
+    room,
+    surgeryCount: 1 + Math.floor(r() * 4), // 1..4
+    domain: SURGERY_DOMAINS[Math.floor(r() * SURGERY_DOMAINS.length)],
+  }));
+}
+// ניתוחים בחדר נתון ליום: {count, domain}. join לפי מחרוזת-חדר; חייב להתקיים ב-OR_ROOMS.
+function surgeriesInRoom(room, dm) {
+  const hit = orScheduleFor(dm).find((s) => s.room === room);
+  return hit ? { count: hit.surgeryCount, domain: hit.domain } : null;
+}
+
+/* ---------- 8b. assignments (שיבוץ-ידני, אימוטבילי) ---------- */
+// seed קטן: 2-3 רשומות לרופאים-נוכחים ב-622.
+function seedAssignments() {
+  const dm = 622;
+  const present = rosterForDate(dm);
+  const out = [];
+  if (present[0]) out.push({ doctorId: present[0].id, dm, kind: "room", room: OR_ROOMS[0], source: "manual" });
+  if (present[1]) out.push({ doctorId: present[1].id, dm, kind: "room", room: OR_ROOMS[1], source: "manual" });
+  if (present[2])
+    out.push({ doctorId: present[2].id, dm, kind: "outside", place: OUTSIDE_PLACES[0], source: "manual" });
+  return out;
+}
+// שיבוץ-היום לרופא: {kind, room?, place?, source} | null.
+function roomAssignmentFor(id, dm) {
+  const a = state.assignments.find((x) => x.doctorId === id && x.dm === dm);
+  return a ? { kind: a.kind, room: a.room, place: a.place, source: a.source } : null;
+}
+// אימוטבילי: מחליפים את state.assignments במערך חדש (כמו state.absences=next ב-v2).
+function assignToRoom(id, dm, room) {
+  state.assignments = [
+    ...state.assignments.filter((a) => !(a.doctorId === id && a.dm === dm)),
+    { doctorId: id, dm, kind: "room", room, source: "manual" },
+  ];
+}
+function assignOutside(id, dm, place) {
+  state.assignments = [
+    ...state.assignments.filter((a) => !(a.doctorId === id && a.dm === dm)),
+    { doctorId: id, dm, kind: "outside", place, source: "manual" },
+  ];
+}
+function clearAssignment(id, dm) {
+  state.assignments = state.assignments.filter((a) => !(a.doctorId === id && a.dm === dm));
+}
+
+/* ---------- 9. small helpers ---------- */
+const firstChar = (name) => name.replace("ד״ר ", "").trim()[0] || "?";
+const docMeta = (d) => (d.kind === "מומחה" ? "מומחה · צוות " + d.team : "מתמחה · שנה " + d.year + " · צוות " + d.team);
+const typeToStatusKey = (typeLabel) => {
+  const s = STATUS_BY_LABEL[typeLabel];
+  return s ? s.key : "vacation";
+};
+
+/* ---------- 10. remap request doctors ---------- */
+// ודא שכל בקשת-תור משויכת לרופא ש*נוכח* ביום-הבקשה, כך שאישור באמת מוריד נוכח ב-1
+// (מונע התנגשות עם היעדרות-קיימת ושכפול אובייקט-היעדרות). אימוטבילי.
+function remapRequestDoctors() {
+  const taken = new Set();
+  state.requests = state.requests.map((r) => {
+    const dm = parseDM(r.from);
+    let id = r.doctorId;
+    // אם הרופא כבר חסר ביום-הבקשה או תפוס ע״י בקשה אחרת → בחר רופא נוכח ופנוי.
+    if (id == null || taken.has(id) || dayStatusKey(id, dm) !== "present") {
+      id = null;
+      for (let cand = 1; cand <= TOTAL_DOCTORS; cand++) {
+        if (!taken.has(cand) && dayStatusKey(cand, dm) === "present") {
+          id = cand;
+          break;
+        }
+      }
+      if (id == null) id = r.doctorId; // נפילה-לאחור (לא אמור לקרות בדמו)
+    }
+    taken.add(id);
+    return { ...r, doctorId: id };
+  });
+}
+remapRequestDoctors();
+state.assignments = seedAssignments(); // seed אחרי ה-remap (roster יציב)
+
+/* ---------- 11. expose contract ---------- */
+Att.data = {
+  // constants
+  STATUS,
+  STATUS_BY_KEY,
+  STATUS_BY_LABEL,
+  DIMS,
+  COVER_GREEN,
+  COVER_ORANGE,
+  TOTAL_DOCTORS,
+  FAMILY,
+  GIVEN_M,
+  GIVEN_F,
+  TEAMS,
+  ROTATIONS,
+  ROOMS,
+  STAGES,
+  OR_ROOMS,
+  OUTSIDE_PLACES,
+  SURGERY_DOMAINS,
+  // PRNG
+  mulberry32,
+  rnd,
+  hashDM,
+  // doctors
+  DOCTORS,
+  DOC_BY_ID,
+  buildDoctors,
+  // date utils
+  parseDM,
+  addDays,
+  DAYS_IN_MONTH,
+  dmToStr,
+  dowOf,
+  HE_DOW,
+  HE_DOW_SHORT,
+  HE_MONTH,
+  ANCHOR_DM,
+  TODAY,
+  // state
+  state,
+  get nextReqId() {
+    return nextReqId;
+  },
+  set nextReqId(v) {
+    nextReqId = v;
+  },
+  buildAbsences,
+  // view-state
+  view,
+  setAnchor,
+  setMode,
+  setMetric,
+  // derive
+  absenceCovers,
+  dayStatusKey,
+  rosterForDate,
+  absencesOnDate,
+  countsForDate,
+  groupBreakdown,
+  namesInGroup,
+  seriesForRange,
+  seriesForDoctor,
+  coverageBand,
+  // OR scheduling
+  orScheduleFor,
+  surgeriesInRoom,
+  // assignments
+  roomAssignmentFor,
+  assignToRoom,
+  assignOutside,
+  clearAssignment,
+  // helpers
+  firstChar,
+  docMeta,
+  typeToStatusKey,
+  remapRequestDoctors,
+};
+
+</script>
+    <script>
+"use strict";
+
+/* ============================================================
+   מערכת נוכחות · מחלקת הרדמה — דמו v3
+   מודול-הקונסולה (attendance). פיצול 1:1 מ-v2 → namespace Att.attendance.
+   קורא נתונים/גזירה מ-Att.data בלבד. ה-DOM נשאר זהה ל-v2.
+   שינויים-מותרים (ע"פ מועצה) בלבד:
+     • כתיבה ל-anchor/mode/metric → דרך Att.data.setAnchor/setMode/setMetric.
+     • dim/drill = state מקומי (_view).  inline view.drill='X' → drillTo(value).
+     • מתג מנהל/מזכירות פעיל: secretary מסתיר אנליטיקה (queue+edit נשארים).
+     • renderAssignSummary() — פאנל "שיבוץ היום" לדשבורד.
+   ============================================================ */
+
+globalThis.Att = globalThis.Att || {};
+
+(function () {
+  const D = Att.data;
+  // קיצורי-דרך ל-API של שכבת-הנתונים (אותם שמות כמו ב-v2 → קוד 1:1).
+  const {
+    STATUS,
+    STATUS_BY_KEY,
+    DIMS,
+    COVER_GREEN,
+    COVER_ORANGE,
+    TOTAL_DOCTORS,
+    DOCTORS,
+    DOC_BY_ID,
+    DAYS_IN_MONTH,
+    HE_DOW,
+    HE_DOW_SHORT,
+    HE_MONTH,
+    TODAY,
+    parseDM,
+    addDays,
+    dmToStr,
+    dowOf,
+    state,
+    view,
+    absenceCovers,
+    dayStatusKey,
+    countsForDate,
+    groupBreakdown,
+    namesInGroup,
+    seriesForRange,
+    coverageBand,
+    rosterForDate,
+    firstChar,
+    docMeta,
+    typeToStatusKey,
+  } = D;
+
+  // DAYS_IN_MONTH נחשף בחוזה Att.data (לשימוש ב-stepPeriod/validDM).
+  const DIM_DAYS = DAYS_IN_MONTH;
+
+  /* ---------- state מקומי למודול (לא בחוזה) ---------- */
+  // dim/drill = פילוח-הקונסולה. role = נקודת-מבט. modalReqId = מודאל-הכיסוי.
+  const _view = { dim: "ותק", drill: null };
+  let role = "manager";
+  let modalReqId = null;
+
+  /* ---------- 9. navigation helpers ---------- */
+  function scrollQueue() {
+    document.getElementById("queue").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  /* ---------- 10. control bar handlers ---------- */
+  // ציר-זמן/מתג נכתבים דרך setters של data.js (לא mutation ישיר).
+  function setMode(m, btn) {
+    Att.data.setMode(m);
+    document.querySelectorAll("#modeSeg button").forEach((x) => x.classList.toggle("on", x === btn));
+    renderAll();
+  }
+  function setMetric(x, btn) {
+    Att.data.setMetric(x);
+    document.querySelectorAll("#metricToggle button").forEach((b) => {
+      const on = b === btn;
+      b.classList.toggle("on", on);
+      b.classList.toggle("abs", on && b.dataset.x === "absent");
+    });
+    renderAll();
+  }
+  function setRole(r, btn) {
+    role = r;
+    document.querySelectorAll("#roleSeg button").forEach((x) => x.classList.toggle("on", x === btn));
+    toast(role === "manager" ? "נקודת מבט: מנהל" : "נקודת מבט: מזכירות");
+    renderAll();
+  }
+  function stepPeriod(dir) {
+    if (view.mode === "day") Att.data.setAnchor(addDays(view.anchor, dir));
+    else if (view.mode === "week") Att.data.setAnchor(addDays(view.anchor, dir * 7));
+    else {
+      let m = Math.floor(view.anchor / 100) + dir;
+      if (m > 12) m = 1;
+      if (m < 1) m = 12;
+      Att.data.setAnchor(m * 100 + Math.min(view.anchor % 100, DIM_DAYS[m]));
+    }
+    _view.drill = null; // reset drill on date change
+    renderAll();
+  }
+  function periodLabel() {
+    if (view.mode === "day") return HE_DOW[dowOf(view.anchor)] + " " + dmToStr(view.anchor);
+    if (view.mode === "week") return dmToStr(view.anchor) + "–" + dmToStr(addDays(view.anchor, 6));
+    return HE_MONTH[Math.floor(view.anchor / 100)];
+  }
+
+  // החלפת view.drill='X';renderCut() ב-inline-onclick → קריאת-פונקציה.
+  function drillTo(value) {
+    _view.drill = value;
+    renderCut();
+  }
+  function setDim(k) {
+    _view.dim = k;
+    _view.drill = null;
+    renderCut();
+  }
+  function clearDrill() {
+    _view.drill = null;
+    renderCut();
+  }
+
+  /* ---------- 11. renderers ---------- */
+  function renderControls() {
+    document.getElementById("periodLab").textContent = periodLabel();
+    document.getElementById("editDay").textContent =
+      view.mode === "day" ? HE_DOW[dowOf(view.anchor)] + " " + dmToStr(view.anchor) : dmToStr(view.anchor);
+  }
+
+  function renderKPIs() {
+    const c = countsForDate(view.anchor);
+    const pres = view.metric === "present";
+    const mainVal = pres ? c.present : c.absent;
+    const otherVal = pres ? c.absent : c.present;
+    document.getElementById("kMainLab").textContent = pres ? "נוכחים" : "חסרים";
+    document.getElementById("kMain").textContent = mainVal;
+    document.getElementById("kMain").style.color = pres ? "var(--green)" : "var(--violet)";
+    document.getElementById("kOtherLab").textContent = pres ? "חסרים" : "נוכחים";
+    document.getElementById("kOther").textContent = otherVal;
+    document.getElementById("kOther").style.color = pres ? "var(--amber)" : "var(--green)";
+    document.getElementById("kTotal").textContent = TOTAL_DOCTORS;
+    document.getElementById("kPctLab").textContent = pres ? "אחוז נוכחות" : "אחוז היעדרות";
+    document.getElementById("kPct").textContent = (pres ? c.pct : 100 - c.pct) + "%";
+    document.getElementById("kPend").textContent = state.requests.length;
+    const dot = document.getElementById("segDot");
+    dot.textContent = state.requests.length;
+    dot.style.display = state.requests.length ? "grid" : "none";
+  }
+
+  function renderReasons() {
+    const c = countsForDate(view.anchor);
+    document.getElementById("reasonsTitle").innerHTML =
+      'סיבות היעדרות <span class="sub" id="absSub">' + c.absent + " רופאים</span>";
+    const entries = Object.entries(c.byBucket).sort((a, b) => b[1] - a[1]);
+    const host = document.getElementById("reasons");
+    if (!entries.length) {
+      host.innerHTML = '<div class="empty">אין היעדרויות ביום זה 🎉</div>';
+      return;
+    }
+    const max = Math.max(...entries.map((e) => e[1]));
+    host.innerHTML = entries
+      .map(
+        ([l, n]) =>
+          `<div class="bar"><div class="top"><span>${l}</span><span class="v">${n}</span></div>
+       <div class="track"><div class="fill" style="width:${Math.round((n / max) * 100)}%"></div></div></div>`,
+      )
+      .join("");
+  }
+
+  function renderCut() {
+    const titleEl = document.getElementById("cutTitle");
+    const crumbEl = document.getElementById("cutCrumb");
+    const barsEl = document.getElementById("cutBars");
+    const chipsEl = document.getElementById("cutChips");
+    const pres = view.metric === "present";
+    const dimKeys = Object.keys(DIMS);
+
+    if (_view.drill) {
+      // ----- level 2: by name -----
+      titleEl.innerHTML = "נוכחות לפי שם";
+      crumbEl.innerHTML =
+        `<div class="crumb"><span class="back" onclick="Att.attendance.clearDrill()">‹ חזרה</span>` +
+        `<span class="sep">·</span><span>${_view.dim}</span><span class="sep">›</span><span>${_view.drill}</span></div>`;
+      const names = namesInGroup(view.anchor, _view.dim, _view.drill);
+      barsEl.innerHTML = names
+        .map((n) => {
+          const isPresent = n.statusKey === "present";
+          const st = STATUS_BY_KEY[n.statusKey];
+          const label = isPresent ? "נוכח" : st.label;
+          return `<div class="arow"><span class="nm">${n.doctor.name}</span>
+         <span class="meta">${docMeta(n.doctor)}</span>
+         <span class="tag t-${isPresent ? "success" : st.tone}">${label}</span></div>`;
+        })
+        .join("");
+      chipsEl.innerHTML = "";
+      return;
+    }
+
+    // ----- level 1: by group (only applicable dims) -----
+    titleEl.innerHTML = "נוכחות לפי קבוצה";
+    crumbEl.innerHTML = "";
+    const rows = groupBreakdown(view.anchor, _view.dim);
+    const chipsHtml = dimKeys
+      .map(
+        (k) => `<span class="chip ${k === _view.dim ? "on" : ""}" onclick="Att.attendance.setDim('${k}')">${k}</span>`,
+      )
+      .join("");
+    // הגנה: ממד ללא שורות → הודעה במקום פאנל ריק (שלא ייראה שבור).
+    if (!rows.length) {
+      barsEl.innerHTML = '<div class="empty">אין נתונים בפילוח זה</div>';
+      chipsEl.innerHTML = chipsHtml;
+      return;
+    }
+    barsEl.innerHTML = rows
+      .map((r) => {
+        const val = pres ? r.present : r.total - r.present;
+        const pctW = pres
+          ? Math.round((r.present / r.total) * 100)
+          : Math.round(((r.total - r.present) / r.total) * 100);
+        const cls = pres ? "g" : "v";
+        const valTxt = pres ? `${r.present} / ${r.total} נוכחים` : `${r.total - r.present} / ${r.total} חסרים`;
+        return `<div class="bar click" onclick="Att.attendance.drillTo('${r.label}')">
+         <div class="top"><span>${r.label}</span><span class="v">${valTxt}</span></div>
+         <div class="track"><div class="fill ${cls}" style="width:${pctW}%"></div></div></div>`;
+      })
+      .join("");
+    chipsEl.innerHTML = chipsHtml;
+  }
+
+  function renderForecast() {
+    const pres = view.metric === "present";
+    const metricWord = pres ? "נוכחים" : "חסרים";
+    const subTxt =
+      view.mode === "day"
+        ? (pres ? "נוכחים צפויים" : "חסרים צפויים") + " · 7 ימים"
+        : view.mode === "week"
+          ? "ממוצע " + metricWord + " שבועי"
+          : "ממוצע " + metricWord + " · 6 חודשים";
+    const titleTxt = "תחזית " + (view.mode === "day" ? "" : view.mode === "week" ? "שבועית" : "חודשית");
+    document.getElementById("fcTitle").innerHTML = titleTxt + ' <span class="sub">' + subTxt + "</span>";
+    const data = seriesForRange();
+    const max = Math.max(...data.map((d) => d.value), 1);
+    document.getElementById("forecast").innerHTML = data
+      .map(
+        (d) =>
+          `<div class="col"><span class="n">${d.value}</span>
+       <div class="stk ${pres ? "g" : ""}" style="height:${Math.max(6, Math.round((d.value / max) * 86))}px"></div>
+       <span class="d">${d.label}</span></div>`,
+      )
+      .join("");
+  }
+
+  function renderAbsTable() {
+    const c = countsForDate(view.anchor);
+    const show = c.absentList.slice(0, 8);
+    document.getElementById("absTitle").innerHTML =
+      'חסרים <span class="sub">' + show.length + " מתוך " + c.absent + "</span>";
+    const host = document.getElementById("absTable");
+    if (!c.absent) {
+      host.innerHTML = '<div class="empty">כל המחלקה נוכחת ביום זה 🎉</div>';
+      return;
+    }
+    host.innerHTML = show
+      .map((a) => {
+        const d = DOC_BY_ID[a.doctorId];
+        const st = STATUS_BY_KEY[a.status];
+        return `<div class="arow"><span class="nm">${d.name}</span>
+         <span class="meta">${docMeta(d)}</span>
+         <span class="tag t-${st.tone}">${st.label} · עד ${a.to}</span></div>`;
+      })
+      .join("");
+  }
+
+  // 🆕 פאנל "שיבוץ היום" לדשבורד. נגזר מ-state.assignments + rosterForDate ליום-העוגן.
+  function renderAssignSummary() {
+    const host = document.getElementById("assignSummary");
+    if (!host) return; // element-id חדש ב-index — אם לא קיים, no-op בטוח.
+    const dm = view.anchor;
+    const present = rosterForDate(dm); // רופאים נוכחים היום
+    const presentIds = new Set(present.map((d) => d.id));
+    const todayAssigns = state.assignments.filter((a) => a.dm === dm);
+
+    let inRoom = 0; // משובצים-לחדר ונוכחים
+    let outside = 0; // משובצים-מחוץ-לחדר ונוכחים
+    const riskRooms = []; // חדרים-בסיכון: רופא ששובץ-לחדר אך הפך-חסר
+    const assignedIds = new Set();
+    todayAssigns.forEach((a) => {
+      assignedIds.add(a.doctorId);
+      const stillPresent = presentIds.has(a.doctorId);
+      if (a.kind === "room") {
+        if (stillPresent) inRoom++;
+        else riskRooms.push(a.room); // שובץ לחדר אך חסר → חדר בסיכון
+      } else if (a.kind === "outside") {
+        if (stillPresent) outside++;
+      }
+    });
+    // נוכחים-לא-משובצים: נוכחים היום שאין להם רשומת-שיבוץ.
+    const unassigned = present.filter((d) => !assignedIds.has(d.id)).length;
+    const riskUnique = [...new Set(riskRooms)];
+
+    const riskHtml = riskUnique.length
+      ? riskUnique.map((room) => `<span class="tag t-danger" style="margin-inline-end:6px">⚠ ${room}</span>`).join("")
+      : '<span class="meta">אין חדרים בסיכון 🎉</span>';
+
+    host.innerHTML = `
+      <h3>שיבוץ היום <span class="sub" id="assignSub">${dmToStr(dm)}</span></h3>
+      <div class="grid kpis" style="margin-bottom:14px">
+        <div class="kpi" style="background:var(--glass2);border:1px solid var(--stroke2)">
+          <div class="lab">משובצים לחדרים</div>
+          <div class="num" style="color:var(--green);font-size:26px">${inRoom}</div>
+        </div>
+        <div class="kpi" style="background:var(--glass2);border:1px solid var(--stroke2)">
+          <div class="lab">מחוץ לחדר</div>
+          <div class="num" style="color:var(--blue);font-size:26px">${outside}</div>
+        </div>
+        <div class="kpi" style="background:var(--glass2);border:1px solid var(--stroke2)">
+          <div class="lab">נוכחים לא משובצים</div>
+          <div class="num" style="color:var(--amber);font-size:26px">${unassigned}</div>
+        </div>
+        <div class="kpi" style="background:var(--glass2);border:1px solid var(--stroke2)">
+          <div class="lab">חדרים בסיכון</div>
+          <div class="num" style="color:var(--red);font-size:26px">${riskUnique.length}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:14px">${riskHtml}</div>
+      <button class="btn primary" onclick="Att.app.go('tables')">
+        <svg viewBox="0 0 24 24"><path d="M3 9h18M9 3v18M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
+        פתח טבלת שיבוץ
+      </button>`;
+  }
+
+  function renderQueue() {
+    document.getElementById("qCount").textContent = state.requests.length
+      ? state.requests.length + " ממתינות"
+      : "הכל מאושר";
+    const q = document.getElementById("queue");
+    if (!state.requests.length) {
+      q.innerHTML = '<div class="empty">אין בקשות ממתינות 🎉</div>';
+      return;
+    }
+    q.innerHTML = state.requests
+      .map((r) => {
+        const d = DOC_BY_ID[r.doctorId];
+        const nm = d ? d.name : "ד״ר כץ";
+        const meta = d ? docMeta(d) : "מתמחה · שנה ג׳";
+        return `<div class="req" id="req${r.id}">
+         <span class="av">${firstChar(nm)}</span>
+         <div class="info">
+           <div class="l1">${nm} · ${r.type}</div>
+           <div class="l2">${meta} · <span class="datechip" onclick="Att.attendance.openDayReport(${r.id})">
+             <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+             ${r.from}–${r.to}</span></div>
+         </div>
+         <div class="act">
+           <button class="btn ok" onclick="Att.attendance.approve(${r.id})"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>אשר</button>
+           <button class="btn no" onclick="Att.attendance.reject(${r.id})">דחה</button>
+         </div></div>`;
+      })
+      .join("");
+  }
+
+  function renderEdit() {
+    // עורכים את סטטוס-היום של 6 רופאים-לדוגמה (ה-6 הראשונים).
+    const opts = STATUS.map((s) => s.label);
+    const sample = DOCTORS.slice(0, 6);
+    document.getElementById("editList").innerHTML = sample
+      .map((d) => {
+        const cur = STATUS_BY_KEY[dayStatusKey(d.id, view.anchor)].label;
+        return `<div class="req"><span class="av">${firstChar(d.name)}</span>
+         <div class="info"><div class="l1">${d.name}</div><div class="l2">${docMeta(d)}</div></div>
+         <select style="width:auto;min-width:140px" onchange="Att.attendance.editStatus(${d.id},this.value)">
+           ${opts.map((o) => `<option ${o === cur ? "selected" : ""}>${o}</option>`).join("")}</select></div>`;
+      })
+      .join("");
+  }
+  function editStatus(doctorId, label) {
+    const key = typeToStatusKey(label);
+    // אימוטבילי: בונים מערך-היעדרויות חדש. העריכה חלה על *היום הנבחר* בלבד.
+    const today = view.anchor;
+    const next = [];
+    state.absences.forEach((a) => {
+      // היעדרות שאינה של הרופא, או שאינה מכסה את היום הנבחר → נשארת כמות שהיא.
+      if (a.doctorId !== doctorId || !absenceCovers(a, today)) {
+        next.push(a);
+        return;
+      }
+      // היעדרות רב-יומית שמכסה את היום → מפצלים כדי לנקות *רק* את היום הנבחר
+      // (במקום למחוק את כל הרשומה ולשנות בטעות ימים עתידיים).
+      const f = parseDM(a.from),
+        t = parseDM(a.to);
+      if (f < today) next.push({ ...a, to: dmToStr(addDays(today, -1)) }); // קטע מוביל
+      if (t > today) next.push({ ...a, from: dmToStr(addDays(today, 1)) }); // קטע נגרר
+    });
+    if (key !== "present") {
+      next.push({ doctorId, status: key, from: dmToStr(today), to: dmToStr(today) });
+    }
+    state.absences = next;
+    renderAll();
+    const d = DOC_BY_ID[doctorId];
+    toast("עודכן: " + d.name + " · " + label);
+    flashKPIs();
+  }
+
+  function renderMine() {
+    document.getElementById("myReqs").innerHTML = state.myReqs
+      .map((m) => {
+        const c = m.status === "אושר" ? "success" : m.status === "נדחה" ? "danger" : "warning";
+        return `<div class="row"><span>${m.type} · ${m.from}–${m.to}</span><span class="tag t-${c}">${m.status}</span></div>`;
+      })
+      .join("");
+  }
+
+  // מתג מנהל/מזכירות: מסתיר/מציג את עמודת-האנליטיקה של המנהל.
+  // secretary → רק תור+עריכה (col-sec). manager → הכול.
+  function applyRole() {
+    const mgrCol = document.querySelector(".col-mgr");
+    if (mgrCol) mgrCol.style.display = role === "secretary" ? "none" : "";
+  }
+
+  function renderAll() {
+    applyRole();
+    renderControls();
+    renderQueue();
+    renderEdit();
+    renderMine();
+    // פאנלי-האנליטיקה של המנהל מצוירים תמיד (ה-DOM מוסתר ב-secretary, אך נשאר עקבי).
+    renderKPIs();
+    renderReasons();
+    renderCut();
+    renderForecast();
+    renderAbsTable();
+    renderAssignSummary();
+  }
+
+  /* ---------- 12. day-coverage modal (F3) ---------- */
+  function openDayReport(reqId) {
+    const r = state.requests.find((x) => x.id === reqId);
+    if (!r) return;
+    modalReqId = reqId;
+    const reviewingDoc = DOC_BY_ID[r.doctorId];
+    // סורקים את כל ימי הבקשה (from..to) ובוחרים את היום ה*גרוע* ביותר (הכי מעט נוכחים אחרי אישור),
+    // שכן בקשה רב-יומית עלולה להיות תקינה ביום-הראשון ותת-תקן ביום מאוחר יותר.
+    const startDm = parseDM(r.from);
+    const endDm = parseDM(r.to);
+    let scanDm = startDm,
+      worstAfter = Infinity,
+      worstDm = startDm,
+      guard = 0;
+    while (guard++ < 90) {
+      const c = countsForDate(scanDm);
+      const absentHere = dayStatusKey(r.doctorId, scanDm) !== "present";
+      const after = absentHere ? c.present : c.present - 1;
+      if (after < worstAfter) {
+        worstAfter = after;
+        worstDm = scanDm;
+      }
+      if (scanDm === endDm) break;
+      scanDm = addDays(scanDm, 1);
+    }
+    // הבאנר והמספרים משקפים את היום ה*גרוע* בטווח הבקשה (כיסוי-decision כן).
+    const dm = worstDm;
+    const base = countsForDate(dm);
+    const reviewingAlreadyAbsent = dayStatusKey(r.doctorId, dm) !== "present";
+    const presentAfter = worstAfter;
+    const multiDay = startDm !== endDm;
+    const absentAfter = TOTAL_DOCTORS - presentAfter;
+    const band = coverageBand(presentAfter);
+    const bandText = {
+      green: "כיסוי תקין — אפשר לאשר בבטחה.",
+      orange: "כיסוי גבולי — שקול לפני אישור.",
+      red: "תת-תקן! אישור ישאיר את היום מתחת לסף הבטיחות.",
+    }[band];
+    const bandIcon = {
+      green: '<path d="M5 13l4 4L19 7"/>',
+      orange:
+        '<path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>',
+      red: '<path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>',
+    }[band];
+
+    // רשימת צפויים-להיעדר (כולל הרופא-הנבדק, מודגש)
+    const absentObjs = [...base.absentList];
+    if (!reviewingAlreadyAbsent) {
+      absentObjs.unshift({ doctorId: r.doctorId, status: typeToStatusKey(r.type), to: r.to, reviewing: true });
+    } else {
+      // mark existing as reviewing
+      const idx = absentObjs.findIndex((a) => a.doctorId === r.doctorId);
+      if (idx >= 0) absentObjs[idx] = { ...absentObjs[idx], reviewing: true };
+    }
+    const listHtml = absentObjs
+      .slice(0, 30)
+      .map((a) => {
+        const d = DOC_BY_ID[a.doctorId];
+        const st = STATUS_BY_KEY[a.status];
+        const hl = a.reviewing ? ' style="background:rgba(96,165,250,.10);border-radius:10px;padding-inline:6px"' : "";
+        const revTag = a.reviewing ? ' <span class="tag t-info">נבדק כעת</span>' : "";
+        return `<div class="arow"${hl}><span class="nm">${d ? d.name : "—"}</span>
+         <span class="meta">${d ? docMeta(d) : ""}</span>
+         <span class="tag t-${st.tone}">${st.label}</span>${revTag}</div>`;
+      })
+      .join("");
+
+    const worstStr = dmToStr(dm);
+    const titleStr = multiDay ? `כיסוי ביום הגרוע בטווח · ${worstStr}` : `כיסוי ליום ${worstStr}`;
+    const html = `
+          <div class="mhead">
+            <div>
+              <div class="mtitle">${titleStr}</div>
+              <div class="msub">נבדק: ${reviewingDoc ? reviewingDoc.name : "—"} · ${r.type} · ${r.from}–${r.to}</div>
+            </div>
+            <span class="mx" onclick="Att.attendance.closeDayReport()">×</span>
+          </div>
+          <div class="cover-banner ${band}">
+            <svg viewBox="0 0 24 24">${bandIcon}</svg>
+            <div>${bandText}<div style="font-size:12px;font-weight:500;opacity:.85;margin-top:2px">
+              ${presentAfter} נוכחים · סף ירוק ≥ ${COVER_GREEN} · כתום ${COVER_ORANGE}–${COVER_GREEN - 1} · אדום < ${COVER_ORANGE}</div></div>
+          </div>
+          <div class="mkpis">
+            <div class="mkpi"><div class="lab">נוכחים (אחרי אישור)</div><div class="num" style="color:var(--green)">${presentAfter}</div></div>
+            <div class="mkpi"><div class="lab">חסרים (אחרי אישור)</div><div class="num" style="color:var(--amber)">${absentAfter}</div></div>
+          </div>
+          <p class="msec-title">צפויים להיעדר ביום ${worstStr} (${absentObjs.length})</p>
+          <div class="mlist">${listHtml || '<div class="empty">אף אחד לא נעדר ביום זה</div>'}</div>
+          <div class="mfoot">
+            <button class="btn ok" onclick="Att.attendance.approve(${r.id});Att.attendance.closeDayReport()"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>אשר בקשה</button>
+            <button class="btn no" onclick="Att.attendance.reject(${r.id});Att.attendance.closeDayReport()">דחה בקשה</button>
+          </div>`;
+    document.getElementById("dayReport").innerHTML = html;
+    document.getElementById("dayOverlay").classList.add("show");
+  }
+  function closeDayReport() {
+    document.getElementById("dayOverlay").classList.remove("show");
+    modalReqId = null;
+  }
+
+  /* ---------- 13. immutable handlers ---------- */
+  function approve(id) {
+    const r = state.requests.find((x) => x.id === id);
+    if (!r) return;
+    // הסרה סינכרונית מיידית של הבקשה → קליק-כפול תוך כדי האנימציה הוא no-op
+    // (מונע דחיפת אובייקט-היעדרות פעמיים / מצב לא-עקבי). אימוטבילי.
+    state.requests = state.requests.filter((x) => x.id !== id);
+    const el = document.getElementById("req" + id);
+    if (el) {
+      el.style.transition = ".35s";
+      el.style.opacity = "0";
+      el.style.transform = "translateX(-30px)";
+    }
+    const finish = () => {
+      // אימוטבילי: מסירים היעדרות-קיימת חופפת לאותו רופא, ואז מוסיפים את החדשה.
+      const newAbs = { doctorId: r.doctorId, status: typeToStatusKey(r.type), from: r.from, to: r.to };
+      const nf = parseDM(r.from),
+        nt = parseDM(r.to);
+      state.absences = [
+        ...state.absences.filter((a) => !(a.doctorId === r.doctorId && parseDM(a.from) <= nt && nf <= parseDM(a.to))),
+        newAbs,
+      ];
+      // עדכון myReqs (אם זו בקשת הרופא-הנוכחי) — אימוטבילי
+      state.myReqs = state.myReqs.map((m) =>
+        m.status === "ממתין" && m.type === r.type && m.from === r.from ? { ...m, status: "אושר" } : m,
+      );
+      renderAll();
+      const coversNow = absenceCovers({ from: r.from, to: r.to }, view.anchor);
+      flashKPIs(coversNow);
+      const d = DOC_BY_ID[r.doctorId];
+      toast("הבקשה אושרה · " + (d ? d.name : "ד״ר כץ"));
+    };
+    if (el) setTimeout(finish, 330);
+    else finish();
+  }
+  function reject(id) {
+    const r = state.requests.find((x) => x.id === id);
+    if (!r) return;
+    state.requests = state.requests.filter((x) => x.id !== id);
+    state.myReqs = state.myReqs.map((m) =>
+      m.status === "ממתין" && m.type === r.type && m.from === r.from ? { ...m, status: "נדחה" } : m,
+    );
+    renderAll();
+    const d = DOC_BY_ID[r.doctorId];
+    toast("הבקשה נדחתה · " + (d ? d.name : "ד״ר כץ"));
+  }
+  // אימות תאריך-דמו בפורמט "D.M" (יום 1..31, חודש 1..12). מחזיר null אם לא תקין.
+  function validDM(str) {
+    if (!/^\d{1,2}\.\d{1,2}$/.test(str)) return null;
+    const [d, m] = str.split(".").map(Number);
+    if (m < 1 || m > 12) return null;
+    if (d < 1 || d > DIM_DAYS[m]) return null;
+    return str;
+  }
+  function submitReq() {
+    const type = document.getElementById("rType").value;
+    const rawFrom = document.getElementById("rFrom").value.trim();
+    const rawTo = document.getElementById("rTo").value.trim();
+    const from = rawFrom ? validDM(rawFrom) : dmToStr(TODAY);
+    const to = rawTo ? validDM(rawTo) : from;
+    // קלט לא תקין → עצירה עם הודעה (לא שומרים בקשה עם תאריך-שבור).
+    if (!from || !to) {
+      toast("תאריך לא תקין · השתמשו בפורמט יום.חודש (לדוגמה 22.6)");
+      return;
+    }
+    if (parseDM(to) < parseDM(from)) {
+      toast('תאריך "עד" מוקדם מ"מתאריך"');
+      return;
+    }
+    // ד״ר כץ = doctorId null (לא ב-roster) → מטופל כשם-קבוע.
+    state.requests = [...state.requests, { id: D.nextReqId++, doctorId: null, type, from, to }];
+    state.myReqs = [{ type, from, to, status: "ממתין" }, ...state.myReqs];
+    renderAll();
+    toast("הבקשה נשלחה · ממתינה לאישור");
+    const dot = document.getElementById("segDot");
+    dot.classList.add("pulse");
+    setTimeout(() => dot.classList.remove("pulse"), 900);
+  }
+
+  function flashKPIs(changed) {
+    if (changed === false) return;
+    ["kMain", "kOther"].forEach((id) => {
+      const e = document.getElementById(id);
+      if (!e) return;
+      e.classList.add("pulse");
+      setTimeout(() => e.classList.remove("pulse"), 900);
+    });
+  }
+
+  function toast(msg) {
+    const t = document.createElement("div");
+    t.className = "t";
+    t.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>' + msg;
+    document.getElementById("toast").appendChild(t);
+    requestAnimationFrame(() => t.classList.add("show"));
+    setTimeout(() => {
+      t.classList.remove("show");
+      setTimeout(() => t.remove(), 300);
+    }, 2300);
+  }
+
+  /* ---------- expose contract ---------- */
+  Att.attendance = {
+    _view,
+    get role() {
+      return role;
+    },
+    get modalReqId() {
+      return modalReqId;
+    },
+    // renderers
+    renderAll,
+    renderControls,
+    renderKPIs,
+    renderReasons,
+    renderCut,
+    renderForecast,
+    renderAbsTable,
+    renderAssignSummary,
+    renderQueue,
+    renderEdit,
+    renderMine,
+    // handlers
+    stepPeriod,
+    editStatus,
+    approve,
+    reject,
+    submitReq,
+    scrollQueue,
+    openDayReport,
+    closeDayReport,
+    flashKPIs,
+    toast,
+    validDM,
+    // control-bar / role / drill
+    setMode,
+    setMetric,
+    setRole,
+    drillTo,
+    setDim,
+    clearDrill,
+    periodLabel,
+  };
+})();
+
+</script>
+    <script>
+"use strict";
+
+/* ============================================================
+   מערכת נוכחות · מחלקת הרדמה — דמו v3
+   מודול-טבלאות (Att.tables). לשונית "טבלאות": טבלת-נוכחות יומית +
+   שיבוץ-ידני לחדר + בורר-עמודות-צ'יפים + מיון/חיפוש/סינון.
+   קורא נתונים/גזירה מ-Att.data בלבד (החוזה היחיד).
+   tableState = state מקומי למודול (sortCol/sortDir/query/filter/visibleCols),
+   נשמר בין-render אך לא בין-reload.
+   ============================================================ */
+
+globalThis.Att = globalThis.Att || {};
+
+(function () {
+  const D = Att.data;
+  const {
+    STATUS_BY_KEY,
+    COVER_GREEN,
+    COVER_ORANGE,
+    TOTAL_DOCTORS,
+    DOCTORS,
+    DOC_BY_ID,
+    OR_ROOMS,
+    OUTSIDE_PLACES,
+    HE_DOW,
+    parseDM,
+    dmToStr,
+    dowOf,
+    view,
+    dayStatusKey,
+    rosterForDate,
+    roomAssignmentFor,
+    assignToRoom,
+    assignOutside,
+    clearAssignment,
+    surgeriesInRoom,
+    docMeta,
+  } = D;
+
+  /* ---------- column catalogue (single source of truth) ----------
+     always = תמיד מוצגות (שם + סטטוס). pickable = ניתנות-לבחירה דרך הצ'יפים.
+     derived:true → תוויות-"דמו" (#ניתוחים/תחום). assign:true → תאי-בורר (חדר/מחוץ). */
+  const COLS = [
+    { key: "name", label: "שם", always: true },
+    { key: "status", label: "נוכחות", always: true },
+    { key: "kind", label: "סוג" },
+    { key: "rotation", label: "רוטציה" },
+    { key: "room", label: "מספר חדר", assign: true },
+    { key: "surg", label: "#ניתוחים", derived: true },
+    { key: "domain", label: "תחום", derived: true },
+    { key: "outside", label: "מחוץ לחדר", assign: true },
+    { key: "team", label: "צוות" },
+    { key: "phone", label: "טלפון" },
+    { key: "year", label: "שנה" },
+  ];
+  const COL_BY_KEY = Object.fromEntries(COLS.map((c) => [c.key, c]));
+  const PICKABLE = COLS.filter((c) => !c.always).map((c) => c.key);
+  const SORTABLE = new Set(["name", "status", "kind", "rotation", "team", "year"]);
+
+  /* ---------- tableState מקומי (לא בחוזה) ----------
+     ברירת-מחדל: סינון=נוכחים בלבד · מיון לפי שם עולה ·
+     עמודות-נבחרות-התחלתיות = מספר-חדר + #ניתוחים + תחום (התפר הקריטי). */
+  const tableState = {
+    sortCol: "name",
+    sortDir: 1, // 1 עולה · -1 יורד
+    query: "",
+    filter: "present", // 'present' | 'absent' | 'all'
+    visibleCols: ["room", "surg", "domain"],
+  };
+
+  /* ---------- helpers: ערך-תא לרופא (לפי dm הנוכחי) ---------- */
+  function statusOf(d, dm) {
+    return STATUS_BY_KEY[dayStatusKey(d.id, dm)];
+  }
+  function isPresent(d, dm) {
+    return dayStatusKey(d.id, dm) === "present";
+  }
+  // ערך-מיון טקסטואלי לעמודה (משמש ב-sort בלבד).
+  function sortValue(d, dm, col) {
+    switch (col) {
+      case "name":
+        return d.name;
+      case "status":
+        return statusOf(d, dm).label;
+      case "kind":
+        return d.kind;
+      case "rotation":
+        return d.defaultRotation;
+      case "team":
+        return d.team;
+      case "year":
+        return d.year;
+      default:
+        return d.name;
+    }
+  }
+
+  /* ---------- pipeline: filter → search → sort ----------
+     אימוטבילי: לא משנים את DOCTORS; בונים מערך-תוצאה חדש בכל שלב. */
+  function buildRows(dm) {
+    const q = tableState.query.trim();
+    return DOCTORS.filter((d) => {
+      // filter
+      // present: מסתירים חסרים — אך משאירים גלוי רופא ששובץ-לחדר היום אך הפך-חסר
+      // (כדי שה-row האדום "⚠ שובץ אך חסר" לא ייעלם מהטבלה).
+      if (tableState.filter === "present" && !isPresent(d, dm)) {
+        const a = roomAssignmentFor(d.id, dm);
+        if (!(a && a.kind === "room")) return false;
+      }
+      if (tableState.filter === "absent" && isPresent(d, dm)) return false;
+      // search (שם בלבד — ה-input הקבוע, בלי לאבד focus)
+      if (q && !d.name.includes(q)) return false;
+      return true;
+    }).sort((a, b) => {
+      const va = sortValue(a, dm, tableState.sortCol);
+      const vb = sortValue(b, dm, tableState.sortCol);
+      const cmp = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb), "he");
+      return cmp * tableState.sortDir;
+    });
+  }
+
+  /* ---------- coverage summary (פס סיכום-כיסוי-חדרים) ---------- */
+  // X/Y חדרים מאוישים · Z נוכחים לא-משובצים · חדרים-בסיכון.
+  function coverageStats(dm) {
+    const present = rosterForDate(dm);
+    const presentIds = new Set(present.map((d) => d.id));
+    const todayAssigns = state_assignments_for(dm);
+    const roomsManned = new Set(); // חדרים מאוישים ע"י רופא-נוכח
+    const riskRooms = new Set(); // חדר ששובץ אך הרופא הפך-חסר
+    const assignedIds = new Set();
+    todayAssigns.forEach((a) => {
+      assignedIds.add(a.doctorId);
+      const still = presentIds.has(a.doctorId);
+      if (a.kind === "room") {
+        if (still) roomsManned.add(a.room);
+        else riskRooms.add(a.room);
+      }
+    });
+    const unassigned = present.filter((d) => !assignedIds.has(d.id)).length;
+    return {
+      manned: roomsManned.size,
+      totalRooms: OR_ROOMS.length,
+      unassigned,
+      riskRooms: [...riskRooms],
+    };
+  }
+  // קריאה דרך data.js בלבד (לא ניגשים ל-state של מודול אחר; assignments הם בבעלות data.js).
+  function state_assignments_for(dm) {
+    return DOCTORS.map((d) => {
+      const a = roomAssignmentFor(d.id, dm);
+      return a ? { doctorId: d.id, ...a } : null;
+    }).filter(Boolean);
+  }
+
+  /* ---------- render: coverage bar ---------- */
+  function renderCoverBar(dm) {
+    const host = document.getElementById("tblCover");
+    if (!host) return;
+    const s = coverageStats(dm);
+    const band = s.riskRooms.length ? "red" : s.manned >= s.totalRooms ? "green" : "orange";
+    const riskHtml = s.riskRooms.length
+      ? s.riskRooms.map((r) => `<span class="tag t-danger" style="margin-inline-end:6px">⚠ ${r}</span>`).join("")
+      : '<span class="meta">אין חדרים בסיכון 🎉</span>';
+    host.className = "glass cover-bar " + band;
+    host.innerHTML = `
+      <div class="cb-item"><span class="cb-num">${s.manned}/${s.totalRooms}</span><span class="cb-lab">חדרים מאוישים</span></div>
+      <div class="cb-item"><span class="cb-num">${s.unassigned}</span><span class="cb-lab">נוכחים לא-משובצים</span></div>
+      <div class="cb-item cb-risk"><span class="cb-lab">חדרים בסיכון</span><span class="cb-tags">${riskHtml}</span></div>`;
+  }
+
+  /* ---------- render: column chips ---------- */
+  function renderChips() {
+    const host = document.getElementById("tblChips");
+    if (!host) return;
+    host.innerHTML = PICKABLE.map((key) => {
+      const c = COL_BY_KEY[key];
+      const on = tableState.visibleCols.includes(key);
+      const demo = c.derived ? ' <span class="chip-demo">דמו</span>' : "";
+      return `<span class="chip ${on ? "on" : ""}" data-coltoggle="${key}">${on ? "− " : "+ "}${c.label}${demo}</span>`;
+    }).join("");
+  }
+
+  /* ---------- render: a single <td> per column ---------- */
+  function cellHtml(d, dm, col) {
+    const present = isPresent(d, dm);
+    switch (col) {
+      case "name":
+        return `<td class="c-name"><span class="lnk" data-openprofile="${d.id}">${d.name}</span></td>`;
+      case "status": {
+        const st = statusOf(d, dm);
+        const tone = present ? "success" : st.tone;
+        return `<td><span class="tag t-${tone}">${present ? "נוכח" : st.label}</span></td>`;
+      }
+      case "kind":
+        return `<td class="c-dim">${d.kind}</td>`;
+      case "rotation":
+        return `<td class="c-dim">${d.defaultRotation}</td>`;
+      case "team":
+        return `<td class="c-dim">צוות ${d.team}</td>`;
+      case "year":
+        return `<td class="c-dim">${d.kind === "מומחה" ? "—" : "שנה " + d.year}</td>`;
+      case "phone":
+        return `<td class="c-dim" dir="ltr">${d.phone}</td>`;
+      case "room": {
+        if (!present) return roomDisabledCell(d, dm);
+        const a = roomAssignmentFor(d.id, dm);
+        const cur = a && a.kind === "room" ? a.room : "";
+        const opts =
+          `<option value="">— ללא —</option>` +
+          OR_ROOMS.map((r) => `<option value="${r}" ${r === cur ? "selected" : ""}>${r}</option>`).join("");
+        return `<td><select class="cell-sel" data-assignroom="${d.id}">${opts}</select></td>`;
+      }
+      case "outside": {
+        if (!present) return roomDisabledCell(d, dm);
+        const a = roomAssignmentFor(d.id, dm);
+        const cur = a && a.kind === "outside" ? a.place : "";
+        const opts =
+          `<option value="">— ללא —</option>` +
+          OUTSIDE_PLACES.map((p) => `<option value="${p}" ${p === cur ? "selected" : ""}>${p}</option>`).join("");
+        return `<td><select class="cell-sel" data-assignoutside="${d.id}">${opts}</select></td>`;
+      }
+      case "surg": {
+        const a = roomAssignmentFor(d.id, dm);
+        if (present && a && a.kind === "room") {
+          const sg = surgeriesInRoom(a.room, dm);
+          return `<td class="c-dim">${sg ? sg.count : "—"}</td>`;
+        }
+        return `<td class="c-dim">—</td>`;
+      }
+      case "domain": {
+        const a = roomAssignmentFor(d.id, dm);
+        if (present && a && a.kind === "room") {
+          const sg = surgeriesInRoom(a.room, dm);
+          return `<td class="c-dim">${sg ? sg.domain : "—"}</td>`;
+        }
+        return `<td class="c-dim">—</td>`;
+      }
+      default:
+        return "<td></td>";
+    }
+  }
+  // רופא-חסר בעמודת-שיבוץ → '—' מושבת (אי-אפשר לשבץ חסר).
+  function roomDisabledCell(d, dm) {
+    return `<td class="c-dim c-disabled">—</td>`;
+  }
+
+  /* ---------- render: one full <tr> (render-ממוקד-לשורה) ---------- */
+  function rowHtml(d, dm) {
+    const cols = activeCols();
+    // תא-אזהרה: רופא ששובץ-לחדר אך הפך-חסר → "⚠ שובץ אך חסר" (אדום) על-פני שורת-השיבוץ.
+    const a = roomAssignmentFor(d.id, dm);
+    const assignedButAbsent = a && a.kind === "room" && !isPresent(d, dm);
+    const tds = cols
+      .map((col) => {
+        if (assignedButAbsent && (col === "room" || col === "outside")) {
+          return `<td class="c-warn">⚠ שובץ אך חסר</td>`;
+        }
+        return cellHtml(d, dm, col);
+      })
+      .join("");
+    return `<tr id="trow-${d.id}" class="${assignedButAbsent ? "row-warn" : ""}">${tds}</tr>`;
+  }
+
+  // רשימת-העמודות-הפעילות בסדר-הקאנוני (always קודם, אז visibleCols לפי סדר-COLS).
+  function activeCols() {
+    return COLS.filter((c) => c.always || tableState.visibleCols.includes(c.key)).map((c) => c.key);
+  }
+
+  /* ---------- render: table head ---------- */
+  function headHtml() {
+    return (
+      "<tr>" +
+      activeCols()
+        .map((key) => {
+          const c = COL_BY_KEY[key];
+          if (SORTABLE.has(key)) {
+            const arrow = tableState.sortCol === key ? (tableState.sortDir === 1 ? " ▲" : " ▼") : "";
+            return `<th class="th-sort" data-sort="${key}">${c.label}${arrow}</th>`;
+          }
+          return `<th>${c.label}</th>`;
+        })
+        .join("") +
+      "</tr>"
+    );
+  }
+
+  /* ---------- render: full table ---------- */
+  function renderTable(dm) {
+    const head = document.getElementById("tblHead");
+    const body = document.getElementById("tblBody");
+    const cap = document.getElementById("tblCount");
+    if (!head || !body) return;
+    head.innerHTML = headHtml();
+    const rows = buildRows(dm);
+    if (cap) cap.textContent = rows.length + " רופאים";
+    if (!rows.length) {
+      const span = activeCols().length;
+      body.innerHTML = `<tr><td colspan="${span}"><div class="empty">אין רופאים בסינון זה</div></td></tr>`;
+      return;
+    }
+    body.innerHTML = rows.map((d) => rowHtml(d, dm)).join("");
+  }
+
+  /* ---------- render-ממוקד-לשורה (אחרי שיבוץ-יחיד) ----------
+     מחליף רק את ה-<tr> של הרופא (לא 110 שורות) → לא נשבר focus/scroll.
+     מעדכן גם את פס-הכיסוי (השיבוץ משנה ספירת-חדרים). */
+  function renderRow(id) {
+    const dm = view.anchor;
+    const tr = document.getElementById("trow-" + id);
+    const d = DOC_BY_ID[id];
+    if (tr && d) {
+      const tmp = document.createElement("tbody");
+      tmp.innerHTML = rowHtml(d, dm);
+      tr.replaceWith(tmp.firstElementChild);
+    }
+    renderCoverBar(dm);
+  }
+
+  /* ---------- header (date + period label) ---------- */
+  function renderHeader(dm) {
+    const lab = document.getElementById("tblDateLab");
+    if (lab) lab.textContent = HE_DOW[dowOf(dm)] + " " + dmToStr(dm);
+  }
+
+  /* ---------- entry: full render of the tab ---------- */
+  function render() {
+    const dm = view.anchor;
+    renderHeader(dm);
+    renderCoverBar(dm);
+    renderChips();
+    renderTable(dm);
+    syncFilterSeg();
+  }
+
+  // מסמן את כפתור-הסינון הפעיל (אם קיים ב-DOM).
+  function syncFilterSeg() {
+    document.querySelectorAll("#tblFilterSeg button").forEach((b) => {
+      b.classList.toggle("on", b.dataset.filter === tableState.filter);
+    });
+  }
+
+  /* ---------- handlers (נקראים מ-app.js דרך event-delegation) ---------- */
+  // בורר-יום: מדלג קדימה/אחורה (כמו stepPeriod בקונסולה, דרך setAnchor).
+  function stepDay(dir) {
+    Att.data.setAnchor(D.addDays(view.anchor, dir));
+    render();
+  }
+  function setFilter(f) {
+    tableState.filter = f;
+    render();
+  }
+  function toggleCol(key) {
+    if (!PICKABLE.includes(key)) return;
+    tableState.visibleCols = tableState.visibleCols.includes(key)
+      ? tableState.visibleCols.filter((k) => k !== key)
+      : [...tableState.visibleCols, key];
+    renderChips();
+    renderTable(view.anchor);
+  }
+  function sortBy(key) {
+    if (!SORTABLE.has(key)) return;
+    if (tableState.sortCol === key) tableState.sortDir = -tableState.sortDir;
+    else {
+      tableState.sortCol = key;
+      tableState.sortDir = 1;
+    }
+    renderTable(view.anchor);
+  }
+  // חיפוש debounced — ה-input קבוע מחוץ ל-innerHTML-המתחלף (#tblSearch) → לא מאבד focus.
+  let _searchTimer = null;
+  function onSearch(value) {
+    tableState.query = value;
+    clearTimeout(_searchTimer);
+    _searchTimer = setTimeout(() => renderTable(view.anchor), 180);
+  }
+  // שיבוץ-חדר → assignToRoom (או clear אם '') → render-ממוקד-לשורה.
+  function assignRoom(id, room) {
+    const dm = view.anchor;
+    if (room) assignToRoom(id, dm, room);
+    else clearAssignment(id, dm);
+    renderRow(id);
+  }
+  function assignOut(id, place) {
+    const dm = view.anchor;
+    if (place) assignOutside(id, dm, place);
+    else clearAssignment(id, dm);
+    renderRow(id);
+  }
+  function openProfile(id) {
+    if (Att.profile && Att.profile.open) Att.profile.open(id);
+  }
+
+  /* ---------- expose contract ---------- */
+  Att.tables = {
+    tableState,
+    COLS,
+    render,
+    renderTable,
+    renderRow,
+    renderCoverBar,
+    renderChips,
+    // handlers
+    stepDay,
+    setFilter,
+    toggleCol,
+    sortBy,
+    onSearch,
+    assignRoom,
+    assignOut,
+    openProfile,
+  };
+})();
+
+</script>
+    <script>
+"use strict";
+
+/* ============================================================
+   מערכת נוכחות · מחלקת הרדמה — דמו v3
+   מודול-פרופיל (profile) — דף drill-in לרופא בודד.
+   קורא נתונים/גזירה מ-Att.data בלבד; ניווט דרך Att.app.go.
+   חדש בסבב זה (לא ב-v2): אישי+מקצועי · מאזנים (נתוני-דמו) ·
+   תחזית-נוכחות פשוטה (seriesForDoctor) · שיבוץ-היום (roomAssignmentFor).
+
+   element-ids שהמודול מצפה להם ב-index.html:
+     #profile        — <section> המסך (router מציג/מסתיר; hidden כברירת-מחדל)
+     #profileBody    — host פנימי שאליו נכתב כל ה-HTML (render-target)
+   ============================================================ */
+
+globalThis.Att = globalThis.Att || {};
+
+(function () {
+  const D = Att.data;
+  const {
+    DOC_BY_ID,
+    STATUS_BY_KEY,
+    HE_MONTH,
+    addDays,
+    dmToStr,
+    dayStatusKey,
+    seriesForDoctor,
+    roomAssignmentFor,
+    docMeta,
+    firstChar,
+    view,
+  } = D;
+
+  /* ---------- state מקומי (לא בחוזה) ---------- */
+  // מצב-התחזית הנבחר. שלושת המצבים ממופים ישירות ל-mode של seriesForDoctor.
+  // תווית-תצוגה ⇄ mode-נתונים (כל mode נותן את האופק שלו, ראו data.js §7).
+  const FC_MODES = [
+    { key: "day", label: "שבוע" }, // 7 ימים מהעוגן
+    { key: "week", label: "חודש" }, // ~5 שבועות (12 נק׳ דגימה)
+    { key: "month", label: "3 חודשים" }, // 3 חודשים (12 נק׳ דגימה)
+  ];
+  let _id = null; // הרופא המוצג כעת
+  let _fcMode = "day"; // מצב-תחזית נוכחי
+
+  /* ---------- helpers ---------- */
+  // מספר ימי-ההיעדרות הצפויים של הרופא בחודש-הקלנדרי של העוגן.
+  // לולאה חסומה על ימי-החודש בלבד (לא 365) — דגימה מדויקת, לא משוערכת.
+  function absencesThisMonth(id, anchor) {
+    const month = Math.floor(anchor / 100);
+    let dm = month * 100 + 1; // ה-1 בחודש
+    let count = 0;
+    let guard = 0;
+    while (Math.floor(dm / 100) === month && guard++ < 40) {
+      if (dayStatusKey(id, dm) !== "present") count++;
+      dm = addDays(dm, 1);
+    }
+    return count;
+  }
+
+  // שורת-מאזן עם בר-התקדמות (used / total). מחזיר HTML של .bar קיים.
+  function balanceBar(label, used, total) {
+    const pct = total > 0 ? Math.min(100, Math.round((used / total) * 100)) : 0;
+    return `<div class="bar">
+        <div class="top"><span>${label}</span><span class="v">${used} / ${total}</span></div>
+        <div class="track"><div class="fill v" style="width:${pct}%"></div></div>
+      </div>`;
+  }
+
+  // תחזית-נוכחות: seriesForDoctor מחזיר value:'present'|'absent' לכל נקודת-דגימה.
+  // ציר בינארי — עמודה ירוקה-מלאה (נוכח) / עמודה-קצרה סגולה (חסר).
+  function renderForecastInto(host) {
+    const data = seriesForDoctor(_id, _fcMode, view.anchor);
+    host.innerHTML = data
+      .map((p) => {
+        const present = p.value === "present";
+        const h = present ? 80 : 26; // גובה-עמודה: נוכח גבוה, חסר נמוך
+        const cls = present ? "stk g" : "stk";
+        const mark = present ? "✓" : "✗";
+        return `<div class="col"><span class="n">${mark}</span>
+          <div class="${cls}" style="height:${h}px"></div>
+          <span class="d">${p.label}</span></div>`;
+      })
+      .join("");
+  }
+
+  /* ---------- main render ---------- */
+  function open(id) {
+    const d = DOC_BY_ID[id];
+    if (!d) return; // מזהה לא-קיים → no-op בטוח
+    _id = id;
+    _fcMode = "day"; // איפוס מצב-תחזית בכל פתיחה
+
+    // ניווט-לוגי: מציגים את מסך-הפרופיל. ה-router (app.js) מחזיק את החלפת ה-sections;
+    // כאן רק מבקשים ממנו לעבור, ואז מציירים את הגוף. אם אין router עדיין — ניגשים ישירות לסקשן.
+    if (Att.app && typeof Att.app.go === "function") {
+      Att.app.go("profile");
+    } else {
+      const sec = document.getElementById("profile");
+      if (sec) sec.hidden = false;
+    }
+    render();
+  }
+
+  function render() {
+    const host = document.getElementById("profileBody");
+    if (!host || _id == null) return;
+    const d = DOC_BY_ID[_id];
+    if (!d) return;
+
+    // ----- שיבוץ-היום (מ-roomAssignmentFor) -----
+    const asg = roomAssignmentFor(_id, view.anchor);
+    const todayStatusKey = dayStatusKey(_id, view.anchor);
+    const isPresentToday = todayStatusKey === "present";
+    let assignText;
+    if (!isPresentToday) {
+      const st = STATUS_BY_KEY[todayStatusKey];
+      assignText = `<span class="tag t-${st.tone}">${st.label}</span> · אינו נוכח היום`;
+    } else if (!asg) {
+      assignText = '<span class="meta">נוכח · לא משובץ</span>';
+    } else if (asg.kind === "room") {
+      assignText = `<span class="tag t-success">משובץ</span> · ${asg.room}`;
+    } else {
+      assignText = `<span class="tag t-info">מחוץ לחדר</span> · ${asg.place}`;
+    }
+
+    // ----- אישי + מקצועי -----
+    const proRows = [
+      ["סוג", d.kind],
+      ["שנת התמחות", d.kind === "מומחה" ? "—" : "שנה " + d.year],
+      ["שלב", d.stage],
+      ["תת-התמחות", d.subspec],
+      ["צוות", "צוות " + d.team],
+      ["חדר-ברירת-מחדל", d.room],
+      ["טלפון", d.phone],
+      ["ותק (שנת-תחילה)", String(d.startYear)],
+    ]
+      .map(([k, v]) => `<div class="row"><span class="meta">${k}</span><span style="font-weight:600">${v}</span></div>`)
+      .join("");
+
+    // ----- מאזנים (נתוני-דמו) -----
+    const balancesHtml =
+      balanceBar("חופשות (נוצל)", d.vacationUsed, d.vacationTotal) +
+      `<div class="grid kpis" style="margin-top:14px">
+        <div class="kpi" style="background:var(--glass2);border:1px solid var(--stroke2)">
+          <div class="lab">תורנויות (YTD)</div>
+          <div class="num" style="color:var(--blue);font-size:26px">${d.onCallYTD}</div>
+        </div>
+        <div class="kpi" style="background:var(--glass2);border:1px solid var(--stroke2)">
+          <div class="lab">ססיות (YTD)</div>
+          <div class="num" style="color:var(--violet);font-size:26px">${d.sessionsYTD}</div>
+        </div>
+      </div>`;
+
+    // ----- תחזית — מתג + ציר -----
+    const month = Math.floor(view.anchor / 100);
+    const expectedAbs = absencesThisMonth(_id, view.anchor);
+    const fcSeg = FC_MODES.map(
+      (m) =>
+        `<button class="${m.key === _fcMode ? "on" : ""}" data-fc="${m.key}"
+           onclick="Att.profile.setForecast('${m.key}')">${m.label}</button>`,
+    ).join("");
+
+    host.innerHTML = `
+      <div class="card glass" style="margin-bottom:16px">
+        <button class="btn" onclick="Att.app.go('tables')" style="margin-bottom:14px">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          חזרה לטבלאות
+        </button>
+        <div class="arow" style="border-bottom:0;gap:12px">
+          <span class="av" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--glass2);border:1px solid var(--stroke2);font-weight:700;flex:none">${firstChar(d.name)}</span>
+          <div style="flex:1">
+            <div class="hello" style="margin-bottom:2px">${d.name}</div>
+            <div class="sub2" style="margin-bottom:0">${docMeta(d)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card glass" style="margin-bottom:16px">
+        <h3>שיבוץ היום <span class="sub">${dmToStr(view.anchor)}</span></h3>
+        <div style="padding:6px 0">${assignText}</div>
+      </div>
+
+      <div class="card glass" style="margin-bottom:16px">
+        <h3>פרטים אישיים ומקצועיים</h3>
+        <div style="margin-top:8px">${proRows}</div>
+      </div>
+
+      <div class="card glass" style="margin-bottom:16px">
+        <h3>מאזנים <span class="tag t-warning" style="font-size:11px;margin-inline-start:6px">נתוני-דמו</span></h3>
+        <div style="margin-top:12px">${balancesHtml}</div>
+      </div>
+
+      <div class="card glass">
+        <h3>תחזית נוכחות
+          <span class="tag t-warning" style="font-size:11px;margin-inline-start:6px">נתוני-דמו</span>
+        </h3>
+        <div class="seg glass" id="fcSeg" style="margin:12px 0">${fcSeg}</div>
+        <div class="meta" style="margin-bottom:10px">
+          ${expectedAbs} היעדרויות צפויות בחודש ${HE_MONTH[month]}
+        </div>
+        <div class="fc" style="display:flex;gap:8px;align-items:flex-end;min-height:110px" id="fcChart"></div>
+      </div>`;
+
+    renderForecastInto(document.getElementById("fcChart"));
+  }
+
+  // החלפת מצב-תחזית — מצייר-מחדש את הציר בלבד (לא בונה את כל הדף).
+  function setForecast(mode) {
+    if (!FC_MODES.some((m) => m.key === mode)) return;
+    _fcMode = mode;
+    document.querySelectorAll("#fcSeg button").forEach((b) => b.classList.toggle("on", b.dataset.fc === mode));
+    const chart = document.getElementById("fcChart");
+    if (chart) renderForecastInto(chart);
+  }
+
+  // re-render חיצוני (למשל אם ציר-הזמן השתנה במודול-אחר בזמן שהפרופיל פתוח).
+  function rerender() {
+    if (_id != null) render();
+  }
+
+  /* ---------- expose contract ---------- */
+  Att.profile = {
+    open,
+    render,
+    setForecast,
+    rerender,
+    get currentId() {
+      return _id;
+    },
+  };
+})();
+
+</script>
+    <script>
+"use strict";
+
+/* ============================================================
+   מערכת נוכחות · מחלקת הרדמה — דמו v3
+   מודול-פידבק-בוס מינימלי (frontend בלבד). namespace Att.feedback.
+   §11 באפיון: כפתור-צף "מצב הערות" (toggle) → לחיצה על אלמנט →
+   סיכה ממוספרת + popover (textarea+שלח) → מגירת-צד "הערות הבוס"
+   (רשימה + סטטוס פתוח/בעבודה/טופל) → ייצוא JSON/טקסט + ניקוי.
+
+   חוזה-בנייה:
+     • בלי backend, בלי fetch()/XHR/import(), בלי localStorage-כתלות.
+     • state מקומי במודול בלבד (לא ב-data.js).
+     • הזרקה דרך Att.feedback.mount(rootEl) שנקרא מ-app.js בלבד —
+       בלי לגעת במודולים אחרים.
+     • אי-שינוי: כל עדכון-state בונה מערך חדש (ללא מוטציה-במקום).
+     • RTL, סגנון-זכוכית (משתמש ב-CSS-vars של v2: --glass/--stroke/--ink...).
+
+   נקודת-עיגון / דרישות-mount:
+     • app.js קורא Att.feedback.mount(document.body) פעם אחת אחרי ה-boot.
+     • rootEl משמש כ-host ל-overlay (הסיכות מוצמדות יחסית לעמוד; ה-FAB,
+       ה-drawer וה-popover מוזרקים אל ה-root). אם לא מועבר root → document.body.
+     • element-id-ים שהמודול יוצר (כולם בעלי-prefix fb-* כדי לא להתנגש):
+         #fb-fab        כפתור-צף "מצב הערות"
+         #fb-pins       שכבת-סיכות (overlay)
+         #fb-popover    popover-הוספת-הערה
+         #fb-drawer     מגירת-הצד "הערות הבוס"
+         #fb-style      תג-ה-<style> המוזרק
+   ============================================================ */
+
+globalThis.Att = globalThis.Att || {};
+
+(function () {
+  /* ---------- state מקומי (אימוטבילי) ---------- */
+  // כל הערה: {id, n, text, status:'open'|'progress'|'done', selector, label, at}
+  const STATUSES = [
+    { key: "open", label: "פתוח", tone: "var(--amber)" },
+    { key: "progress", label: "בעבודה", tone: "var(--blue)" },
+    { key: "done", label: "טופל", tone: "var(--green)" },
+  ];
+  const NEXT_STATUS = { open: "progress", progress: "done", done: "open" };
+
+  let notes = []; // מערך-הערות (מוחלף, לא ממוטט)
+  let nextN = 1; // מספר-סיכה רץ
+  let pickMode = false; // "מצב הערות" פעיל?
+  let drawerOpen = false; // מגירת-הצד פתוחה?
+  let pending = null; // {selector, label, x, y} בזמן בחירת-אלמנט
+  let root = null; // ה-host (document.body כברירת-מחדל)
+
+  /* ---------- helpers ---------- */
+  const esc = (s) =>
+    String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+  // תיאור-אלמנט קריא-לאדם (מה הבוס לחץ עליו) — מבלי לדלוף נתונים רגישים.
+  function describeEl(el) {
+    if (!el) return "אלמנט";
+    const txt = (el.textContent || "").replace(/\s+/g, " ").trim();
+    const tag = el.tagName.toLowerCase();
+    const short = txt.length > 38 ? txt.slice(0, 38) + "…" : txt;
+    return short ? `"${short}" (${tag})` : tag;
+  }
+
+  // selector יציב-יחסית לאלמנט (לתיעוד בלבד — לא ננווט אליו).
+  function selectorFor(el) {
+    if (!el) return "";
+    if (el.id) return "#" + el.id;
+    const tag = el.tagName.toLowerCase();
+    const cls = (el.className && typeof el.className === "string" ? el.className.trim().split(/\s+/)[0] : "") || "";
+    return cls ? `${tag}.${cls}` : tag;
+  }
+
+  const statusMeta = (key) => STATUSES.find((s) => s.key === key) || STATUSES[0];
+
+  /* ---------- DOM refs ---------- */
+  let fab, pinsLayer, popover, drawer;
+
+  /* ---------- styles (מוזרק פעם אחת) ---------- */
+  function injectStyle() {
+    if (document.getElementById("fb-style")) return;
+    const css = `
+      #fb-fab{
+        position:fixed; inset-inline-start:18px; bottom:18px; z-index:9000;
+        display:flex; align-items:center; gap:8px;
+        padding:11px 15px; border-radius:999px; cursor:pointer;
+        font-family:inherit; font-size:13.5px; font-weight:600; color:var(--ink);
+        background:var(--glass); border:1px solid var(--stroke);
+        -webkit-backdrop-filter:blur(24px) saturate(150%); backdrop-filter:blur(24px) saturate(150%);
+        box-shadow:0 10px 30px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.1);
+        transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+      }
+      #fb-fab:hover{ transform:translateY(-1px); }
+      #fb-fab.on{
+        background:linear-gradient(150deg, var(--violet), var(--blue));
+        border-color:transparent; color:#fff;
+        box-shadow:0 12px 34px rgba(167,139,250,.4);
+      }
+      #fb-fab .fb-count{
+        min-width:18px; height:18px; padding:0 5px; border-radius:9px;
+        display:inline-grid; place-items:center; font-size:11px; font-weight:700;
+        background:rgba(255,255,255,.18);
+      }
+      /* בזמן מצב-בחירה: סמן צלב על העמוד כולו */
+      body.fb-picking, body.fb-picking *{ cursor:crosshair !important; }
+
+      #fb-pins{ position:absolute; inset:0; z-index:8800; pointer-events:none; }
+      .fb-pin{
+        position:absolute; transform:translate(50%,-50%); pointer-events:auto; cursor:pointer;
+        width:24px; height:24px; border-radius:50%;
+        display:grid; place-items:center; font-size:12px; font-weight:800; color:#06121f;
+        background:linear-gradient(150deg, var(--amber), #fcd577);
+        border:2px solid rgba(11,16,32,.6);
+        box-shadow:0 4px 12px rgba(0,0,0,.4);
+      }
+      .fb-pin.progress{ background:linear-gradient(150deg, var(--blue), var(--teal)); color:#06121f; }
+      .fb-pin.done{ background:linear-gradient(150deg, var(--green), var(--teal)); color:#06121f; }
+
+      #fb-popover{
+        position:fixed; z-index:9200; width:min(320px, calc(100vw - 28px)); padding:14px;
+        border-radius:var(--radius-sm); color:var(--ink); direction:rtl;
+        background:var(--glass); border:1px solid var(--stroke);
+        -webkit-backdrop-filter:blur(26px) saturate(160%); backdrop-filter:blur(26px) saturate(160%);
+        box-shadow:0 18px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1);
+      }
+      #fb-popover .fb-target{ font-size:11.5px; color:var(--ink3); margin-bottom:8px; line-height:1.4; }
+      #fb-popover textarea{
+        width:100%; min-height:78px; resize:vertical; box-sizing:border-box;
+        padding:9px 11px; border-radius:10px; font-family:inherit; font-size:13.5px;
+        color:var(--ink); background:var(--glass2); border:1px solid var(--stroke2);
+        outline:none; direction:rtl;
+      }
+      #fb-popover textarea:focus{ border-color:var(--blue); }
+      .fb-row{ display:flex; gap:8px; margin-top:10px; justify-content:flex-start; }
+      .fb-btn{
+        padding:8px 13px; border-radius:10px; cursor:pointer; font-family:inherit;
+        font-size:12.5px; font-weight:600; color:var(--ink);
+        background:var(--glass2); border:1px solid var(--stroke2);
+        transition:background .12s ease, transform .1s ease;
+      }
+      .fb-btn:hover{ background:rgba(255,255,255,.1); }
+      .fb-btn:active{ transform:translateY(1px); }
+      .fb-btn.primary{ background:linear-gradient(150deg, var(--violet), var(--blue)); border-color:transparent; color:#fff; }
+      .fb-btn.danger{ color:var(--red); }
+      .fb-btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+      #fb-drawer{
+        position:fixed; top:0; inset-inline-start:0; height:100vh; width:min(360px, 92vw);
+        z-index:9100; direction:rtl; color:var(--ink);
+        display:flex; flex-direction:column;
+        background:rgba(13,18,36,.72); border-inline-end:1px solid var(--stroke);
+        -webkit-backdrop-filter:blur(28px) saturate(150%); backdrop-filter:blur(28px) saturate(150%);
+        box-shadow:14px 0 50px rgba(0,0,0,.5);
+        transform:translateX(104%); transition:transform .26s cubic-bezier(.4,0,.2,1);
+      }
+      #fb-drawer.open{ transform:translateX(0); }
+      .fb-dhead{
+        display:flex; align-items:center; justify-content:space-between; gap:10px;
+        padding:16px 16px 12px; border-bottom:1px solid var(--stroke2);
+      }
+      .fb-dhead .fb-title{ font-size:15px; font-weight:600; }
+      .fb-dhead .fb-x{ cursor:pointer; font-size:18px; color:var(--ink2); padding:2px 6px; border-radius:8px; }
+      .fb-dhead .fb-x:hover{ background:var(--glass2); }
+      .fb-dactions{ display:flex; gap:8px; padding:11px 16px; border-bottom:1px solid var(--stroke2); }
+      .fb-list{ flex:1; overflow-y:auto; padding:12px 16px 24px; display:flex; flex-direction:column; gap:10px; }
+      .fb-empty{ color:var(--ink3); font-size:13px; text-align:center; padding:30px 8px; line-height:1.6; }
+      .fb-card{
+        padding:11px 12px; border-radius:12px;
+        background:var(--glass2); border:1px solid var(--stroke2);
+      }
+      .fb-card .fb-chead{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+      .fb-chead .fb-num{
+        width:20px; height:20px; flex:none; border-radius:50%; display:grid; place-items:center;
+        font-size:11px; font-weight:800; color:#06121f; background:linear-gradient(150deg,var(--amber),#fcd577);
+      }
+      .fb-chead .fb-num.progress{ background:linear-gradient(150deg,var(--blue),var(--teal)); }
+      .fb-chead .fb-num.done{ background:linear-gradient(150deg,var(--green),var(--teal)); }
+      .fb-chead .fb-loc{ flex:1; font-size:11.5px; color:var(--ink3); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .fb-status{
+        cursor:pointer; font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px;
+        border:1px solid var(--stroke2); white-space:nowrap; background:var(--glass2);
+      }
+      .fb-card .fb-text{ font-size:13px; line-height:1.5; color:var(--ink); white-space:pre-wrap; word-break:break-word; }
+      .fb-card .fb-del{ margin-top:7px; font-size:11px; color:var(--ink3); cursor:pointer; }
+      .fb-card .fb-del:hover{ color:var(--red); }
+    `;
+    const tag = document.createElement("style");
+    tag.id = "fb-style";
+    tag.textContent = css;
+    document.head.appendChild(tag);
+  }
+
+  /* ---------- mount: בונה שלד-DOM פעם אחת ---------- */
+  function mount(rootEl) {
+    root = rootEl || document.body;
+    if (document.getElementById("fb-fab")) return; // idempotent
+    injectStyle();
+
+    fab = document.createElement("button");
+    fab.id = "fb-fab";
+    fab.type = "button";
+
+    pinsLayer = document.createElement("div");
+    pinsLayer.id = "fb-pins";
+
+    drawer = document.createElement("aside");
+    drawer.id = "fb-drawer";
+
+    root.appendChild(pinsLayer);
+    root.appendChild(fab);
+    root.appendChild(drawer);
+
+    fab.addEventListener("click", (e) => {
+      e.stopPropagation();
+      togglePickMode();
+    });
+
+    // לחיצה על העמוד בזמן מצב-בחירה → לוכד את האלמנט ופותח popover.
+    // capture=true כדי לתפוס לפני handlers אחרים (ולמנוע פעולה-לא-רצויה).
+    document.addEventListener("click", onPagePick, true);
+    // Esc סוגר popover / יוצא ממצב-בחירה.
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (popover) closePopover();
+        else if (pickMode) togglePickMode();
+      }
+    });
+
+    renderFab();
+    renderDrawer();
+  }
+
+  /* ---------- toggle "מצב הערות" ---------- */
+  function togglePickMode() {
+    pickMode = !pickMode;
+    document.body.classList.toggle("fb-picking", pickMode);
+    if (!pickMode) closePopover();
+    renderFab();
+  }
+
+  /* ---------- לחיצה על אלמנט במצב-בחירה ---------- */
+  function onPagePick(e) {
+    if (!pickMode) return;
+    const el = e.target;
+    // התעלמות מרכיבי-המודול עצמו (FAB / drawer / popover / pins).
+    if (el.closest && el.closest("#fb-fab,#fb-drawer,#fb-popover,#fb-pins")) return;
+    // ביטול הפעולה-המקורית של האלמנט (כדי לא לאשר/לדחות בטעות).
+    e.preventDefault();
+    e.stopPropagation();
+    pending = {
+      selector: selectorFor(el),
+      label: describeEl(el),
+      x: e.clientX,
+      y: e.clientY,
+    };
+    openPopover(e.clientX, e.clientY);
+  }
+
+  /* ---------- popover ---------- */
+  function openPopover(x, y) {
+    // הסרת popover-קודם בלבד — בלי לאפס את pending (שעליו openPopover מסתמך).
+    if (popover && popover.parentNode) popover.parentNode.removeChild(popover);
+    popover = document.createElement("div");
+    popover.id = "fb-popover";
+    popover.innerHTML = `
+      <div class="fb-target">📍 ${esc(pending.label)}</div>
+      <textarea id="fb-text" placeholder="כתוב הערה למפתח…"></textarea>
+      <div class="fb-row">
+        <button type="button" class="fb-btn primary" id="fb-send">שלח</button>
+        <button type="button" class="fb-btn" id="fb-cancel">ביטול</button>
+      </div>`;
+    root.appendChild(popover);
+
+    // מיקום קרוב-לקליק, עם הצמדה לגבולות-החלון.
+    const r = popover.getBoundingClientRect();
+    const pad = 12;
+    let left = Math.min(x, window.innerWidth - r.width - pad);
+    let top = Math.min(y + 14, window.innerHeight - r.height - pad);
+    popover.style.left = Math.max(pad, left) + "px";
+    popover.style.top = Math.max(pad, top) + "px";
+
+    const ta = popover.querySelector("#fb-text");
+    ta.focus();
+    popover.querySelector("#fb-send").addEventListener("click", () => submitNote(ta.value));
+    popover.querySelector("#fb-cancel").addEventListener("click", closePopover);
+    // Ctrl/Cmd+Enter = שליחה מהירה.
+    ta.addEventListener("keydown", (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") submitNote(ta.value);
+    });
+  }
+
+  function closePopover() {
+    if (popover && popover.parentNode) popover.parentNode.removeChild(popover);
+    popover = null;
+    pending = null;
+  }
+
+  /* ---------- הוספת-הערה (אימוטבילי) ---------- */
+  function submitNote(text) {
+    const t = (text || "").trim();
+    if (!t || !pending) {
+      closePopover();
+      return;
+    }
+    const note = {
+      id: "n" + Date.now() + "_" + nextN,
+      n: nextN,
+      text: t,
+      status: "open",
+      selector: pending.selector,
+      label: pending.label,
+      at: new Date().toISOString(),
+      // מיקום-סיכה (page-relative): clientX/Y + גלילה בעת היצירה. תיעוד-מיקום בלבד.
+      _x: pending.x,
+      _y: pending.y + window.scrollY,
+    };
+    notes = [...notes, note]; // מערך חדש
+    nextN += 1;
+    closePopover();
+    renderFab();
+    renderPins();
+    renderDrawer();
+    drawerOpen = true;
+    syncDrawer();
+  }
+
+  /* ---------- שינוי-סטטוס (אימוטבילי) ---------- */
+  function cycleStatus(id) {
+    notes = notes.map((nt) => (nt.id === id ? { ...nt, status: NEXT_STATUS[nt.status] } : nt));
+    renderPins();
+    renderDrawer();
+  }
+
+  /* ---------- מחיקת-הערה (אימוטבילי) ---------- */
+  function removeNote(id) {
+    notes = notes.filter((nt) => nt.id !== id);
+    renderFab();
+    renderPins();
+    renderDrawer();
+  }
+
+  function clearAll() {
+    if (!notes.length) return;
+    if (!window.confirm("למחוק את כל ההערות?")) return;
+    notes = [];
+    nextN = 1;
+    renderFab();
+    renderPins();
+    renderDrawer();
+  }
+
+  /* ---------- ייצוא (JSON + טקסט קריא) ---------- */
+  function exportNotes() {
+    if (!notes.length) {
+      window.alert("אין הערות לייצוא.");
+      return;
+    }
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+    const payload = {
+      project: "attendance-demo-v3",
+      exportedAt: new Date().toISOString(),
+      count: notes.length,
+      notes: notes.map((nt) => ({
+        n: nt.n,
+        status: nt.status,
+        statusLabel: statusMeta(nt.status).label,
+        target: nt.label,
+        selector: nt.selector,
+        text: nt.text,
+        at: nt.at,
+        x: nt._x,
+        y: nt._y,
+      })),
+    };
+    const lines = [
+      "הערות הבוס — מערכת נוכחות (דמו v3)",
+      "יוצא: " + new Date().toLocaleString("he-IL"),
+      "סה״כ הערות: " + notes.length,
+      "",
+      ...notes.map(
+        (nt) => `#${nt.n} [${statusMeta(nt.status).label}] · ${nt.label}\n    ${nt.text.replace(/\n/g, "\n    ")}`,
+      ),
+    ];
+    download(`feedback-${stamp}.json`, JSON.stringify(payload, null, 2), "application/json");
+    download(`feedback-${stamp}.txt`, lines.join("\n"), "text/plain");
+  }
+
+  function download(filename, content, mime) {
+    const blob = new Blob([content], { type: mime + ";charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    // מצרפים את ה-<a> אל המגירה (#fb-drawer) ולא ל-body — כך הקליק-הסינתטי
+    // של ההורדה מוחרג ע"י onPagePick (closest #fb-drawer) ולא נתפס כ"בחירת-אלמנט"
+    // (אחרת מצב-הבחירה היה מבטל את ההורדה ופותח popover). bug-fix.
+    const host = drawer || document.body;
+    host.appendChild(a);
+    a.click();
+    host.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  /* ---------- טעינת-הערות (import) — קורא קובץ JSON שיוצא מהדמו ומשחזר
+     את הסיכות+הרשימה בהקשר. FileReader קורא קובץ שהמשתמש בחר — בלי רשת,
+     בלי backend, עובד גם ב-file://. כך מקבל-הקובץ רואה את ההערות "כמו שצריך". */
+  function importNotes(file) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      try {
+        const data = JSON.parse(String(reader.result));
+        const arr = (data && data.notes) || (Array.isArray(data) ? data : []);
+        if (!arr.length) {
+          window.alert("הקובץ ריק או לא בפורמט הנכון.");
+          return;
+        }
+        const imported = arr.map((nt, i) => ({
+          id: nt.id || "imp" + i + "_" + (nt.n || i + 1),
+          n: nt.n || i + 1,
+          text: nt.text || "",
+          status: nt.status || "open",
+          selector: nt.selector || "",
+          label: nt.target || nt.label || "אלמנט",
+          at: nt.at || "",
+          _x: nt.x != null ? nt.x : nt._x || 0,
+          _y: nt.y != null ? nt.y : nt._y || 0,
+        }));
+        notes = imported; // החלפה אימוטבילית
+        nextN = imported.reduce((m, nt) => Math.max(m, nt.n || 0), 0) + 1;
+        drawerOpen = true;
+        renderFab();
+        renderPins();
+        renderDrawer();
+        syncDrawer();
+        window.alert("נטענו " + imported.length + " הערות. הסיכות חזרו על האלמנטים.");
+      } catch (e) {
+        window.alert("שגיאה בקריאת הקובץ: " + e.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  /* ---------- render: FAB ---------- */
+  function renderFab() {
+    if (!fab) return;
+    fab.classList.toggle("on", pickMode);
+    const label = pickMode ? "בחר אלמנט…" : "מצב הערות";
+    const count = notes.length ? `<span class="fb-count">${notes.length}</span>` : "";
+    fab.innerHTML = `💬 <span>${label}</span>${count}`;
+  }
+
+  /* ---------- render: סיכות ---------- */
+  // הערה: הסיכה מוצבת ליד מיקום-הקליק שתועד (x,y בעת היצירה).
+  // אין מעקב-אלמנט חי (selector לתיעוד בלבד) — מתאים לדמו-frontend.
+  function renderPins() {
+    if (!pinsLayer) return;
+    // מיקום-הסיכה = ה-_x/_y שנשמרו בעת היצירה (כבר page-relative, כולל scrollY).
+    pinsLayer.innerHTML = notes
+      .map(
+        (nt) =>
+          `<button type="button" class="fb-pin ${nt.status}" data-id="${esc(nt.id)}"
+          style="left:${nt._x || 0}px;top:${nt._y || 0}px" title="${esc(nt.label)}">${nt.n}</button>`,
+      )
+      .join("");
+    pinsLayer.querySelectorAll(".fb-pin").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        drawerOpen = true;
+        syncDrawer();
+        focusCard(el.dataset.id);
+      });
+    });
+  }
+
+  // CSS.escape fallback (לסביבות ישנות).
+  function cssEscape(s) {
+    return window.CSS && CSS.escape ? CSS.escape(s) : String(s).replace(/["\\]/g, "\\$&");
+  }
+
+  function focusCard(id) {
+    const card = drawer && drawer.querySelector(`.fb-card[data-id="${cssEscape(id)}"]`);
+    if (card) {
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      card.style.outline = "1px solid var(--blue)";
+      setTimeout(() => (card.style.outline = ""), 1200);
+    }
+  }
+
+  /* ---------- render: drawer ---------- */
+  function renderDrawer() {
+    if (!drawer) return;
+    const body = notes.length
+      ? notes
+          .map((nt) => {
+            const m = statusMeta(nt.status);
+            return `
+            <div class="fb-card" data-id="${esc(nt.id)}">
+              <div class="fb-chead">
+                <span class="fb-num ${nt.status}">${nt.n}</span>
+                <span class="fb-loc" title="${esc(nt.label)}">${esc(nt.label)}</span>
+                <button type="button" class="fb-status" data-id="${esc(nt.id)}"
+                  style="color:${m.tone};border-color:${m.tone}">${esc(m.label)}</button>
+              </div>
+              <div class="fb-text">${esc(nt.text)}</div>
+              <div class="fb-del" data-del="${esc(nt.id)}">מחק</div>
+            </div>`;
+          })
+          .join("")
+      : `<div class="fb-empty">אין הערות עדיין.<br>הפעל "מצב הערות" ולחץ על אלמנט בעמוד כדי להוסיף.</div>`;
+
+    drawer.innerHTML = `
+      <div class="fb-dhead">
+        <span class="fb-title">💬 הערות הבוס</span>
+        <span class="fb-x" id="fb-close" title="סגור">✕</span>
+      </div>
+      <div class="fb-dactions">
+        <button type="button" class="fb-btn primary" id="fb-export">⬇ ייצוא</button>
+        <button type="button" class="fb-btn" id="fb-import">⬆ טען</button>
+        <button type="button" class="fb-btn danger" id="fb-clear">נקה</button>
+        <input type="file" id="fb-import-file" accept=".json,application/json" style="display:none" />
+      </div>
+      <div class="fb-list">${body}</div>`;
+
+    drawer.classList.toggle("open", drawerOpen);
+
+    drawer.querySelector("#fb-close").addEventListener("click", () => {
+      drawerOpen = false;
+      syncDrawer();
+    });
+    drawer.querySelector("#fb-export").addEventListener("click", exportNotes);
+    drawer.querySelector("#fb-clear").addEventListener("click", clearAll);
+    const impBtn = drawer.querySelector("#fb-import");
+    const impFile = drawer.querySelector("#fb-import-file");
+    if (impBtn && impFile) {
+      impBtn.addEventListener("click", () => impFile.click());
+      impFile.addEventListener("change", (e) => {
+        const f = e.target.files && e.target.files[0];
+        if (f) importNotes(f);
+        e.target.value = ""; // אפס כדי לאפשר טעינה חוזרת של אותו קובץ
+      });
+    }
+    drawer.querySelectorAll(".fb-status").forEach((b) => b.addEventListener("click", () => cycleStatus(b.dataset.id)));
+    drawer.querySelectorAll(".fb-del").forEach((b) => b.addEventListener("click", () => removeNote(b.dataset.del)));
+  }
+
+  function syncDrawer() {
+    if (drawer) drawer.classList.toggle("open", drawerOpen);
+  }
+
+  /* ---------- toggle drawer (חשיפה ציבורית — לכפתור-חיצוני אם יחובר) ---------- */
+  function toggleDrawer() {
+    drawerOpen = !drawerOpen;
+    syncDrawer();
+  }
+
+  /* ---------- expose contract ---------- */
+  Att.feedback = {
+    mount,
+    togglePickMode,
+    toggleDrawer,
+    exportNotes,
+    importNotes,
+    clearAll,
+    // קריאה-בלבד למצב (לבדיקות/אינטגרציה)
+    get notes() {
+      return notes.slice();
+    },
+    get isPicking() {
+      return pickMode;
+    },
+  };
+})();
+
+</script>
+    <script>
+"use strict";
+
+/* ============================================================
+   מערכת נוכחות · מחלקת הרדמה — דמו v3
+   מודול-עזרה (Att.help) — מצב "❓ עזרה" (#4).
+   בדפוס feedback.js: כפתור-צף toggle → שכבת-overlay של תגי-ⓘ
+   מרחפים מעל אלמנטים-מרכזיים → קליק על ⓘ → popover-זכוכית
+   עם {כותרת · הסבר קצר בעברית · מכוון-לבוס}.
+
+   חוזה-בנייה (זהה ל-feedback.js):
+     • בלי backend, בלי fetch()/XHR/import(), classic-script בלבד.
+     • state מקומי במודול בלבד (לא ב-data.js).
+     • הזרקה דרך Att.help.mount(rootEl) שנקרא מ-app.js בלבד —
+       בלי לגעת במודולים אחרים (app.js/index.html — שלב נפרד).
+     • אי-שינוי: כל עדכון-state בונה ערך חדש (ללא מוטציה-במקום).
+       קריאת-בלבד מ-DOM; הציור הוא overlay בלבד — לא משנה
+       את האלמנטים עצמם (לא מוסיף בהם class/attr/ילד).
+     • RTL, סגנון-זכוכית (CSS-vars של v2: --glass/--stroke/--ink…).
+
+   נקודת-עיגון / דרישות-mount:
+     • app.js קורא Att.help.mount(document.body) פעם אחת אחרי ה-boot.
+     • rootEl משמש כ-host ל-overlay (התגים מוצמדים page-relative;
+       ה-FAB, שכבת-התגים וה-popover מוזרקים אל ה-root).
+       אם לא מועבר root → document.body.
+     • element-id-ים שהמודול יוצר (prefix hp-* כדי לא להתנגש):
+         #hp-fab     כפתור-צף "❓ עזרה"
+         #hp-tips    שכבת-תגי-ⓘ (overlay)
+         #hp-pop     popover-ההסבר
+         #hp-style   תג-ה-<style> המוזרק
+
+   ── מפת-הקונפיג: element-id/selectors שבהם השתמשתי (יציבים, מ-index.html) ──
+   KPI cards (אב .kpi של ה-num):
+     #kMain (נוכחים) · #kOther (חסרים) · #kTotal (סה״כ) ·
+     #kPct (אחוז) · #kPend (בקשות ממתינות)
+   פאנלים (אב .panel של הכותרת/האזור):
+     #reasonsTitle (סיבות-היעדרות) · #cutTitle (נוכחות-לפי-קבוצה) ·
+     #fcTitle (תחזית) · #absTitle (חסרים) · #assignSummary (שיבוץ-היום) ·
+     #queue (תור-בקשות) · #editList (עריכת-סטטוס)
+   ניווט: #seg (לשוניות-הניווט)
+   לשונית-טבלאות:
+     #tblCover (פס-כיסוי-חדרים) · #tblChips (בורר-עמודות) ·
+     [data-assignroom] (תא שיבוץ-חדר) · #tblSearch (חיפוש) ·
+     #tblFilterSeg (סינון)
+   ============================================================ */
+
+globalThis.Att = globalThis.Att || {};
+
+(function () {
+  /* ---------- מפת-קונפיג (קבועה, לקריאה-בלבד) ----------
+     כל ערך: { sel, anchor, title, body, boss }
+       sel    — selector יציב לאלמנט-המקור (לא משתנים אותו).
+       anchor — '.kpi' / '.panel' → מטפסים ל-closest כדי לעטוף את
+                הכרטיס/הפאנל כולו ולא רק את הכותרת/המספר. אם ריק →
+                האלמנט עצמו הוא המטרה.
+       title  — כותרת ה-popover.
+       body   — הסבר קצר בעברית פשוטה (משפט-שניים, פלא-ז'רגון).
+       boss   — מכוון-בוס (מה הבוס מרוויח מזה / איך זה עוזר לו). */
+  const CONFIG = [
+    /* ----- כרטיסי KPI ----- */
+    {
+      sel: "#kMain",
+      anchor: ".kpi",
+      title: "נוכחים",
+      body: "כמה רופאים פיזית במחלקה וזמינים לשיבוץ בטווח שנבחר (יום/שבוע/חודש).",
+      boss: "מבט-על מיידי: מי באמת כאן היום, לפני שמתחילים לשבץ חדרים.",
+    },
+    {
+      sel: "#kOther",
+      anchor: ".kpi",
+      title: "חסרים",
+      body: "כל מי שלא נוכח — חופש, מילואים, מחלה, רוטציה. כל היעדרות נספרת כאן.",
+      boss: "רואים מיד כמה ידיים חסרות לכם, בלי לספור מהנייר.",
+    },
+    {
+      sel: "#kTotal",
+      anchor: ".kpi",
+      title: "סה״כ רופאים",
+      body: "מספר כל הרופאים במחלקה (נוכחים + חסרים) — הבסיס לחישוב האחוזים.",
+      boss: "נקודת-ייחוס קבועה: מול הגודל המלא של הצוות.",
+    },
+    {
+      sel: "#kPct",
+      anchor: ".kpi",
+      title: "אחוז נוכחות",
+      body: "החלק היחסי של הנוכחים מתוך כלל הצוות, באחוזים.",
+      boss: "מדד-בריאות אחד למחלקה — קל להשוות בין ימים ושבועות.",
+    },
+    {
+      sel: "#kPend",
+      anchor: ".kpi",
+      title: "בקשות ממתינות",
+      body: "כמה בקשות-היעדרות שלחו הרופאים ועדיין מחכות לאישור. לחיצה קופצת לתור.",
+      boss: "כפתור-קיצור: רואים מה תקוע ומאשרים, כדי שהמספרים יתעדכנו.",
+    },
+
+    /* ----- פאנלים ----- */
+    {
+      sel: "#reasonsTitle",
+      anchor: ".panel",
+      title: "סיבות היעדרות",
+      body: "פילוח החסרים לפי סיבה — חופש, מילואים, מחלה, רוטציה וכו׳.",
+      boss: "מבינים למה חסרים אנשים, לא רק כמה — עוזר לתכנן קדימה.",
+    },
+    {
+      sel: "#cutTitle",
+      anchor: ".panel",
+      title: "נוכחות לפי קבוצה",
+      body: "פירוק הנוכחות לפי חתך — צוות, ותק, סוג רופא. אפשר ללחוץ ולהעמיק.",
+      boss: "מאתרים חוסר-איזון: אם צוות אחד דליל היום, רואים אותו מיד.",
+    },
+    {
+      sel: "#fcTitle",
+      anchor: ".panel",
+      title: "תחזית",
+      body: "ממוצע הנוכחים הצפוי לחודש/שבוע, מבוסס על הבקשות שכבר אושרו.",
+      boss: "הצצה קדימה: כמה אנשים צפויים להיות, כדי לתכנן תורנויות מראש.",
+    },
+    {
+      sel: "#absTitle",
+      anchor: ".panel",
+      title: "חסרים",
+      body: "רשימה שמית של מי שלא נוכח בטווח שנבחר, עם הסיבה לכל אחד.",
+      boss: "שם-ושם מול הסיבה — בדיוק מי חסר ולמה, בלי ניחושים.",
+    },
+    {
+      sel: "#assignSummary",
+      anchor: "",
+      title: "שיבוץ היום",
+      body: "סיכום השיבוץ ליום הנוכחי — אילו חדרים מאוישים ומי לא-משובץ עדיין.",
+      boss: "סטטוס-שיבוץ במבט אחד: רואים פערים לפני תחילת היום.",
+    },
+    {
+      sel: "#queue",
+      anchor: ".panel",
+      title: "תור בקשות לאישור",
+      body: "כל בקשות-ההיעדרות שממתינות — אפשר לאשר או לדחות כל אחת בלחיצה.",
+      boss: "כאן מחליטים: אישור/דחייה, וההשפעה על המספרים מיידית.",
+    },
+    {
+      sel: "#editList",
+      anchor: ".panel",
+      title: "עריכת סטטוס",
+      body: "שינוי ידני של סטטוס רופא ליום הנבחר — לתיקונים נקודתיים.",
+      boss: "גמישות: מתקנים סטטוס ביד כשהמציאות שונה מהבקשות.",
+    },
+
+    /* ----- ניווט ----- */
+    {
+      sel: "#seg",
+      anchor: "",
+      title: "ניווט בין מסכים",
+      body: "מעבר בין נוכחות (קונסולת-מזכירות), טבלאות, ומסך-הרופא במובייל.",
+      boss: "הכל במקום אחד: מבט-מנהל, טבלה מפורטת, וצד-הרופא — בלשונית.",
+    },
+
+    /* ----- לשונית-טבלאות ----- */
+    {
+      sel: "#tblCover",
+      anchor: "",
+      title: "כיסוי חדרים",
+      body: "פס-סיכום: כמה חדרים מאוישים, כמה נוכחים לא-שובצו, ואילו חדרים בסיכון.",
+      boss: "התראה מהירה: חדר בלי רופא קופץ לעין לפני שזה הופך לבעיה.",
+    },
+    {
+      sel: "#tblChips",
+      anchor: "",
+      title: "בורר עמודות",
+      body: "הדלקה/כיבוי של עמודות בטבלה — מציגים רק את מה שרלוונטי כרגע.",
+      boss: "טבלה נקייה לפי הצורך: רק השדות שמעניינים אתכם עכשיו.",
+    },
+    {
+      sel: "[data-assignroom]",
+      anchor: "td",
+      title: "שיבוץ חדר",
+      body: "בחירת החדר שאליו משובץ הרופא — ישירות מתוך התא בטבלה.",
+      boss: "משבצים חדר במקום, וההשפעה על פס-הכיסוי מתעדכנת מיד.",
+    },
+    {
+      sel: "#tblSearch",
+      anchor: "",
+      title: "חיפוש",
+      body: "הקלדת שם רופא מסננת את הטבלה בזמן-אמת.",
+      boss: "מאתרים רופא ספציפי בשנייה, בלי לגלול את כל הרשימה.",
+    },
+    {
+      sel: "#tblFilterSeg",
+      anchor: "",
+      title: "סינון",
+      body: "הצגת נוכחים בלבד / חסרים בלבד / הכל — לפי מה שצריך לבדוק.",
+      boss: "ממקדים מבט: רק הנוכחים לשיבוץ, או רק החסרים לבירור.",
+    },
+  ];
+
+  /* ---------- state מקומי (אימוטבילי) ---------- */
+  let active = false; // מצב "עזרה" פעיל?
+  let root = null; // ה-host (document.body כברירת-מחדל)
+  let openId = null; // ה-id של ה-tip שה-popover שלו פתוח (או null)
+
+  /* ---------- helpers ---------- */
+  const esc = (s) =>
+    String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+  // פתרון-מטרה לערך-קונפיג: מאתר את אלמנט-המקור ומטפס ל-anchor אם הוגדר.
+  // מחזיר null אם אין אלמנט (למשל section מוסתר שלא רונדר עדיין).
+  function resolveTarget(item) {
+    const src = document.querySelector(item.sel);
+    if (!src) return null;
+    if (!item.anchor) return src;
+    const wrap = src.closest(item.anchor);
+    return wrap || src;
+  }
+
+  // האם האלמנט מוצג בפועל (יש לו שטח על-המסך)? section מוסתר → 0.
+  function isVisible(el) {
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  }
+
+  /* ---------- DOM refs ---------- */
+  let fab, tipsLayer, popover;
+
+  /* ---------- styles (מוזרק פעם אחת) ---------- */
+  function injectStyle() {
+    if (document.getElementById("hp-style")) return;
+    const css = `
+      #hp-fab{
+        position:fixed; inset-inline-start:18px; bottom:18px; z-index:9000;
+        display:flex; align-items:center; gap:8px;
+        padding:11px 15px; border-radius:999px; cursor:pointer;
+        font-family:inherit; font-size:13.5px; font-weight:600; color:var(--ink);
+        background:var(--glass); border:1px solid var(--stroke);
+        -webkit-backdrop-filter:blur(24px) saturate(150%); backdrop-filter:blur(24px) saturate(150%);
+        box-shadow:0 10px 30px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.1);
+        transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+      }
+      #hp-fab:hover{ transform:translateY(-1px); }
+      #hp-fab.on{
+        background:linear-gradient(150deg, var(--teal), var(--blue));
+        border-color:transparent; color:#06121f;
+        box-shadow:0 12px 34px rgba(45,212,191,.4);
+      }
+
+      /* שכבת-התגים: page-relative; שקופה-ללחיצות חוץ מהתגים עצמם */
+      #hp-tips{ position:absolute; inset:0; z-index:8850; pointer-events:none; }
+      .hp-badge{
+        position:absolute; transform:translate(50%,-50%); pointer-events:auto; cursor:help;
+        width:22px; height:22px; border-radius:50%;
+        display:grid; place-items:center; font-size:13px; font-weight:800; font-style:normal;
+        color:#06121f; background:linear-gradient(150deg, var(--teal), var(--blue));
+        border:2px solid rgba(11,16,32,.6);
+        box-shadow:0 4px 12px rgba(0,0,0,.4);
+        animation:hp-pulse 1.8s ease-in-out infinite;
+      }
+      .hp-badge:hover{ transform:translate(50%,-50%) scale(1.12); }
+      .hp-badge.open{ background:linear-gradient(150deg, var(--violet), var(--blue)); color:#fff; }
+      @keyframes hp-pulse{
+        0%,100%{ box-shadow:0 4px 12px rgba(0,0,0,.4), 0 0 0 0 rgba(45,212,191,.4); }
+        50%{ box-shadow:0 4px 12px rgba(0,0,0,.4), 0 0 0 6px rgba(45,212,191,0); }
+      }
+
+      #hp-pop{
+        position:fixed; z-index:9200; width:min(300px, calc(100vw - 28px)); padding:15px 16px;
+        border-radius:var(--radius-sm); color:var(--ink); direction:rtl;
+        background:var(--glass); border:1px solid var(--stroke);
+        -webkit-backdrop-filter:blur(26px) saturate(160%); backdrop-filter:blur(26px) saturate(160%);
+        box-shadow:0 18px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1);
+      }
+      #hp-pop .hp-title{ font-size:15px; font-weight:700; margin-bottom:7px; display:flex; align-items:center; gap:7px; }
+      #hp-pop .hp-title .hp-dot{
+        width:18px; height:18px; flex:none; border-radius:50%; display:grid; place-items:center;
+        font-size:11px; font-weight:800; color:#06121f; font-style:normal;
+        background:linear-gradient(150deg,var(--teal),var(--blue));
+      }
+      #hp-pop .hp-body{ font-size:13px; line-height:1.55; color:var(--ink); margin-bottom:11px; }
+      #hp-pop .hp-boss{
+        font-size:12px; line-height:1.5; color:var(--ink2);
+        padding:9px 10px; border-radius:10px;
+        background:var(--glass2); border:1px solid var(--stroke2);
+      }
+      #hp-pop .hp-boss b{ color:var(--teal); font-weight:700; }
+      #hp-pop .hp-close{
+        position:absolute; inset-inline-start:10px; top:9px; cursor:pointer;
+        font-size:16px; color:var(--ink3); padding:0 4px; border-radius:6px; line-height:1.4;
+      }
+      #hp-pop .hp-close:hover{ color:var(--ink); background:var(--glass2); }
+    `;
+    const tag = document.createElement("style");
+    tag.id = "hp-style";
+    tag.textContent = css;
+    document.head.appendChild(tag);
+  }
+
+  /* ---------- mount: בונה שלד-DOM פעם אחת ---------- */
+  function mount(rootEl) {
+    root = rootEl || document.body;
+    if (document.getElementById("hp-fab")) return; // idempotent
+    injectStyle();
+
+    fab = document.createElement("button");
+    fab.id = "hp-fab";
+    fab.type = "button";
+
+    tipsLayer = document.createElement("div");
+    tipsLayer.id = "hp-tips";
+
+    root.appendChild(tipsLayer);
+    root.appendChild(fab);
+
+    fab.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggle();
+    });
+
+    // מיקום-התגים יחסי-לעמוד → צריך לחשב-מחדש בגלילה/שינוי-גודל כשפעיל.
+    window.addEventListener("resize", onReflow);
+    window.addEventListener("scroll", onReflow, true);
+    // Esc סוגר popover, ואם אין — יוצא ממצב-עזרה.
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      if (popover) closePopover();
+      else if (active) toggle();
+    });
+
+    renderFab();
+  }
+
+  function onReflow() {
+    if (!active) return;
+    renderBadges();
+    if (popover) repositionPopover();
+  }
+
+  /* ---------- toggle "מצב עזרה" ---------- */
+  function toggle() {
+    active = !active;
+    if (active) {
+      renderBadges();
+    } else {
+      closePopover();
+      clearBadges();
+    }
+    renderFab();
+  }
+
+  /* ---------- render: FAB ---------- */
+  function renderFab() {
+    if (!fab) return;
+    fab.classList.toggle("on", active);
+    const label = active ? "סגור עזרה" : "עזרה";
+    fab.innerHTML = `❓ <span>${esc(label)}</span>`;
+  }
+
+  /* ---------- render: תגי-ⓘ (overlay בלבד) ----------
+     לכל ערך-קונפיג שמטרתו גלויה כרגע — תג ⓘ ממוקם ליד הפינה-העליונה
+     (start) של האלמנט. המיקום page-relative (כולל scrollY) כדי שיישב
+     נכון בתוך שכבת-ה-overlay המוחלטת. לא נוגעים באלמנט-המקור. */
+  function renderBadges() {
+    if (!tipsLayer) return;
+    const html = CONFIG.map((item, i) => {
+      const el = resolveTarget(item);
+      if (!el || !isVisible(el)) return "";
+      const r = el.getBoundingClientRect();
+      // נקודת-עיגון: הפינה ההתחלתית-עליונה (ב-RTL זו הפינה הימנית).
+      const x = r.right + window.scrollX - 9;
+      const y = r.top + window.scrollY + 9;
+      const cls = String(i) === String(openId) ? "hp-badge open" : "hp-badge";
+      return `<i class="${cls}" data-i="${i}" style="left:${x}px;top:${y}px" title="${esc(item.title)}">ⓘ</i>`;
+    }).join("");
+    tipsLayer.innerHTML = html;
+    tipsLayer.querySelectorAll(".hp-badge").forEach((b) => {
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openPopover(Number(b.dataset.i), b);
+      });
+    });
+  }
+
+  function clearBadges() {
+    if (tipsLayer) tipsLayer.innerHTML = "";
+  }
+
+  /* ---------- popover ---------- */
+  let popAnchorEl = null; // התג שעליו נפתח (לצורך מיקום-מחדש)
+
+  function openPopover(i, badgeEl) {
+    closePopover();
+    const item = CONFIG[i];
+    if (!item) return;
+    openId = i;
+    popAnchorEl = badgeEl;
+    popover = document.createElement("div");
+    popover.id = "hp-pop";
+    popover.innerHTML = `
+      <span class="hp-close" title="סגור">✕</span>
+      <div class="hp-title"><i class="hp-dot">ⓘ</i>${esc(item.title)}</div>
+      <div class="hp-body">${esc(item.body)}</div>
+      <div class="hp-boss"><b>למה זה טוב לבוס:</b> ${esc(item.boss)}</div>`;
+    root.appendChild(popover);
+    popover.querySelector(".hp-close").addEventListener("click", closePopover);
+
+    repositionPopover();
+    // סימון התג הפעיל.
+    if (tipsLayer) {
+      tipsLayer.querySelectorAll(".hp-badge").forEach((b) => b.classList.toggle("open", b === badgeEl));
+    }
+  }
+
+  // ממקם את ה-popover ליד התג (fixed → לפי קואורדינטות-מסך), עם הצמדה לגבולות.
+  function repositionPopover() {
+    if (!popover || !popAnchorEl) return;
+    const br = popAnchorEl.getBoundingClientRect(); // התג נמצא בשכבה-מוחלטת → ה-rect כבר ויאופורט-יחסי
+    const pr = popover.getBoundingClientRect();
+    const pad = 12;
+    // מעדיפים מתחת-ומעט-שמאלה לתג; נצמדים לגבולות-החלון.
+    let left = Math.min(br.left, window.innerWidth - pr.width - pad);
+    let top = Math.min(br.bottom + 10, window.innerHeight - pr.height - pad);
+    popover.style.left = Math.max(pad, left) + "px";
+    popover.style.top = Math.max(pad, top) + "px";
+  }
+
+  function closePopover() {
+    if (popover && popover.parentNode) popover.parentNode.removeChild(popover);
+    popover = null;
+    popAnchorEl = null;
+    openId = null;
+    if (tipsLayer) tipsLayer.querySelectorAll(".hp-badge.open").forEach((b) => b.classList.remove("open"));
+  }
+
+  /* ---------- expose contract ---------- */
+  Att.help = {
+    mount,
+    toggle,
+    // קריאה-בלבד למצב (לבדיקות/אינטגרציה)
+    get isActive() {
+      return active;
+    },
+  };
+})();
+
+</script>
+    <script>
+"use strict";
+
+/* ============================================================
+   מערכת נוכחות · מחלקת הרדמה — דמו v3
+   מודול-האפליקציה (Att.app) — boot + router + שכבת-shims.
+   נטען אחרון (אחרי data/attendance/tables/profile/feedback).
+
+   תפקידים:
+     • router go(view): מציג/מסתיר sections ומצייר את המודול הנכון.
+     • boot: remapRequestDoctors → populate rType → renderAll → feedback.mount.
+     • shims גלובליים: כל ה-onclick ה-inline שעברו 1:1 מ-v2 (Att.attendance.*).
+     • event-delegation: ניווט-עליון + סרגלי-הקונסולה + handlers של לשונית-הטבלאות.
+
+   element-ids של ה-sections (router): console · tables · profile · doctor.
+   ============================================================ */
+
+globalThis.Att = globalThis.Att || {};
+
+(function () {
+  const D = Att.data;
+  const A = Att.attendance;
+
+  // כל ה-sections שה-router מנהל. profile = drill-in (לא בניווט-העליון).
+  const VIEWS = ["console", "tables", "profile", "doctor"];
+
+  /* ---------- router ---------- */
+  // go(view): מסמן את כפתור-הניווט, מציג section אחד ומסתיר את השאר, ואז מצייר.
+  function go(v) {
+    if (!VIEWS.includes(v)) return; // ערך לא-מוכר (למשל schedule המושבת) → no-op
+    // profile אינו בניווט-העליון → לא מסמנים כפתור עבורו (משאירים את הסימון הקודם).
+    if (v !== "profile") {
+      document.querySelectorAll("#seg button").forEach((b) => b.classList.toggle("active", b.dataset.v === v));
+    }
+    VIEWS.forEach((s) => {
+      const el = document.getElementById(s);
+      if (el) el.hidden = s !== v;
+    });
+    drawFor(v);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // מצייר את המודול המתאים ל-view הנוכחי (כל מודול קורא מ-Att.data).
+  function drawFor(v) {
+    if (v === "console") A.renderAll();
+    else if (v === "tables") Att.tables.render();
+    else if (v === "profile") Att.profile.rerender();
+    // doctor = DOM סטטי (טופס) — נצבע בעת ה-boot (myReqs), אין מה לצייר-מחדש כאן.
+  }
+
+  /* ---------- shims גלובליים (onclick inline 1:1 מ-v2) ----------
+     כל onclick שמופיע במחרוזות-render של attendance.js או ב-index.html
+     ממופה ל-Att.attendance.* . שומר 1:1 ודאי בלי "כפתורים-מתים". */
+  const SHIMS = [
+    "stepPeriod",
+    "approve",
+    "reject",
+    "openDayReport",
+    "closeDayReport",
+    "editStatus",
+    "submitReq",
+    "scrollQueue",
+    "toast",
+    "drillTo",
+    "setDim",
+    "clearDrill",
+  ];
+  SHIMS.forEach((fn) => {
+    window[fn] = (...args) => Att.attendance[fn](...args);
+  });
+
+  /* ---------- event-delegation ---------- */
+  function wireDelegation() {
+    // ניווט-עליון
+    const seg = document.getElementById("seg");
+    if (seg) {
+      seg.addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (b && !b.disabled) go(b.dataset.v);
+      });
+    }
+
+    // סרגל-בקרה של הקונסולה — מעבירים את הכפתור (btn) ל-setters שב-attendance.js
+    // (הם מטפלים בסימון-הכפתור + render).
+    const modeSeg = document.getElementById("modeSeg");
+    if (modeSeg) {
+      modeSeg.addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (b) A.setMode(b.dataset.m, b);
+      });
+    }
+    const metricToggle = document.getElementById("metricToggle");
+    if (metricToggle) {
+      metricToggle.addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (b) A.setMetric(b.dataset.x, b);
+      });
+    }
+    const roleSeg = document.getElementById("roleSeg");
+    if (roleSeg) {
+      roleSeg.addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (b) A.setRole(b.dataset.r, b);
+      });
+    }
+
+    /* ----- לשונית-הטבלאות: delegation נקי (בלי inline-onclick חדשים) ----- */
+    const tablesSec = document.getElementById("tables");
+    if (tablesSec) {
+      const T = Att.tables;
+      // קליקים: בורר-יום · סינון · בורר-עמודות · מיון · פתיחת-פרופיל
+      tablesSec.addEventListener("click", (e) => {
+        const step = e.target.closest("[data-tblstep]");
+        if (step) {
+          T.stepDay(Number(step.dataset.tblstep));
+          return;
+        }
+        const filt = e.target.closest("[data-filter]");
+        if (filt) {
+          T.setFilter(filt.dataset.filter);
+          return;
+        }
+        const chip = e.target.closest("[data-coltoggle]");
+        if (chip) {
+          T.toggleCol(chip.dataset.coltoggle);
+          return;
+        }
+        const th = e.target.closest("[data-sort]");
+        if (th) {
+          T.sortBy(th.dataset.sort);
+          return;
+        }
+        const lnk = e.target.closest("[data-openprofile]");
+        if (lnk) {
+          T.openProfile(Number(lnk.dataset.openprofile));
+          return;
+        }
+      });
+      // שינוי-בוררים: שיבוץ-חדר / שיבוץ-מחוץ-לחדר
+      tablesSec.addEventListener("change", (e) => {
+        const room = e.target.closest("[data-assignroom]");
+        if (room) {
+          T.assignRoom(Number(room.dataset.assignroom), room.value);
+          return;
+        }
+        const out = e.target.closest("[data-assignoutside]");
+        if (out) {
+          T.assignOut(Number(out.dataset.assignoutside), out.value);
+          return;
+        }
+      });
+      // חיפוש debounced — ה-input קבוע מחוץ ל-innerHTML-המתחלף (#tblSearch).
+      const search = document.getElementById("tblSearch");
+      if (search) {
+        search.addEventListener("input", (e) => T.onSearch(e.target.value));
+      }
+    }
+
+    // Esc → סגירת מודאל-הכיסוי (שחזור התנהגות v2).
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") Att.attendance.closeDayReport();
+    });
+  }
+
+  /* ---------- boot ---------- */
+  function boot() {
+    // 1) ודא שבקשות-התור משויכות לרופאים-נוכחים ביום-הבקשה (idempotent — כבר רץ ב-data.js).
+    D.remapRequestDoctors();
+
+    // 2) אכלוס בורר סוג-הבקשה בטופס-הרופא — מתוך STATUS (היעדרויות בלבד).
+    const rType = document.getElementById("rType");
+    if (rType) {
+      rType.innerHTML = D.STATUS.filter((s) => s.countsAbsent)
+        .map((s) => `<option>${s.label}</option>`)
+        .join("");
+    }
+
+    // 3) חיווט event-delegation.
+    wireDelegation();
+
+    // 4) ציור-ראשוני של הקונסולה (ה-view הפעיל כברירת-מחדל).
+    A.renderAll();
+
+    // 5) ערוץ-הפידבק (💬 הערות) — שוחזר אחרי תיקון מצב-הבחירה (CHANGELOG v3.0, אומת בדפדפן).
+    Att.feedback.mount(document.body);
+
+    // 6) מצב-עזרה (❓ עזרה) — תגי-ⓘ מסבירים פר-אלמנט.
+    Att.help.mount(document.body);
+
+    // 7) שני הכפתורים-הצפים חולקים פינה-תחתונה (inset-inline-start). מסדרים אותם
+    //    כסטאק-אנכי כדי שלא יחפפו: 💬 הערות למטה, ❓ עזרה מעליו, עם מרווח.
+    stackFloatingButtons();
+  }
+
+  /* ---------- סידור-סטאק לשני ה-FAB-ים (מניעת-חפיפה) ----------
+     שני המודולים מקבעים bottom:18px → היו נערמים זה-על-זה. מזריקים
+     override-CSS קצר (פעם אחת): feedback נשאר בתחתית, help מעליו עם מרווח. */
+  function stackFloatingButtons() {
+    if (document.getElementById("fab-stack-style")) return;
+    const tag = document.createElement("style");
+    tag.id = "fab-stack-style";
+    tag.textContent = `
+      #fb-fab{ bottom:18px; }
+      #hp-fab{ bottom:70px; }
+    `;
+    document.head.appendChild(tag);
+  }
+
+  /* ---------- expose contract ---------- */
+  Att.app = { go, boot };
+
+  // הפעלה: הסקריפטים בסוף ה-body → ה-DOM כבר מוכן.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+
+</script>
+  </body>
+</html>
