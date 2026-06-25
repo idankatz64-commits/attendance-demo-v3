@@ -1728,7 +1728,9 @@ table.sched-matrix thead th.sched-daycol {
           <button data-v="console" class="active">נוכחות <span class="dot" id="segDot">0</span></button>
           <button data-v="tables">טבלאות</button>
           <button data-v="doctor">רופא</button>
-          <button data-v="schedule">שיבוץ</button>
+          <!-- "שיבוץ" מוסתר מהגרסה-לבוס: מודול-השיבוץ הוא שלב-נפרד (דמו ייעודי בעתיד) +
+               הקודים placeholder שטרם אומתו מול המחלקה. הקוד נשאר טעון; הסר את display:none כדי להציג. -->
+          <button data-v="schedule" style="display: none">שיבוץ</button>
         </div>
         <div class="date">יום שני · 22.6.2026</div>
       </header>
