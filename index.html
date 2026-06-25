@@ -8,1255 +8,1705 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>מערכת נוכחות · מחלקת הרדמה</title>
     <style>
-      :root {
-        --ink: #eef2f9;
-        --ink2: rgba(238, 242, 249, 0.66);
-        --ink3: rgba(238, 242, 249, 0.4);
-        --glass: rgba(255, 255, 255, 0.07);
-        --glass2: rgba(255, 255, 255, 0.045);
-        --stroke: rgba(255, 255, 255, 0.14);
-        --stroke2: rgba(255, 255, 255, 0.08);
-        --green: #34d399;
-        --amber: #fbbf24;
-        --blue: #60a5fa;
-        --red: #f87171;
-        --violet: #a78bfa;
-        --pink: #f472b6;
-        --teal: #2dd4bf;
-        --radius: 22px;
-        --radius-sm: 14px;
-      }
-      * {
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: -apple-system, "SF Pro Display", "Segoe UI", "Heebo", Arial, sans-serif;
-        color: var(--ink);
-        min-height: 100vh;
-        overflow-x: hidden;
-        background: #0b1020;
-        -webkit-text-size-adjust: 100%;
-      }
-      .bg {
-        position: fixed;
-        inset: 0;
-        z-index: -2;
-        background:
-          radial-gradient(60% 55% at 78% 12%, rgba(45, 212, 191, 0.2), transparent 60%),
-          radial-gradient(55% 50% at 12% 18%, rgba(167, 139, 250, 0.22), transparent 60%),
-          radial-gradient(70% 60% at 50% 110%, rgba(96, 165, 250, 0.18), transparent 60%),
-          linear-gradient(160deg, #0d1224 0%, #0b0f1f 50%, #0a0d1a 100%);
-      }
-      .bg::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        opacity: 0.5;
-        background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-        background-size: 46px 46px;
-        -webkit-mask: linear-gradient(#000, transparent 70%);
-        mask: linear-gradient(#000, transparent 70%);
-      }
-      .wrap {
-        max-width: 1180px;
-        margin: 0 auto;
-        padding: max(18px, env(safe-area-inset-top)) 18px 60px;
-      }
+:root {
+  --ink: #eef2f9;
+  --ink2: rgba(238, 242, 249, 0.66);
+  --ink3: rgba(238, 242, 249, 0.4);
+  --glass: rgba(255, 255, 255, 0.07);
+  --glass2: rgba(255, 255, 255, 0.045);
+  --stroke: rgba(255, 255, 255, 0.14);
+  --stroke2: rgba(255, 255, 255, 0.08);
+  --green: #34d399;
+  --amber: #fbbf24;
+  --blue: #60a5fa;
+  --red: #f87171;
+  --violet: #a78bfa;
+  --pink: #f472b6;
+  --teal: #2dd4bf;
+  --radius: 22px;
+  --radius-sm: 14px;
+}
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: -apple-system, "SF Pro Display", "Segoe UI", "Heebo", Arial, sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #0b1020;
+  -webkit-text-size-adjust: 100%;
+}
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(60% 55% at 78% 12%, rgba(45, 212, 191, 0.2), transparent 60%),
+    radial-gradient(55% 50% at 12% 18%, rgba(167, 139, 250, 0.22), transparent 60%),
+    radial-gradient(70% 60% at 50% 110%, rgba(96, 165, 250, 0.18), transparent 60%),
+    linear-gradient(160deg, #0d1224 0%, #0b0f1f 50%, #0a0d1a 100%);
+}
+.bg::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.5;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask: linear-gradient(#000, transparent 70%);
+  mask: linear-gradient(#000, transparent 70%);
+}
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: max(18px, env(safe-area-inset-top)) 18px 60px;
+}
 
-      header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        font-size: 17px;
-        font-weight: 600;
-        letter-spacing: 0.2px;
-      }
-      .logo {
-        width: 38px;
-        height: 38px;
-        border-radius: 12px;
-        display: grid;
-        place-items: center;
-        flex: none;
-        background: linear-gradient(150deg, var(--teal), var(--blue));
-        box-shadow: 0 6px 20px rgba(45, 212, 191, 0.35);
-      }
-      .logo svg {
-        width: 20px;
-        height: 20px;
-        stroke: #06121f;
-        stroke-width: 2.2;
-        fill: none;
-      }
-      .demo-badge {
-        font-size: 11px;
-        font-weight: 700;
-        padding: 3px 9px;
-        border-radius: 8px;
-        background: rgba(251, 191, 36, 0.18);
-        color: #fcd577;
-      }
-      .date {
-        font-size: 13.5px;
-        color: var(--ink2);
-      }
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  background: linear-gradient(150deg, var(--teal), var(--blue));
+  box-shadow: 0 6px 20px rgba(45, 212, 191, 0.35);
+}
+.logo svg {
+  width: 20px;
+  height: 20px;
+  stroke: #06121f;
+  stroke-width: 2.2;
+  fill: none;
+}
+.demo-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: rgba(251, 191, 36, 0.18);
+  color: #fcd577;
+}
+.date {
+  font-size: 13.5px;
+  color: var(--ink2);
+}
 
-      .glass {
-        background: var(--glass);
-        -webkit-backdrop-filter: blur(24px) saturate(150%);
-        backdrop-filter: blur(24px) saturate(150%);
-        border: 1px solid var(--stroke);
-        border-radius: var(--radius);
-        box-shadow:
-          0 10px 36px rgba(0, 0, 0, 0.32),
-          inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      }
+.glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  box-shadow:
+    0 10px 36px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
 
-      .seg {
-        display: inline-flex;
-        padding: 5px;
-        gap: 4px;
-        border-radius: 16px;
-      }
-      .seg button {
-        appearance: none;
-        border: 0;
-        background: transparent;
-        color: var(--ink2);
-        font: inherit;
-        font-size: 14px;
-        font-weight: 600;
-        padding: 10px 18px;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: 0.22s;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 7px;
-        min-height: 42px;
-      }
-      .seg button.active {
-        color: #06121f;
-        background: linear-gradient(150deg, #eef2f9, #cdd6e6);
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-      }
-      .seg button[disabled] {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .seg .dot {
-        min-width: 18px;
-        height: 18px;
-        padding: 0 5px;
-        border-radius: 9px;
-        background: var(--amber);
-        color: #3a2a00;
-        font-size: 11px;
-        font-weight: 700;
-        display: grid;
-        place-items: center;
-      }
-      .seg button.active .dot {
-        background: #3a2a00;
-        color: var(--amber);
-      }
-      .seg .soon {
-        font-size: 9.5px;
-        font-weight: 700;
-        padding: 1px 5px;
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.12);
-        color: var(--ink2);
-      }
+.seg {
+  display: inline-flex;
+  padding: 5px;
+  gap: 4px;
+  border-radius: 16px;
+}
+.seg button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink2);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.22s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+}
+.seg button.active {
+  color: #06121f;
+  background: linear-gradient(150deg, #eef2f9, #cdd6e6);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+.seg button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.seg .dot {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--amber);
+  color: #3a2a00;
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+.seg button.active .dot {
+  background: #3a2a00;
+  color: var(--amber);
+}
+.seg .soon {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--ink2);
+}
 
-      .hint {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 13px;
-        color: var(--ink2);
-        padding: 11px 16px;
-        margin-bottom: 16px;
-        border-radius: 16px;
-        background: var(--glass2);
-        border: 1px solid var(--stroke2);
-      }
-      .hint b {
-        color: var(--ink);
-        font-weight: 600;
-      }
-      .hint .x {
-        margin-inline-start: auto;
-        cursor: pointer;
-        color: var(--ink3);
-        font-size: 20px;
-        line-height: 1;
-        padding: 0 4px;
-      }
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink2);
+  padding: 11px 16px;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  background: var(--glass2);
+  border: 1px solid var(--stroke2);
+}
+.hint b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.hint .x {
+  margin-inline-start: auto;
+  cursor: pointer;
+  color: var(--ink3);
+  font-size: 20px;
+  line-height: 1;
+  padding: 0 4px;
+}
 
-      section[hidden] {
-        display: none;
-      }
+section[hidden] {
+  display: none;
+}
 
-      /* ---- control bar ---- */
-      .controlbar {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-        padding: 12px 14px;
-        margin-bottom: 16px;
-      }
-      .ctl-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .ctl-lab {
-        font-size: 12px;
-        color: var(--ink3);
-        font-weight: 600;
-      }
-      .miniseg {
-        display: inline-flex;
-        gap: 3px;
-        padding: 4px;
-        border-radius: 13px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--stroke2);
-      }
-      .miniseg button {
-        appearance: none;
-        border: 0;
-        background: transparent;
-        color: var(--ink2);
-        font: inherit;
-        font-size: 13px;
-        font-weight: 600;
-        padding: 8px 14px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: 0.18s;
-        min-height: 36px;
-      }
-      .miniseg button.on {
-        color: #06121f;
-        background: linear-gradient(150deg, #eef2f9, #cdd6e6);
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
-      }
-      .miniseg.metric button.on {
-        background: linear-gradient(150deg, var(--green), var(--teal));
-        color: #06241b;
-      }
-      .miniseg.metric button.on.abs {
-        background: linear-gradient(150deg, var(--violet), var(--blue));
-        color: #0b0820;
-      }
-      .period {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 4px;
-        border-radius: 13px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--stroke2);
-      }
-      .period .lab {
-        font-size: 13.5px;
-        font-weight: 600;
-        padding: 0 12px;
-        min-width: 118px;
-        text-align: center;
-        white-space: nowrap;
-      }
-      .period button {
-        appearance: none;
-        border: 0;
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--ink);
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 17px;
-        display: grid;
-        place-items: center;
-        transition: 0.16s;
-      }
-      .period button:active {
-        transform: scale(0.92);
-        background: rgba(255, 255, 255, 0.12);
-      }
-      .rolepill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        margin-inline-start: auto;
-        font-size: 12px;
-        color: var(--ink2);
-      }
-      .rolepill .miniseg button {
-        font-size: 12px;
-        padding: 7px 11px;
-        min-height: 32px;
-      }
+/* ---- control bar ---- */
+.controlbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+.ctl-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ctl-lab {
+  font-size: 12px;
+  color: var(--ink3);
+  font-weight: 600;
+}
+.miniseg {
+  display: inline-flex;
+  gap: 3px;
+  padding: 4px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--stroke2);
+}
+.miniseg button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.18s;
+  min-height: 36px;
+}
+.miniseg button.on {
+  color: #06121f;
+  background: linear-gradient(150deg, #eef2f9, #cdd6e6);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
+}
+.miniseg.metric button.on {
+  background: linear-gradient(150deg, var(--green), var(--teal));
+  color: #06241b;
+}
+.miniseg.metric button.on.abs {
+  background: linear-gradient(150deg, var(--violet), var(--blue));
+  color: #0b0820;
+}
+.period {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--stroke2);
+}
+.period .lab {
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 0 12px;
+  min-width: 118px;
+  text-align: center;
+  white-space: nowrap;
+}
+.period button {
+  appearance: none;
+  border: 0;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 17px;
+  display: grid;
+  place-items: center;
+  transition: 0.16s;
+}
+.period button:active {
+  transform: scale(0.92);
+  background: rgba(255, 255, 255, 0.12);
+}
+.rolepill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-inline-start: auto;
+  font-size: 12px;
+  color: var(--ink2);
+}
+.rolepill .miniseg button {
+  font-size: 12px;
+  padding: 7px 11px;
+  min-height: 32px;
+}
 
-      /* ---- console grid ---- */
-      .console-grid {
-        display: grid;
-        grid-template-columns: 1fr 1.5fr;
-        gap: 14px;
-        align-items: start;
-      }
-      .col {
-        display: grid;
-        gap: 14px;
-        align-content: start;
-      }
+/* ---- console grid ---- */
+.console-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 14px;
+  align-items: start;
+}
+.col {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
 
-      .grid {
-        display: grid;
-        gap: 14px;
-      }
-      .kpis {
-        grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
-      }
-      .kpi {
-        padding: 16px 17px;
-      }
-      .kpi.click {
-        cursor: pointer;
-        transition: 0.2s;
-      }
-      .kpi.click:active {
-        transform: scale(0.98);
-      }
-      .kpi .lab {
-        font-size: 12.5px;
-        color: var(--ink2);
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 7px;
-      }
-      .kpi .num {
-        font-size: 32px;
-        font-weight: 700;
-        line-height: 1;
-        letter-spacing: 0.5px;
-      }
-      .two {
-        grid-template-columns: 1fr 1fr;
-      }
-      .panel {
-        padding: 20px;
-      }
-      .panel h3 {
-        margin: 0 0 16px;
-        font-size: 15.5px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-      }
-      .panel h3 .sub {
-        font-size: 12.5px;
-        color: var(--ink3);
-        font-weight: 500;
-      }
+.grid {
+  display: grid;
+  gap: 14px;
+}
+.kpis {
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+}
+.kpi {
+  padding: 16px 17px;
+}
+.kpi.click {
+  cursor: pointer;
+  transition: 0.2s;
+}
+.kpi.click:active {
+  transform: scale(0.98);
+}
+.kpi .lab {
+  font-size: 12.5px;
+  color: var(--ink2);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.kpi .num {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+.two {
+  grid-template-columns: 1fr 1fr;
+}
+.panel {
+  padding: 20px;
+}
+.panel h3 {
+  margin: 0 0 16px;
+  font-size: 15.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.panel h3 .sub {
+  font-size: 12.5px;
+  color: var(--ink3);
+  font-weight: 500;
+}
 
-      .bar {
-        margin-bottom: 13px;
-      }
-      .bar:last-child {
-        margin-bottom: 0;
-      }
-      .bar.click {
-        cursor: pointer;
-        padding: 4px;
-        margin: -4px -4px 9px;
-        border-radius: 10px;
-        transition: 0.16s;
-      }
-      .bar.click:hover {
-        background: rgba(255, 255, 255, 0.04);
-      }
-      .bar .top {
-        display: flex;
-        justify-content: space-between;
-        font-size: 13.5px;
-        margin-bottom: 6px;
-        gap: 8px;
-      }
-      .bar .top .v {
-        color: var(--ink2);
-        white-space: nowrap;
-      }
-      .track {
-        height: 9px;
-        border-radius: 7px;
-        background: rgba(255, 255, 255, 0.07);
-        overflow: hidden;
-        display: flex;
-        justify-content: flex-start;
-      }
-      .fill {
-        height: 100%;
-        border-radius: 7px;
-        background: linear-gradient(90deg, var(--blue), var(--teal));
-        transition: width 0.7s cubic-bezier(0.4, 1.3, 0.5, 1);
-      }
-      .fill.g {
-        background: linear-gradient(90deg, var(--teal), var(--green));
-      }
-      .fill.v {
-        background: linear-gradient(90deg, var(--violet), var(--blue));
-      }
+.bar {
+  margin-bottom: 13px;
+}
+.bar:last-child {
+  margin-bottom: 0;
+}
+.bar.click {
+  cursor: pointer;
+  padding: 4px;
+  margin: -4px -4px 9px;
+  border-radius: 10px;
+  transition: 0.16s;
+}
+.bar.click:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.bar .top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+.bar .top .v {
+  color: var(--ink2);
+  white-space: nowrap;
+}
+.track {
+  height: 9px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-start;
+}
+.fill {
+  height: 100%;
+  border-radius: 7px;
+  background: linear-gradient(90deg, var(--blue), var(--teal));
+  transition: width 0.7s cubic-bezier(0.4, 1.3, 0.5, 1);
+}
+.fill.g {
+  background: linear-gradient(90deg, var(--teal), var(--green));
+}
+.fill.v {
+  background: linear-gradient(90deg, var(--violet), var(--blue));
+}
 
-      .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-        margin-top: 14px;
-      }
-      .chip {
-        font-size: 12.5px;
-        padding: 8px 14px;
-        border-radius: 11px;
-        cursor: pointer;
-        color: var(--ink2);
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--stroke2);
-        transition: 0.18s;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-      }
-      .chip:active {
-        color: var(--ink);
-      }
-      .chip.on {
-        color: #06121f;
-        background: var(--ink);
-        border-color: transparent;
-        font-weight: 600;
-      }
-      .crumb {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 12.5px;
-        color: var(--ink2);
-        margin-bottom: 14px;
-      }
-      .crumb .back {
-        cursor: pointer;
-        color: var(--teal);
-        font-weight: 600;
-      }
-      .crumb .sep {
-        color: var(--ink3);
-      }
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 14px;
+}
+.chip {
+  font-size: 12.5px;
+  padding: 8px 14px;
+  border-radius: 11px;
+  cursor: pointer;
+  color: var(--ink2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--stroke2);
+  transition: 0.18s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.chip:active {
+  color: var(--ink);
+}
+.chip.on {
+  color: #06121f;
+  background: var(--ink);
+  border-color: transparent;
+  font-weight: 600;
+}
+.crumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--ink2);
+  margin-bottom: 14px;
+}
+.crumb .back {
+  cursor: pointer;
+  color: var(--teal);
+  font-weight: 600;
+}
+.crumb .sep {
+  color: var(--ink3);
+}
 
-      .fc {
-        display: flex;
-        align-items: flex-end;
-        gap: 8px;
-        height: 110px;
-        padding-top: 6px;
-      }
-      .fc .col {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 7px;
-      }
-      .fc .stk {
-        width: 100%;
-        max-width: 34px;
-        border-radius: 7px 7px 4px 4px;
-        background: linear-gradient(180deg, var(--violet), rgba(96, 165, 250, 0.35));
-        transition: height 0.7s;
-      }
-      .fc .stk.g {
-        background: linear-gradient(180deg, var(--green), rgba(45, 212, 191, 0.35));
-      }
-      .fc .d {
-        font-size: 11px;
-        color: var(--ink3);
-        text-align: center;
-      }
-      .fc .n {
-        font-size: 11.5px;
-        color: var(--ink2);
-      }
+.fc {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 110px;
+  padding-top: 6px;
+}
+.fc .col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+.fc .stk {
+  width: 100%;
+  max-width: 34px;
+  border-radius: 7px 7px 4px 4px;
+  background: linear-gradient(180deg, var(--violet), rgba(96, 165, 250, 0.35));
+  transition: height 0.7s;
+}
+.fc .stk.g {
+  background: linear-gradient(180deg, var(--green), rgba(45, 212, 191, 0.35));
+}
+.fc .d {
+  font-size: 11px;
+  color: var(--ink3);
+  text-align: center;
+}
+.fc .n {
+  font-size: 11.5px;
+  color: var(--ink2);
+}
 
-      .arow {
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        padding: 11px 0;
-        border-bottom: 1px solid var(--stroke2);
-        flex-wrap: wrap;
-      }
-      .arow:last-child {
-        border-bottom: 0;
-      }
-      .nm {
-        font-weight: 600;
-        min-width: 86px;
-      }
-      .meta {
-        color: var(--ink2);
-        font-size: 12.5px;
-        flex: 1;
-        min-width: 90px;
-      }
-      .tag {
-        font-size: 12px;
-        font-weight: 600;
-        padding: 5px 11px;
-        border-radius: 10px;
-        white-space: nowrap;
-      }
-      .t-info {
-        background: rgba(96, 165, 250, 0.16);
-        color: #9cc4fb;
-      }
-      .t-danger {
-        background: rgba(248, 113, 113, 0.16);
-        color: #fcaaaa;
-      }
-      .t-warning {
-        background: rgba(251, 191, 36, 0.16);
-        color: #fcd577;
-      }
-      .t-success {
-        background: rgba(52, 211, 153, 0.16);
-        color: #86e9c4;
-      }
-      .t-violet {
-        background: rgba(167, 139, 250, 0.16);
-        color: #c7b6fb;
-      }
-      .t-pink {
-        background: rgba(244, 114, 182, 0.16);
-        color: #f7a8d0;
-      }
+.arow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--stroke2);
+  flex-wrap: wrap;
+}
+.arow:last-child {
+  border-bottom: 0;
+}
+.nm {
+  font-weight: 600;
+  min-width: 86px;
+}
+.meta {
+  color: var(--ink2);
+  font-size: 12.5px;
+  flex: 1;
+  min-width: 90px;
+}
+.tag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.t-info {
+  background: rgba(96, 165, 250, 0.16);
+  color: #9cc4fb;
+}
+.t-danger {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fcaaaa;
+}
+.t-warning {
+  background: rgba(251, 191, 36, 0.16);
+  color: #fcd577;
+}
+.t-success {
+  background: rgba(52, 211, 153, 0.16);
+  color: #86e9c4;
+}
+.t-violet {
+  background: rgba(167, 139, 250, 0.16);
+  color: #c7b6fb;
+}
+.t-pink {
+  background: rgba(244, 114, 182, 0.16);
+  color: #f7a8d0;
+}
 
-      .req {
-        display: flex;
-        align-items: center;
-        gap: 13px;
-        padding: 14px 4px;
-        border-bottom: 1px solid var(--stroke2);
-        flex-wrap: wrap;
-      }
-      .req:last-child {
-        border-bottom: 0;
-      }
-      .av {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        font-weight: 700;
-        font-size: 14px;
-        background: linear-gradient(150deg, rgba(167, 139, 250, 0.5), rgba(96, 165, 250, 0.4));
-        color: #fff;
-        flex: none;
-      }
-      .req .info {
-        flex: 1;
-        min-width: 120px;
-      }
-      .req .info .l1 {
-        font-size: 14px;
-        font-weight: 600;
-      }
-      .req .info .l2 {
-        font-size: 12.5px;
-        color: var(--ink2);
-        margin-top: 2px;
-      }
-      .datechip {
-        font-size: 12px;
-        font-weight: 600;
-        padding: 4px 9px;
-        border-radius: 9px;
-        background: rgba(96, 165, 250, 0.16);
-        color: #9cc4fb;
-        cursor: pointer;
-        border: 1px solid rgba(96, 165, 250, 0.25);
-        transition: 0.16s;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-      }
-      .datechip:active {
-        transform: scale(0.95);
-      }
-      .datechip svg {
-        width: 12px;
-        height: 12px;
-        stroke: currentColor;
-        stroke-width: 2.2;
-        fill: none;
-      }
-      .act {
-        display: flex;
-        gap: 8px;
-      }
-      .btn {
-        appearance: none;
-        border: 1px solid var(--stroke);
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--ink);
-        font: inherit;
-        font-size: 13.5px;
-        font-weight: 600;
-        padding: 10px 15px;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: 0.18s;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        min-height: 42px;
-      }
-      .btn:active {
-        transform: scale(0.97);
-      }
-      .btn.ok {
-        background: linear-gradient(150deg, var(--green), var(--teal));
-        color: #06241b;
-        border-color: transparent;
-      }
-      .btn.no {
-        color: #fcaaaa;
-      }
-      .btn.primary {
-        background: linear-gradient(150deg, var(--teal), var(--blue));
-        color: #06121f;
-        border-color: transparent;
-        width: 100%;
-        justify-content: center;
-        padding: 14px;
-        font-size: 15px;
-      }
-      .btn[disabled] {
-        opacity: 0.45;
-        cursor: not-allowed;
-      }
-      .btn svg {
-        width: 15px;
-        height: 15px;
-        stroke: currentColor;
-        stroke-width: 2.4;
-        fill: none;
-      }
-      .empty {
-        text-align: center;
-        color: var(--ink3);
-        font-size: 13.5px;
-        padding: 26px 0;
-      }
+.req {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--stroke2);
+  flex-wrap: wrap;
+}
+.req:last-child {
+  border-bottom: 0;
+}
+.av {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  background: linear-gradient(150deg, rgba(167, 139, 250, 0.5), rgba(96, 165, 250, 0.4));
+  color: #fff;
+  flex: none;
+}
+.req .info {
+  flex: 1;
+  min-width: 120px;
+}
+.req .info .l1 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.req .info .l2 {
+  font-size: 12.5px;
+  color: var(--ink2);
+  margin-top: 2px;
+}
+.datechip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 9px;
+  background: rgba(96, 165, 250, 0.16);
+  color: #9cc4fb;
+  cursor: pointer;
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  transition: 0.16s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.datechip:active {
+  transform: scale(0.95);
+}
+.datechip svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  fill: none;
+}
+.act {
+  display: flex;
+  gap: 8px;
+}
+.btn {
+  appearance: none;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 10px 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn.ok {
+  background: linear-gradient(150deg, var(--green), var(--teal));
+  color: #06241b;
+  border-color: transparent;
+}
+.btn.no {
+  color: #fcaaaa;
+}
+.btn.primary {
+  background: linear-gradient(150deg, var(--teal), var(--blue));
+  color: #06121f;
+  border-color: transparent;
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  font-size: 15px;
+}
+.btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  fill: none;
+}
+.empty {
+  text-align: center;
+  color: var(--ink3);
+  font-size: 13.5px;
+  padding: 26px 0;
+}
 
-      /* ---- teaser card ---- */
-      .teaser {
-        padding: 20px;
-        position: relative;
-        overflow: hidden;
-      }
-      .teaser .soonbadge {
-        position: absolute;
-        inset-block-start: 14px;
-        inset-inline-end: 14px;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 9px;
-        background: rgba(251, 191, 36, 0.18);
-        color: #fcd577;
-      }
-      .teaser h3 {
-        margin: 0 0 8px;
-        font-size: 15.5px;
-        font-weight: 600;
-      }
-      .teaser p {
-        margin: 0 0 16px;
-        font-size: 13px;
-        color: var(--ink2);
-        line-height: 1.55;
-        max-width: 92%;
-      }
-      .teaser-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      }
+/* ---- teaser card ---- */
+.teaser {
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.teaser .soonbadge {
+  position: absolute;
+  inset-block-start: 14px;
+  inset-inline-end: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9px;
+  background: rgba(251, 191, 36, 0.18);
+  color: #fcd577;
+}
+.teaser h3 {
+  margin: 0 0 8px;
+  font-size: 15.5px;
+  font-weight: 600;
+}
+.teaser p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.55;
+  max-width: 92%;
+}
+.teaser-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
 
-      /* ---- modal ---- */
-      .overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 60;
-        background: rgba(6, 9, 18, 0.66);
-        -webkit-backdrop-filter: blur(6px);
-        backdrop-filter: blur(6px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 18px;
-        opacity: 0;
-        pointer-events: none;
-        transition: 0.22s;
-      }
-      .overlay.show {
-        opacity: 1;
-        pointer-events: auto;
-      }
-      .modal {
-        width: 100%;
-        max-width: 540px;
-        max-height: 90vh;
-        overflow-y: auto;
-        padding: 22px;
-        transform: translateY(16px) scale(0.98);
-        transition: 0.22s;
-      }
-      .overlay.show .modal {
-        transform: none;
-      }
-      .modal .mhead {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 10px;
-        margin-bottom: 16px;
-      }
-      .modal .mtitle {
-        font-size: 18px;
-        font-weight: 700;
-      }
-      .modal .msub {
-        font-size: 13px;
-        color: var(--ink2);
-        margin-top: 3px;
-      }
-      .modal .mx {
-        cursor: pointer;
-        color: var(--ink3);
-        font-size: 24px;
-        line-height: 1;
-        padding: 0 4px;
-        flex: none;
-      }
-      .cover-banner {
-        padding: 14px 16px;
-        border-radius: var(--radius-sm);
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        line-height: 1.4;
-      }
-      .cover-banner svg {
-        width: 22px;
-        height: 22px;
-        stroke-width: 2.4;
-        fill: none;
-        flex: none;
-      }
-      .cover-banner.green {
-        background: rgba(52, 211, 153, 0.14);
-        border: 1px solid rgba(52, 211, 153, 0.3);
-        color: #86e9c4;
-      }
-      .cover-banner.green svg {
-        stroke: var(--green);
-      }
-      .cover-banner.orange {
-        background: rgba(251, 191, 36, 0.14);
-        border: 1px solid rgba(251, 191, 36, 0.3);
-        color: #fcd577;
-      }
-      .cover-banner.orange svg {
-        stroke: var(--amber);
-      }
-      .cover-banner.red {
-        background: rgba(248, 113, 113, 0.16);
-        border: 1px solid rgba(248, 113, 113, 0.35);
-        color: #fcaaaa;
-      }
-      .cover-banner.red svg {
-        stroke: var(--red);
-      }
-      .mkpis {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 18px;
-      }
-      .mkpi {
-        padding: 14px 16px;
-        border-radius: var(--radius-sm);
-        background: var(--glass2);
-        border: 1px solid var(--stroke2);
-      }
-      .mkpi .lab {
-        font-size: 12px;
-        color: var(--ink2);
-        margin-bottom: 6px;
-      }
-      .mkpi .num {
-        font-size: 28px;
-        font-weight: 700;
-        line-height: 1;
-      }
-      .msec-title {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--ink2);
-        margin: 0 0 10px;
-      }
-      .mlist {
-        max-height: 168px;
-        overflow-y: auto;
-        margin-bottom: 18px;
-      }
-      .mfoot {
-        display: flex;
-        gap: 10px;
-        margin-top: 4px;
-      }
-      .mfoot .btn {
-        flex: 1;
-        justify-content: center;
-      }
+/* ---- modal ---- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(6, 9, 18, 0.66);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.22s;
+}
+.overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal {
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 22px;
+  transform: translateY(16px) scale(0.98);
+  transition: 0.22s;
+}
+.overlay.show .modal {
+  transform: none;
+}
+.modal .mhead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.modal .mtitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+.modal .msub {
+  font-size: 13px;
+  color: var(--ink2);
+  margin-top: 3px;
+}
+.modal .mx {
+  cursor: pointer;
+  color: var(--ink3);
+  font-size: 24px;
+  line-height: 1;
+  padding: 0 4px;
+  flex: none;
+}
+.cover-banner {
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  line-height: 1.4;
+}
+.cover-banner svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.4;
+  fill: none;
+  flex: none;
+}
+.cover-banner.green {
+  background: rgba(52, 211, 153, 0.14);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #86e9c4;
+}
+.cover-banner.green svg {
+  stroke: var(--green);
+}
+.cover-banner.orange {
+  background: rgba(251, 191, 36, 0.14);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: #fcd577;
+}
+.cover-banner.orange svg {
+  stroke: var(--amber);
+}
+.cover-banner.red {
+  background: rgba(248, 113, 113, 0.16);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #fcaaaa;
+}
+.cover-banner.red svg {
+  stroke: var(--red);
+}
+.mkpis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.mkpi {
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--glass2);
+  border: 1px solid var(--stroke2);
+}
+.mkpi .lab {
+  font-size: 12px;
+  color: var(--ink2);
+  margin-bottom: 6px;
+}
+.mkpi .num {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+.msec-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink2);
+  margin: 0 0 10px;
+}
+.mlist {
+  max-height: 168px;
+  overflow-y: auto;
+  margin-bottom: 18px;
+}
+.mfoot {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.mfoot .btn {
+  flex: 1;
+  justify-content: center;
+}
 
-      #toast {
-        position: fixed;
-        inset-block-end: 26px;
-        inset-inline: 0;
-        display: flex;
-        justify-content: center;
-        pointer-events: none;
-        z-index: 70;
-        padding: 0 16px;
-      }
-      #toast .t {
-        background: rgba(20, 26, 44, 0.94);
-        -webkit-backdrop-filter: blur(14px);
-        backdrop-filter: blur(14px);
-        border: 1px solid var(--stroke);
-        color: var(--ink);
-        padding: 13px 22px;
-        border-radius: 15px;
-        font-size: 14px;
-        font-weight: 600;
-        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
-        opacity: 0;
-        transform: translateY(14px);
-        transition: 0.3s;
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        text-align: center;
-      }
-      #toast .t.show {
-        opacity: 1;
-        transform: none;
-      }
-      #toast .t svg {
-        width: 17px;
-        height: 17px;
-        stroke: var(--green);
-        stroke-width: 2.6;
-        fill: none;
-        flex: none;
-      }
-      .pulse {
-        animation: pulse 0.8s ease;
-      }
-      @keyframes pulse {
-        0% {
-          color: var(--amber);
-        }
-        50% {
-          color: #fff;
-          text-shadow: 0 0 22px var(--amber);
-        }
-        100% {
-        }
-      }
+#toast {
+  position: fixed;
+  inset-block-end: 26px;
+  inset-inline: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 70;
+  padding: 0 16px;
+}
+#toast .t {
+  background: rgba(20, 26, 44, 0.94);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--stroke);
+  color: var(--ink);
+  padding: 13px 22px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-align: center;
+}
+#toast .t.show {
+  opacity: 1;
+  transform: none;
+}
+#toast .t svg {
+  width: 17px;
+  height: 17px;
+  stroke: var(--green);
+  stroke-width: 2.6;
+  fill: none;
+  flex: none;
+}
+.pulse {
+  animation: pulse 0.8s ease;
+}
+@keyframes pulse {
+  0% {
+    color: var(--amber);
+  }
+  50% {
+    color: #fff;
+    text-shadow: 0 0 22px var(--amber);
+  }
+  100% {
+  }
+}
 
-      /* ---- doctor mobile ---- */
-      .phone {
-        max-width: 390px;
-        margin: 0 auto;
-        border-radius: 38px;
-        padding: 14px;
-        background: linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
-        border: 1px solid var(--stroke);
-        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
-      }
-      .screen {
-        border-radius: 26px;
-        background: rgba(10, 14, 28, 0.55);
-        padding: 20px 17px;
-        border: 1px solid var(--stroke2);
-      }
-      .hello {
-        font-size: 18px;
-        font-weight: 700;
-        margin-bottom: 3px;
-      }
-      .sub2 {
-        font-size: 13px;
-        color: var(--ink2);
-        margin-bottom: 16px;
-      }
-      .status-card {
-        padding: 15px 16px;
-        border-radius: 16px;
-        background: rgba(52, 211, 153, 0.12);
-        border: 1px solid rgba(52, 211, 153, 0.25);
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        margin-bottom: 18px;
-      }
-      .status-card .ring {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        background: rgba(52, 211, 153, 0.2);
-        flex: none;
-      }
-      .status-card .ring svg {
-        width: 18px;
-        height: 18px;
-        stroke: var(--green);
-        stroke-width: 2.6;
-        fill: none;
-      }
-      label.fl {
-        display: block;
-        font-size: 13px;
-        color: var(--ink2);
-        margin: 13px 0 6px;
-      }
-      select,
-      input[type="text"] {
-        width: 100%;
-        font: inherit;
-        font-size: 16px;
-        color: var(--ink);
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid var(--stroke);
-        border-radius: 12px;
-        padding: 12px 13px;
-        outline: none;
-      }
-      select option {
-        color: #000;
-      }
-      .dates {
-        display: flex;
-        gap: 9px;
-      }
-      .dates > div {
-        flex: 1;
-      }
-      .mine {
-        margin-top: 18px;
-      }
-      .mine .row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        padding: 11px 0;
-        border-bottom: 1px solid var(--stroke2);
-        font-size: 13px;
-      }
-      .mine .row:last-child {
-        border-bottom: 0;
-      }
+/* ---- doctor mobile ---- */
+.phone {
+  max-width: 390px;
+  margin: 0 auto;
+  border-radius: 38px;
+  padding: 14px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--stroke);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+}
+.screen {
+  border-radius: 26px;
+  background: rgba(10, 14, 28, 0.55);
+  padding: 20px 17px;
+  border: 1px solid var(--stroke2);
+}
+.hello {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.sub2 {
+  font-size: 13px;
+  color: var(--ink2);
+  margin-bottom: 16px;
+}
+.status-card {
+  padding: 15px 16px;
+  border-radius: 16px;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 18px;
+}
+.status-card .ring {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(52, 211, 153, 0.2);
+  flex: none;
+}
+.status-card .ring svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--green);
+  stroke-width: 2.6;
+  fill: none;
+}
+label.fl {
+  display: block;
+  font-size: 13px;
+  color: var(--ink2);
+  margin: 13px 0 6px;
+}
+select,
+input[type="text"] {
+  width: 100%;
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  padding: 12px 13px;
+  outline: none;
+}
+select option {
+  color: #000;
+}
+.dates {
+  display: flex;
+  gap: 9px;
+}
+.dates > div {
+  flex: 1;
+}
+.mine {
+  margin-top: 18px;
+}
+.mine .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--stroke2);
+  font-size: 13px;
+}
+.mine .row:last-child {
+  border-bottom: 0;
+}
 
-      @media (max-width: 980px) {
-        .console-grid {
-          grid-template-columns: 1fr;
-        }
-        .two {
-          grid-template-columns: 1fr;
-        }
-      }
-      @media (max-width: 640px) {
-        .wrap {
-          padding: max(14px, env(safe-area-inset-top)) 13px 50px;
-        }
-        header {
-          gap: 11px;
-        }
-        .brand {
-          font-size: 15.5px;
-          width: 100%;
-        }
-        .seg {
-          width: 100%;
-        }
-        .seg button {
-          flex: 1;
-          padding: 11px 6px;
-          font-size: 13px;
-        }
-        .date {
-          display: none;
-        }
-        .controlbar {
-          gap: 10px;
-        }
-        .ctl-group {
-          width: 100%;
-          justify-content: space-between;
-        }
-        .rolepill {
-          margin-inline-start: 0;
-          width: 100%;
-          justify-content: space-between;
-        }
-        .period .lab {
-          min-width: 90px;
-          font-size: 13px;
-        }
-        .kpis {
-          grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
-        }
-        .kpi {
-          padding: 15px 16px;
-        }
-        .kpi .num {
-          font-size: 27px;
-        }
-        .kpi .lab {
-          font-size: 12px;
-          margin-bottom: 7px;
-        }
-        .panel {
-          padding: 17px 16px;
-        }
-        .hint {
-          font-size: 12.5px;
-          padding: 11px 13px;
-        }
-        .phone {
-          max-width: 100%;
-          padding: 0;
-          border: 0;
-          background: none;
-          box-shadow: none;
-        }
-        .screen {
-          border-radius: 20px;
-          padding: 18px 15px;
-        }
-        .act .btn {
-          padding: 10px 13px;
-        }
-        .mkpis {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-      @media (max-width: 380px) {
-        .kpis {
-          grid-template-columns: 1fr;
-        }
-      }
+@media (max-width: 980px) {
+  .console-grid {
+    grid-template-columns: 1fr;
+  }
+  .two {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .wrap {
+    padding: max(14px, env(safe-area-inset-top)) 13px 50px;
+  }
+  header {
+    gap: 11px;
+  }
+  .brand {
+    font-size: 15.5px;
+    width: 100%;
+  }
+  .seg {
+    width: 100%;
+  }
+  .seg button {
+    flex: 1;
+    padding: 11px 6px;
+    font-size: 13px;
+  }
+  .date {
+    display: none;
+  }
+  .controlbar {
+    gap: 10px;
+  }
+  .ctl-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .rolepill {
+    margin-inline-start: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .period .lab {
+    min-width: 90px;
+    font-size: 13px;
+  }
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .kpi {
+    padding: 15px 16px;
+  }
+  .kpi .num {
+    font-size: 27px;
+  }
+  .kpi .lab {
+    font-size: 12px;
+    margin-bottom: 7px;
+  }
+  .panel {
+    padding: 17px 16px;
+  }
+  .hint {
+    font-size: 12.5px;
+    padding: 11px 13px;
+  }
+  .phone {
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .screen {
+    border-radius: 20px;
+    padding: 18px 15px;
+  }
+  .act .btn {
+    padding: 10px 13px;
+  }
+  .mkpis {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 380px) {
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+}
 
-      /* ============================================================
+/* ============================================================
          v3 — רכיבים חדשים (טבלאות + פרופיל + כרטיסים).
          מועתק-בסגנון מ-v2 (אותם tokens) · נוסף בסבב v3 בלבד.
          ============================================================ */
-      .card {
-        padding: 16px 16px 18px;
-        border-radius: var(--radius);
-      }
-      .card.glass {
-        background: var(--glass);
-        border: 1px solid var(--stroke);
-        -webkit-backdrop-filter: blur(24px) saturate(150%);
-        backdrop-filter: blur(24px) saturate(150%);
-      }
-      .card h3 {
-        margin: 0 0 6px;
-        font-size: 15px;
-        font-weight: 600;
-      }
-      .card h3 .sub {
-        font-size: 12.5px;
-        font-weight: 500;
-        color: var(--ink2);
-        margin-inline-start: 6px;
-      }
+.card {
+  padding: 16px 16px 18px;
+  border-radius: var(--radius);
+}
+.card.glass {
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(150%);
+}
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.card h3 .sub {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink2);
+  margin-inline-start: 6px;
+}
 
-      /* ----- פס-סיכום-כיסוי (לשונית-טבלאות) ----- */
-      .cover-bar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 22px;
-        padding: 14px 18px;
-        border-radius: var(--radius);
-        margin-bottom: 16px;
-        border: 1px solid var(--stroke);
-        background: var(--glass);
-      }
-      .cover-bar.green {
-        border-color: rgba(52, 211, 153, 0.4);
-      }
-      .cover-bar.orange {
-        border-color: rgba(251, 191, 36, 0.4);
-      }
-      .cover-bar.red {
-        border-color: rgba(248, 113, 113, 0.45);
-      }
-      .cb-item {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-      .cb-num {
-        font-size: 22px;
-        font-weight: 700;
-      }
-      .cb-lab {
-        font-size: 12px;
-        color: var(--ink2);
-      }
-      .cb-risk {
-        flex-direction: row;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .cb-tags {
-        display: inline-flex;
-        flex-wrap: wrap;
-        gap: 4px;
-      }
+/* ----- פס-סיכום-כיסוי (לשונית-טבלאות) ----- */
+.cover-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 22px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  border: 1px solid var(--stroke);
+  background: var(--glass);
+}
+.cover-bar.green {
+  border-color: rgba(52, 211, 153, 0.4);
+}
+.cover-bar.orange {
+  border-color: rgba(251, 191, 36, 0.4);
+}
+.cover-bar.red {
+  border-color: rgba(248, 113, 113, 0.45);
+}
+.cb-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cb-num {
+  font-size: 22px;
+  font-weight: 700;
+}
+.cb-lab {
+  font-size: 12px;
+  color: var(--ink2);
+}
+.cb-risk {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.cb-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
 
-      /* ----- טבלה ----- */
-      .tbl-scroll {
-        margin-top: 12px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-      table.tbl {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-        white-space: nowrap;
-      }
-      table.tbl th,
-      table.tbl td {
-        padding: 9px 11px;
-        text-align: right;
-        border-bottom: 1px solid var(--stroke2);
-      }
-      table.tbl th {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--ink2);
-        position: sticky;
-        top: 0;
-        background: rgba(13, 18, 36, 0.92);
-        -webkit-backdrop-filter: blur(8px);
-        backdrop-filter: blur(8px);
-      }
-      table.tbl th.th-sort {
-        cursor: pointer;
-        user-select: none;
-      }
-      table.tbl th.th-sort:hover {
-        color: var(--ink);
-      }
-      table.tbl tbody tr:hover {
-        background: var(--glass2);
-      }
-      .c-name .lnk {
-        cursor: pointer;
-        font-weight: 600;
-        border-bottom: 1px dashed var(--stroke);
-      }
-      .c-name .lnk:hover {
-        color: var(--blue);
-        border-color: var(--blue);
-      }
-      .c-dim {
-        color: var(--ink2);
-      }
-      .c-disabled {
-        opacity: 0.4;
-      }
-      .c-warn {
-        color: var(--red);
-        font-weight: 600;
-        font-size: 12px;
-      }
-      .row-warn {
-        background: rgba(248, 113, 113, 0.07);
-      }
-      .cell-sel {
-        width: auto;
-        min-width: 110px;
-        padding: 6px 9px;
-        border-radius: 9px;
-        font-family: inherit;
-        font-size: 12.5px;
-        color: var(--ink);
-        background: var(--glass2);
-        border: 1px solid var(--stroke2);
-        outline: none;
-        direction: rtl;
-      }
-      .cell-sel:focus {
-        border-color: var(--blue);
-      }
-      .chip-demo {
-        font-size: 9.5px;
-        font-weight: 700;
-        padding: 1px 5px;
-        border-radius: 6px;
-        margin-inline-start: 4px;
-        color: var(--amber);
-        background: rgba(251, 191, 36, 0.14);
-      }
+/* ----- טבלה ----- */
+.tbl-scroll {
+  margin-top: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  white-space: nowrap;
+}
+table.tbl th,
+table.tbl td {
+  padding: 9px 11px;
+  text-align: right;
+  border-bottom: 1px solid var(--stroke2);
+}
+table.tbl th {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink2);
+  position: sticky;
+  top: 0;
+  background: rgba(13, 18, 36, 0.92);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+table.tbl th.th-sort {
+  cursor: pointer;
+  user-select: none;
+}
+table.tbl th.th-sort:hover {
+  color: var(--ink);
+}
+table.tbl tbody tr:hover {
+  background: var(--glass2);
+}
+.c-name .lnk {
+  cursor: pointer;
+  font-weight: 600;
+  border-bottom: 1px dashed var(--stroke);
+}
+.c-name .lnk:hover {
+  color: var(--blue);
+  border-color: var(--blue);
+}
+.c-dim {
+  color: var(--ink2);
+}
+.c-disabled {
+  opacity: 0.4;
+}
+.c-warn {
+  color: var(--red);
+  font-weight: 600;
+  font-size: 12px;
+}
+.row-warn {
+  background: rgba(248, 113, 113, 0.07);
+}
+.cell-sel {
+  width: auto;
+  min-width: 110px;
+  padding: 6px 9px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--ink);
+  background: var(--glass2);
+  border: 1px solid var(--stroke2);
+  outline: none;
+  direction: rtl;
+}
+.cell-sel:focus {
+  border-color: var(--blue);
+}
+.chip-demo {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 6px;
+  margin-inline-start: 4px;
+  color: var(--amber);
+  background: rgba(251, 191, 36, 0.14);
+}
+
+/* ============ SCHEDULING MODULE ============ */
+.sched-banner {
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border: 1px dashed var(--amber);
+  color: var(--amber);
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.sched-scroll {
+  max-height: 62vh;
+  overflow: auto;
+}
+table.sched-matrix th,
+table.sched-matrix td {
+  white-space: nowrap;
+  text-align: center;
+  font-size: 12.5px;
+  padding: 4px 8px;
+}
+/* two-axis sticky layering: header above column, corner above both */
+table.sched-matrix thead th {
+  z-index: 3;
+}
+.sched-daycol {
+  position: sticky;
+  inset-inline-start: 0;
+  background: rgba(20, 28, 48, 0.95);
+  font-weight: 600;
+  text-align: start !important;
+  z-index: 2;
+}
+table.sched-matrix thead th.sched-daycol {
+  z-index: 4;
+}
+.sched-cell {
+  cursor: pointer;
+  border-radius: 8px;
+}
+.sched-cell:hover {
+  outline: 1px solid var(--blue);
+}
+.sched-open {
+  color: var(--ink2);
+  font-style: italic;
+}
+.sched-solver {
+  color: var(--green);
+}
+.sched-warn {
+  color: var(--red) !important;
+}
+.sched-none {
+  color: rgba(255, 255, 255, 0.18);
+}
+.meta.sched-chip-note {
+  margin: 6px 0 10px;
+}
+.sched-day {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.sched-slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.sched-code {
+  min-inline-size: 96px;
+  font-weight: 600;
+}
+.sched-name {
+  min-inline-size: 120px;
+}
+.sched-name.is-solver {
+  color: var(--green);
+}
+.sched-name.is-manual {
+  color: var(--ink);
+}
+.sched-name.is-open {
+  color: var(--ink2);
+  font-style: italic;
+}
+.sched-name.is-warn {
+  color: var(--red);
+}
+.sched-why {
+  margin-inline-start: auto;
+  background: transparent;
+  border: 1px solid var(--stroke);
+  color: var(--ink);
+  border-radius: 10px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+.sched-why:hover {
+  border-color: var(--blue);
+}
+/* funnel — reuses .overlay/.overlay.show + .modal + .mx (no display override) */
+.funnel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.funnel-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  max-block-size: 72vh;
+  overflow: auto;
+}
+.funnel-stage {
+  inline-size: min(420px, 86vw);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 8px 14px;
+  text-align: center;
+}
+.funnel-stage.fn-final {
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid var(--green);
+}
+.funnel-arrow {
+  color: var(--ink2);
+  font-size: 12px;
+}
+.fn-num {
+  margin-inline-end: 6px;
+}
+.fn-count {
+  font-size: 20px;
+  font-weight: 700;
+  margin-inline-end: 8px;
+}
+.fn-lab {
+  font-size: 13px;
+}
+.fn-drop {
+  font-size: 11.5px;
+  color: var(--ink2);
+  margin-top: 3px;
+}
+.fn-drop i {
+  color: var(--amber);
+  font-style: normal;
+}
+.fn-drop.fn-none {
+  opacity: 0.5;
+}
+.funnel-result {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+.funnel-result .fn-check {
+  color: var(--green);
+  font-size: 20px;
+}
+.funnel-result.fn-empty {
+  color: var(--red);
+}
+.funnel-result .btn {
+  display: block;
+  margin: 10px auto 0;
+}
+/* needs / rules placeholders */
+.rule-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.rule-ph {
+  border: 1px dashed rgba(251, 191, 36, 0.6);
+  color: var(--amber);
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+}
+.needs-list {
+  margin: 6px 18px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.sched-demo-note {
+  color: var(--amber);
+  font-size: 11.5px;
+  margin: 4px 0 8px;
+  opacity: 0.9;
+}
+
+/* ============================================================
+   v3 ליטוש (2026-06-25) — הערות-בוס: לוח-חודשי · תחנות-חוץ · ייצוא
+   ============================================================ */
+
+/* ----- סרגל-ייצוא (הערת-בוס #4) ----- */
+.export-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+/* ----- לוח-חודשי (הערת-בוס #1) ----- */
+.cal-mini {
+  cursor: pointer;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink3);
+  padding-bottom: 2px;
+}
+.cal-cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--stroke2);
+}
+.cal-blank {
+  background: transparent;
+  border: 0;
+}
+.cal-d {
+  font-size: 10px;
+  color: var(--ink3);
+}
+.cal-n {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+}
+.cal-green {
+  background: rgba(52, 211, 153, 0.16);
+  border-color: rgba(52, 211, 153, 0.3);
+}
+.cal-green .cal-n {
+  color: #86e9c4;
+}
+.cal-orange {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+.cal-orange .cal-n {
+  color: #fcd577;
+}
+.cal-red {
+  background: rgba(248, 113, 113, 0.16);
+  border-color: rgba(248, 113, 113, 0.35);
+}
+.cal-red .cal-n {
+  color: #fcaaaa;
+}
+.cal-today {
+  outline: 2px solid var(--blue);
+  outline-offset: 0;
+}
+.modal.cal-modal {
+  max-width: 680px;
+}
+.cal-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.cal-big .cal-grid {
+  gap: 7px;
+}
+.cal-big .cal-cell {
+  cursor: pointer;
+  transition: 0.14s;
+}
+.cal-big .cal-cell:hover {
+  outline: 1px solid var(--blue);
+  transform: scale(1.05);
+}
+.cal-big .cal-n {
+  font-size: 17px;
+}
+.cal-legend {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--ink2);
+}
+.cal-legend i.cal-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  margin-inline-end: 4px;
+  vertical-align: middle;
+}
+.cal-dot.cal-green {
+  background: var(--green);
+}
+.cal-dot.cal-orange {
+  background: var(--amber);
+}
+.cal-dot.cal-red {
+  background: var(--red);
+}
+
+/* ----- תחנות-חוץ (הערת-בוס #2+#3) ----- */
+.stations-bar {
+  gap: 16px;
+}
+.st-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+}
+.stchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  padding: 7px 12px;
+  border-radius: 11px;
+  border: 1px solid var(--stroke2);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink2);
+  transition: 0.18s;
+}
+.stchip.off {
+  cursor: pointer;
+}
+.stchip.off:hover {
+  color: var(--ink);
+  border-color: var(--stroke);
+}
+.stchip.red {
+  background: rgba(248, 113, 113, 0.14);
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #fcaaaa;
+}
+.stchip.green {
+  background: rgba(52, 211, 153, 0.14);
+  border-color: rgba(52, 211, 153, 0.4);
+  color: #86e9c4;
+}
+.stchip-lab {
+  font-weight: 600;
+}
+.stchip-off {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0 2px;
+  opacity: 0.7;
+}
+.stchip-off:hover {
+  opacity: 1;
+}
+.stchip-sel {
+  width: auto;
+  font: inherit;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--glass2);
+  border: 1px solid var(--stroke2);
+  border-radius: 8px;
+  padding: 4px 7px;
+  outline: none;
+  max-width: 140px;
+}
+.stchip-sel:focus {
+  border-color: var(--blue);
+}
+
+/* ----- דו"ח-הדפסה (הערת-בוס #4: PDF) ----- */
+#printArea {
+  display: none;
+  color: #111;
+  direction: rtl;
+  font-family: -apple-system, "Segoe UI", "Heebo", Arial, sans-serif;
+}
+@media print {
+  body {
+    background: #fff !important;
+  }
+  body.printing > * {
+    display: none !important;
+  }
+  body.printing > #printArea {
+    display: block !important;
+  }
+}
+#printArea h1 {
+  font-size: 20px;
+  margin: 0 0 6px;
+}
+#printArea .pr-sub {
+  font-size: 13px;
+  color: #444;
+  margin-bottom: 14px;
+}
+#printArea .pr-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+#printArea .pr-tbl th,
+#printArea .pr-tbl td {
+  border: 1px solid #bbb;
+  padding: 5px 8px;
+  text-align: right;
+}
+#printArea .pr-tbl th {
+  background: #eee;
+  font-weight: 700;
+}
+#printArea .pr-foot {
+  margin-top: 12px;
+  font-size: 11px;
+  color: #777;
+}
 
 </style>
   </head>
@@ -1278,7 +1728,7 @@
           <button data-v="console" class="active">נוכחות <span class="dot" id="segDot">0</span></button>
           <button data-v="tables">טבלאות</button>
           <button data-v="doctor">רופא</button>
-          <button data-v="schedule" disabled title="בקרוב">שיבוץ <span class="soon">בקרוב</span></button>
+          <button data-v="schedule">שיבוץ</button>
         </div>
         <div class="date">יום שני · 22.6.2026</div>
       </header>
@@ -1294,6 +1744,24 @@
 
       <!-- ============== CONSOLE (1:1 מ-v2 + פאנל שיבוץ-היום) ============== -->
       <section id="console">
+        <!-- 🆕 סרגל-ייצוא (הערת-בוס #4): 2 כפתורים בראש הדף -->
+        <div class="export-bar">
+          <button class="btn" id="btnExportPdf">
+            <svg viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 2v6h6" />
+            </svg>
+            ייצא PDF
+          </button>
+          <button class="btn" id="btnExportXls">
+            <svg viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 2v6h6" />
+              <path d="m9.5 12.5 5 5M14.5 12.5l-5 5" />
+            </svg>
+            ייצא Excel
+          </button>
+        </div>
         <!-- control bar -->
         <div class="controlbar glass">
           <div class="ctl-group">
@@ -1372,10 +1840,8 @@
             </div>
 
             <div class="grid two">
-              <div class="panel glass">
-                <h3 id="fcTitle">תחזית <span class="sub" id="fcSub">נוכחים צפויים</span></h3>
-                <div class="fc" id="forecast"></div>
-              </div>
+              <!-- 🆕 לוח-חודשי (Att.calendar.renderMini) — מחליף את גרף-התחזית (הערת-בוס #1) -->
+              <div class="panel glass" id="miniCalHost"></div>
               <div class="panel glass">
                 <h3 id="absTitle">חסרים <span class="sub" id="absCount">—</span></h3>
                 <div id="absTable"></div>
@@ -1436,6 +1902,9 @@
         <!-- פס-סיכום-כיסוי-חדרים -->
         <div class="glass cover-bar" id="tblCover"></div>
 
+        <!-- 🆕 פס תחנות-חוץ + אדום/ירוק (הערת-בוס #2+#3) -->
+        <div class="glass cover-bar stations-bar" id="tblStations"></div>
+
         <!-- בורר-עמודות (צ'יפים) -->
         <div class="panel glass">
           <h3>טבלת נוכחות ושיבוץ <span class="sub" id="tblCount">—</span></h3>
@@ -1456,6 +1925,42 @@
       <!-- ============== PROFILE (🆕 drill-in, hidden) ============== -->
       <section id="profile" hidden>
         <div id="profileBody"></div>
+      </section>
+
+      <!-- ============== SCHEDULE (🆕 לשונית-שיבוץ) ============== -->
+      <section id="schedule" hidden>
+        <div class="glass sched-banner" id="schedBanner">
+          ⚠ נתוני-דמו · הקודים והחוקים יוחלפו בנתוני-המחלקה (עידן יביא)
+        </div>
+        <div class="controlbar glass">
+          <div class="ctl-group">
+            <span class="ctl-lab">מצב</span>
+            <div class="miniseg" id="schedModeSeg">
+              <button data-smode="month" class="on">חודשי</button>
+              <button data-smode="day">יומי</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <span class="ctl-lab">לוח</span>
+            <div class="miniseg" id="schedCatSeg">
+              <button data-scat="torenut" class="on">תורנות</button>
+              <button data-scat="konanut">כוננות</button>
+              <button data-scat="session">ססיות</button>
+            </div>
+          </div>
+          <div class="ctl-group" id="schedDayGroup" hidden>
+            <div class="period" id="schedDayPicker">
+              <button data-sstep="-1" aria-label="הקודם">‹</button>
+              <span class="lab" id="schedDayLab">—</span>
+              <button data-sstep="1" aria-label="הבא">›</button>
+            </div>
+          </div>
+          <div class="ctl-group" style="flex: 1; justify-content: flex-end">
+            <button class="btn primary" id="schedRunBtn">⚡ הרץ שיבוץ</button>
+          </div>
+        </div>
+        <div class="panel glass" id="schedBody"></div>
+        <div class="panel glass" id="schedNeeds"></div>
       </section>
 
       <!-- ============== DOCTOR (mobile, 1:1 מ-v2) ============== -->
@@ -1508,6 +2013,16 @@
     <!-- day-coverage modal -->
     <div class="overlay" id="dayOverlay" onclick="if (event.target === this) closeDayReport();">
       <div class="modal glass" id="dayReport"></div>
+    </div>
+
+    <!-- scheduling constraint-funnel modal (backdrop-close via delegation in app.js) -->
+    <div class="overlay" id="funnelOverlay">
+      <div class="modal glass" id="funnelModal"></div>
+    </div>
+
+    <!-- 🆕 monthly-calendar modal (הערת-בוס #1; backdrop/close via delegation in app.js) -->
+    <div class="overlay" id="calOverlay">
+      <div class="modal glass cal-modal" id="calModal"></div>
     </div>
 
     <div id="toast"></div>
@@ -2053,7 +2568,21 @@ function seriesForDoctor(id, mode, anchor) {
 /* ---------- 8. OR scheduling (PRNG ייעודי לפי dm) ---------- */
 // חדרי-ניתוח = ROOMS בדיוק (אותו מערך). שיבוץ מחוץ-לחדר + תחומי-ניתוח.
 const OR_ROOMS = ROOMS;
-const OUTSIDE_PLACES = ["ליס", 'טפנ"צ', "NORA", "מרפאה"];
+// תחנות-חוץ (מחוץ-לחדר-ניתוח). רשימה מאושרת ע"י עידן 2026-06-25 (דמו; הרשימה
+// האמיתית של המחלקה תיכנס ב-production). 'טפנ"צ' מכיל מרכאות → escaping בצד-התצוגה.
+const OUTSIDE_PLACES = [
+  "NORA",
+  "אנגיו",
+  "MRI",
+  "ECT",
+  "גסטרו",
+  "גסטרו ילדים",
+  "צוות חלומות",
+  "מרפאת הרדמה",
+  "מרפאת ילדים",
+  "ליס",
+  'טפנ"צ',
+];
 const SURGERY_DOMAINS = ["כירורגיה כללית", "נוירוכירורגיה", "אורתופדיה", "כלי-דם", "אורולוגיה", "גינקולוגיה"];
 
 // hash יציב מ-dm → seed ל-PRNG-ייעודי. שונה מ-rnd הגלובלי כדי לא לזהם את ה-roster.
@@ -2086,8 +2615,9 @@ function seedAssignments() {
   const out = [];
   if (present[0]) out.push({ doctorId: present[0].id, dm, kind: "room", room: OR_ROOMS[0], source: "manual" });
   if (present[1]) out.push({ doctorId: present[1].id, dm, kind: "room", room: OR_ROOMS[1], source: "manual" });
-  if (present[2])
-    out.push({ doctorId: present[2].id, dm, kind: "outside", place: OUTSIDE_PLACES[0], source: "manual" });
+  // 2 תחנות-חוץ מאוישות (NORA + גסטרו) → הדגמת "ירוק"; שאר התחנות-הפעילות יישארו "אדום".
+  if (present[2]) out.push({ doctorId: present[2].id, dm, kind: "outside", place: "NORA", source: "manual" });
+  if (present[3]) out.push({ doctorId: present[3].id, dm, kind: "outside", place: "גסטרו", source: "manual" });
   return out;
 }
 // שיבוץ-היום לרופא: {kind, room?, place?, source} | null.
@@ -2103,13 +2633,52 @@ function assignToRoom(id, dm, room) {
   ];
 }
 function assignOutside(id, dm, place) {
+  // אימוטבילי + רופא-אחד-לתחנה: מסירים את השיבוץ-הקודם של הרופא, וגם תופס-קודם
+  // של אותה תחנה (place) באותו יום — כך ששיבוץ דרך עמודת-הטבלה ודרך פאנל-התחנות עקביים.
   state.assignments = [
-    ...state.assignments.filter((a) => !(a.doctorId === id && a.dm === dm)),
+    ...state.assignments.filter(
+      (a) => !(a.doctorId === id && a.dm === dm) && !(a.dm === dm && a.kind === "outside" && a.place === place),
+    ),
     { doctorId: id, dm, kind: "outside", place, source: "manual" },
   ];
 }
 function clearAssignment(id, dm) {
   state.assignments = state.assignments.filter((a) => !(a.doctorId === id && a.dm === dm));
+}
+
+/* ---------- 8c. תחנות-חוץ: פעילוֹת-היום + כיסוי אדום/ירוק (הערת-בוס #2+#3) ----------
+   יושב מעל state.assignments הקיים (kind:'outside'). אדום=פעילה-לא-מאוישת · ירוק=מאוישת.
+   "פעילות-היום" = state.stationsActive פר-dm (ברירת-מחדל DEFAULT_ACTIVE). אימוטבילי. */
+const DEFAULT_ACTIVE_STATIONS = ["NORA", "אנגיו", "ECT", "גסטרו", "מרפאת הרדמה"];
+state.stationsActive = {}; // { [dm]: [station,...] }
+function stationsActiveFor(dm) {
+  return state.stationsActive[dm] ? state.stationsActive[dm].slice() : DEFAULT_ACTIVE_STATIONS.slice();
+}
+function isStationActive(dm, station) {
+  return stationsActiveFor(dm).includes(station);
+}
+function toggleStation(dm, station) {
+  const cur = stationsActiveFor(dm);
+  // שמירה על סדר-קנוני (לפי OUTSIDE_PLACES) כדי שקוראים-עתידיים שמסתמכים על הסדר לא יישברו.
+  const next = cur.includes(station)
+    ? cur.filter((s) => s !== station)
+    : OUTSIDE_PLACES.filter((s) => s === station || cur.includes(s));
+  state.stationsActive = { ...state.stationsActive, [dm]: next };
+}
+// מי משובץ לתחנה (place) ביום — מתוך assignments kind:'outside'. מחזיר doctor|null.
+function doctorForStation(station, dm) {
+  const a = state.assignments.find((x) => x.dm === dm && x.kind === "outside" && x.place === station);
+  return a ? DOC_BY_ID[a.doctorId] : null;
+}
+// כיסוי-תחנות: לכל תחנה-פעילה — האם מאוישת ע"י רופא-נוכח. {active, staffed, list[]}.
+function stationCoverage(dm) {
+  const active = stationsActiveFor(dm);
+  const presentIds = new Set(rosterForDate(dm).map((d) => d.id));
+  const list = active.map((station) => {
+    const doc = doctorForStation(station, dm);
+    return { station, doctor: doc, staffed: !!doc && presentIds.has(doc.id) };
+  });
+  return { active: active.length, staffed: list.filter((s) => s.staffed).length, list };
 }
 
 /* ---------- 9. small helpers ---------- */
@@ -2145,6 +2714,146 @@ function remapRequestDoctors() {
 }
 remapRequestDoctors();
 state.assignments = seedAssignments(); // seed אחרי ה-remap (roster יציב)
+
+/* ============================================================
+   12. SCHEDULING module data (additive — does NOT touch attendance)
+   ⚠ קודים/חוקים = placeholder. עידן יחליף בנתוני-המחלקה. אל תתייחס כאמת.
+   state.shifts נפרד מ-state.absences → countsForDate לא מושפע (snapshot 78/73/88 נשמר).
+   ⚠ סדר-טעינה: קריאת seedShifts() נמצאת בסוף הסקציה — אחרי כל ה-const/function —
+   כדי שלא תרוץ ב-TDZ (תלויה ב-TORENUT_CODES) ולא תידרס ע"י init ריק.
+   ============================================================ */
+const SHIFT_CATEGORIES = [
+  { key: "torenut", label: "תורנות", sub: 'משמרת לילה בבי"ח', causesRest: true },
+  { key: "konanut", label: "כוננות", sub: "כונן מהבית", causesRest: false },
+  { key: "session", label: "ססיות", sub: 'ניתוחי אחה"צ (>15:00)', causesRest: false },
+];
+const SHIFT_CAT_BY_KEY = Object.fromEntries(SHIFT_CATEGORIES.map((c) => [c.key, c]));
+
+// קודי-דמו מ-01-data-analysis (12 תורנות · 8 כוננות). placeholder — עידן יביא את הרשימה
+// האמיתית (האפיון נקב "13" אך מנה 12; אל "תתקן" לפי הספירה — חכה לקודים האמיתיים).
+// ססיות = דינמי (חדרים עם ניתוחי-אחה"צ, נגזר מ-orScheduleFor).
+const TORENUT_CODES = [
+  "ח.נ1",
+  "ח.נ2",
+  "ח.נ3",
+  "תורן חצי ליס",
+  "חצי מיון כיסופים",
+  "ט.נ.כ1",
+  "ט.נ.כ2",
+  "ליס1",
+  "ליס2",
+  "תורן נוסף 1",
+  "תורן נוסף 2",
+  "התעוררות",
+];
+const KONANUT_CODES = ["כא1", "כא2", "כנ1", "כנ2", "כנ3", "כטנ", "כ.מילדות", "ת לב"];
+
+// משבצות הקטגוריה ליום: torenut/konanut קבוע · session = חדרים עם >=2 ניתוחי-אחה"צ (ragged כמו האקסל).
+function slotKeysFor(category, dm) {
+  // slice() — מחזיר עותק, לא את המערך-הקנוני (מונע מוטציה-בטעות ע"י קורא עתידי).
+  if (category === "torenut") return TORENUT_CODES.slice();
+  if (category === "konanut") return KONANUT_CODES.slice();
+  return orScheduleFor(dm)
+    .filter((s) => s.surgeryCount >= 2)
+    .map((s) => s.room);
+}
+
+// כל ימי-החודש של dm (לתצוגה החודשית + planAutoSchedule scope=month).
+function daysOfMonth(dm) {
+  const m = Math.floor(dm / 100);
+  const n = DAYS_IN_MONTH[m];
+  const out = [];
+  for (let day = 1; day <= n; day++) out.push(m * 100 + day);
+  return out;
+}
+
+// ⚠ placeholder — כלל-ותק להרשאה. עידן יחליף במטריצת-הרשאות אמיתית.
+function eligibilityDefault(doctor, category) {
+  if (doctor.kind === "מומחה") return true; // מומחה = הכול
+  if (category === "session") return true; // ססיה = כל מתמחה פנוי
+  if (category === "torenut") return doctor.year >= 2; // תורנות = אחרי שלב א'
+  if (category === "konanut") return doctor.year >= 4; // כוננות-אחראי = שלב ב'
+  return false;
+}
+
+// ⚠ placeholder — חוקי-מערכת. עידן יאשר מספרים מהמחלקה.
+const SCHED_RULES = { restAfterNight: 1, maxTorenutPerMonth: 6, maxKonanutPerMonth: 8, minGapDays: 2 };
+
+// ⚠ דמו — בקשות-חסימה להדגמת שלב ❹ במשפך (doctorId 1..110). כמה ב-622 כדי שייראה ביום-ברירת-המחדל.
+const SCHED_REQUESTS = [
+  { doctorId: 5, dm: 622, kind: "block", note: "חתונה" },
+  { doctorId: 12, dm: 622, kind: "block", note: "בקשה אישית" },
+  { doctorId: 20, dm: 622, kind: "block", note: "אילוץ משפחתי" },
+  { doctorId: 33, dm: 622, kind: "block", note: "יום כיף" },
+  { doctorId: 8, dm: 623, kind: "block", note: "אירוע משפחתי" },
+];
+
+// state.shifts — מקביל ל-state.assignments (אימוטבילי). {doctorId, dm, category, slotKey, source, locked}
+state.shifts = [];
+function shiftAt(category, slotKey, dm) {
+  return state.shifts.find((x) => x.category === category && x.slotKey === slotKey && x.dm === dm) || null;
+}
+function shiftsForDay(dm) {
+  return state.shifts.filter((x) => x.dm === dm);
+}
+function assignShift(category, slotKey, dm, doctorId, source) {
+  const src = source || "manual";
+  const existing = state.shifts.find((x) => x.category === category && x.slotKey === slotKey && x.dm === dm);
+  // המנוע (solver) לא דורס שיבוץ-ידני נעוץ (locked). שיבוץ-ידני כן דורס (החלטת-אדם גוברת).
+  if (src === "solver" && existing && existing.locked) return;
+  state.shifts = [
+    ...state.shifts.filter((x) => !(x.category === category && x.slotKey === slotKey && x.dm === dm)),
+    { doctorId, dm, category, slotKey, source: src, locked: src !== "solver" },
+  ];
+}
+function clearShift(category, slotKey, dm) {
+  state.shifts = state.shifts.filter((x) => !(x.category === category && x.slotKey === slotKey && x.dm === dm));
+}
+// כמה שיבוצים מקטגוריה יש לרופא בחודש של dm (הוגנות + תקרה).
+function shiftCountInMonth(doctorId, category, dm) {
+  const m = Math.floor(dm / 100);
+  return state.shifts.filter((x) => x.doctorId === doctorId && x.category === category && Math.floor(x.dm / 100) === m)
+    .length;
+}
+
+// seed: אתמול (21.6) תורנויות-לילה → שלב-המנוחה ב-22.6 יחסום אותם. היום (22.6) כמה ידני + פנויות.
+function seedShifts() {
+  const out = [];
+  const presentY = rosterForDate(621);
+  TORENUT_CODES.slice(0, 4).forEach((code, i) => {
+    if (presentY[i])
+      out.push({
+        doctorId: presentY[i].id,
+        dm: 621,
+        category: "torenut",
+        slotKey: code,
+        source: "solver",
+        locked: false,
+      });
+  });
+  const present = rosterForDate(622);
+  if (present[10])
+    out.push({
+      doctorId: present[10].id,
+      dm: 622,
+      category: "torenut",
+      slotKey: "ח.נ1",
+      source: "manual",
+      locked: true,
+    });
+  if (present[11])
+    out.push({
+      doctorId: present[11].id,
+      dm: 622,
+      category: "konanut",
+      slotKey: "כא1",
+      source: "manual",
+      locked: true,
+    });
+  return out;
+}
+// ⚠ קריאה אחרונה בסקציה (אחרי כל ההגדרות) — מונע TDZ ומונע דריסה ע"י init ריק.
+state.shifts = seedShifts();
 
 /* ---------- 11. expose contract ---------- */
 Att.data = {
@@ -2218,11 +2927,34 @@ Att.data = {
   assignToRoom,
   assignOutside,
   clearAssignment,
+  // outside stations (§8c — הערת-בוס #2+#3)
+  DEFAULT_ACTIVE_STATIONS,
+  stationsActiveFor,
+  isStationActive,
+  toggleStation,
+  doctorForStation,
+  stationCoverage,
   // helpers
   firstChar,
   docMeta,
   typeToStatusKey,
   remapRequestDoctors,
+  // scheduling (additive — §12)
+  SHIFT_CATEGORIES,
+  SHIFT_CAT_BY_KEY,
+  TORENUT_CODES,
+  KONANUT_CODES,
+  slotKeysFor,
+  daysOfMonth,
+  eligibilityDefault,
+  SCHED_RULES,
+  SCHED_REQUESTS,
+  shiftAt,
+  shiftsForDay,
+  assignShift,
+  clearShift,
+  shiftCountInMonth,
+  seedShifts,
 };
 
 </script>
@@ -2270,7 +3002,6 @@ globalThis.Att = globalThis.Att || {};
     countsForDate,
     groupBreakdown,
     namesInGroup,
-    seriesForRange,
     coverageBand,
     rosterForDate,
     firstChar,
@@ -2454,29 +3185,6 @@ globalThis.Att = globalThis.Att || {};
     chipsEl.innerHTML = chipsHtml;
   }
 
-  function renderForecast() {
-    const pres = view.metric === "present";
-    const metricWord = pres ? "נוכחים" : "חסרים";
-    const subTxt =
-      view.mode === "day"
-        ? (pres ? "נוכחים צפויים" : "חסרים צפויים") + " · 7 ימים"
-        : view.mode === "week"
-          ? "ממוצע " + metricWord + " שבועי"
-          : "ממוצע " + metricWord + " · 6 חודשים";
-    const titleTxt = "תחזית " + (view.mode === "day" ? "" : view.mode === "week" ? "שבועית" : "חודשית");
-    document.getElementById("fcTitle").innerHTML = titleTxt + ' <span class="sub">' + subTxt + "</span>";
-    const data = seriesForRange();
-    const max = Math.max(...data.map((d) => d.value), 1);
-    document.getElementById("forecast").innerHTML = data
-      .map(
-        (d) =>
-          `<div class="col"><span class="n">${d.value}</span>
-       <div class="stk ${pres ? "g" : ""}" style="height:${Math.max(6, Math.round((d.value / max) * 86))}px"></div>
-       <span class="d">${d.label}</span></div>`,
-      )
-      .join("");
-  }
-
   function renderAbsTable() {
     const c = countsForDate(view.anchor);
     const show = c.absentList.slice(0, 8);
@@ -2654,7 +3362,7 @@ globalThis.Att = globalThis.Att || {};
     renderKPIs();
     renderReasons();
     renderCut();
-    renderForecast();
+    Att.calendar.renderMini(document.getElementById("miniCalHost"));
     renderAbsTable();
     renderAssignSummary();
   }
@@ -2875,7 +3583,6 @@ globalThis.Att = globalThis.Att || {};
     renderKPIs,
     renderReasons,
     renderCut,
-    renderForecast,
     renderAbsTable,
     renderAssignSummary,
     renderQueue,
@@ -3076,6 +3783,43 @@ globalThis.Att = globalThis.Att || {};
       <div class="cb-item cb-risk"><span class="cb-lab">חדרים בסיכון</span><span class="cb-tags">${riskHtml}</span></div>`;
   }
 
+  /* ---------- render: תחנות-חוץ + אדום/ירוק (הערת-בוס #2+#3) ----------
+     פאנל-צ'יפים מקביל לפס-כיסוי-החדרים. כבוי(אפור)=לא-פעילה-היום ·
+     פעיל-אדום=אין רופא · פעיל-ירוק=מאויש. קליק על כבוי→הפעלה · × →כיבוי · בורר→שיבוץ.
+     escaping ל-" (טפנ"צ) ב-data-attributes כדי לא לשבור HTML. */
+  function esc(s) {
+    return String(s).replace(/"/g, "&quot;");
+  }
+  function renderStationsPanel(dm) {
+    const host = document.getElementById("tblStations");
+    if (!host) return;
+    const cov = D.stationCoverage(dm);
+    const present = rosterForDate(dm);
+    const band =
+      cov.active === 0 ? "green" : cov.staffed >= cov.active ? "green" : cov.staffed === 0 ? "red" : "orange";
+    const chips = OUTSIDE_PLACES.map((station) => {
+      if (!D.isStationActive(dm, station)) {
+        return `<span class="stchip off" data-stationtoggle="${esc(station)}" title="הפעל תחנה להיום">+ ${station}</span>`;
+      }
+      const doc = D.doctorForStation(station, dm);
+      const staffed = doc && present.some((d) => d.id === doc.id);
+      const opts =
+        `<option value="">— בחר רופא —</option>` +
+        present
+          .map((d) => `<option value="${d.id}" ${doc && doc.id === d.id ? "selected" : ""}>${d.name}</option>`)
+          .join("");
+      return `<span class="stchip ${staffed ? "green" : "red"}">
+          <button class="stchip-off" data-stationoff="${esc(station)}" title="כבה תחנה" aria-label="כבה תחנה">×</button>
+          <span class="stchip-lab">${station}</span>
+          <select class="stchip-sel" data-stationassign="${esc(station)}">${opts}</select>
+        </span>`;
+    }).join("");
+    host.className = "glass cover-bar stations-bar " + band;
+    host.innerHTML = `
+      <div class="cb-item"><span class="cb-num">${cov.staffed}/${cov.active}</span><span class="cb-lab">תחנות-חוץ מאוישות</span></div>
+      <div class="st-chips">${chips}</div>`;
+  }
+
   /* ---------- render: column chips ---------- */
   function renderChips() {
     const host = document.getElementById("tblChips");
@@ -3115,7 +3859,7 @@ globalThis.Att = globalThis.Att || {};
         const cur = a && a.kind === "room" ? a.room : "";
         const opts =
           `<option value="">— ללא —</option>` +
-          OR_ROOMS.map((r) => `<option value="${r}" ${r === cur ? "selected" : ""}>${r}</option>`).join("");
+          OR_ROOMS.map((r) => `<option value="${esc(r)}" ${r === cur ? "selected" : ""}>${r}</option>`).join("");
         return `<td><select class="cell-sel" data-assignroom="${d.id}">${opts}</select></td>`;
       }
       case "outside": {
@@ -3124,7 +3868,7 @@ globalThis.Att = globalThis.Att || {};
         const cur = a && a.kind === "outside" ? a.place : "";
         const opts =
           `<option value="">— ללא —</option>` +
-          OUTSIDE_PLACES.map((p) => `<option value="${p}" ${p === cur ? "selected" : ""}>${p}</option>`).join("");
+          OUTSIDE_PLACES.map((p) => `<option value="${esc(p)}" ${p === cur ? "selected" : ""}>${p}</option>`).join("");
         return `<td><select class="cell-sel" data-assignoutside="${d.id}">${opts}</select></td>`;
       }
       case "surg": {
@@ -3235,6 +3979,7 @@ globalThis.Att = globalThis.Att || {};
     const dm = view.anchor;
     renderHeader(dm);
     renderCoverBar(dm);
+    renderStationsPanel(dm);
     renderChips();
     renderTable(dm);
     syncFilterSeg();
@@ -3298,6 +4043,29 @@ globalThis.Att = globalThis.Att || {};
     if (Att.profile && Att.profile.open) Att.profile.open(id);
   }
 
+  /* ---------- תחנות-חוץ handlers (הערת-בוס #2+#3) ----------
+     render() מלא אחרי כל פעולה (כולל renderStationsPanel) — קל ובטוח; ה-#tblSearch
+     קבוע מחוץ ל-innerHTML אז focus לא נפגע. */
+  function activateStation(station) {
+    D.toggleStation(view.anchor, station); // כבוי → פעיל (אדום, עדיין לא-מאויש)
+    render();
+  }
+  function deactivateStation(station) {
+    const dm = view.anchor;
+    const cur = D.doctorForStation(station, dm);
+    if (cur) clearAssignment(cur.id, dm); // כיבוי-תחנה מנקה גם את השיבוץ אליה
+    D.toggleStation(dm, station);
+    render();
+  }
+  function assignStation(station, idStr) {
+    const dm = view.anchor;
+    const id = idStr ? Number(idStr) : null;
+    const cur = D.doctorForStation(station, dm);
+    if (cur) clearAssignment(cur.id, dm); // רופא-אחד-לתחנה: מנקים את הקודם
+    if (id) assignOutside(id, dm, station);
+    render();
+  }
+
   /* ---------- expose contract ---------- */
   Att.tables = {
     tableState,
@@ -3306,6 +4074,7 @@ globalThis.Att = globalThis.Att || {};
     renderTable,
     renderRow,
     renderCoverBar,
+    renderStationsPanel,
     renderChips,
     // handlers
     stepDay,
@@ -3316,6 +4085,10 @@ globalThis.Att = globalThis.Att || {};
     assignRoom,
     assignOut,
     openProfile,
+    // תחנות-חוץ (הערת-בוס #2+#3)
+    activateStation,
+    deactivateStation,
+    assignStation,
   };
 })();
 
@@ -4130,6 +4903,524 @@ globalThis.Att = globalThis.Att || {};
 
 /* ============================================================
    מערכת נוכחות · מחלקת הרדמה — דמו v3
+   מודול-שיבוץ (Att.scheduling). לשונית "שיבוץ": 2 תצוגות (חודשי/יומי) ×
+   3 לוחות (תורנות/כוננות/ססיות) + משפך-אילוצים + "הרץ שיבוץ".
+   "נתונים נפרדים מהמכונה": data.js מחזיק קטלוג/חוקים/state; כאן המנוע+התצוגה.
+   קורא נתונים/גזירה מ-Att.data בלבד (החוזה היחיד). ⚠ חוקים=placeholder.
+   ============================================================ */
+
+globalThis.Att = globalThis.Att || {};
+
+(function () {
+  const D = Att.data;
+
+  /* ============================================================
+     ENGINE — משפך-האילוצים (פונקציות טהורות מעל Att.data)
+     ============================================================ */
+
+  // משקל-עומס-בסיס לרופא (YTD מזויף). session לפי ססיות, אחרת לפי תורנויות.
+  function baseLoad(id, category) {
+    const doc = D.DOC_BY_ID[id];
+    return category === "session" ? doc.sessionsYTD : doc.onCallYTD;
+  }
+  // ציון-הוגנות אחיד: עומס-החודש קודם (משקל 1000 דומיננטי → פיזור), YTD-בסיס משני.
+  // המודאל (funnel) וה-run משתמשים באותו ציון → ההמלצה = התוצאה למשבצת-ריקה ראשונה.
+  function fairScore(id, category, load) {
+    return baseLoad(id, category) + load * 1000;
+  }
+
+  /* funnel(category,slotKey,dm) — רצף 5 שלבים: הרשאה→זמינות→מנוחה→בקשות→הוגנות.
+     כל שלב מחזיר kept (ids ששרדו) + dropped ([{id,reason}]). chosen = ההוגן ביותר. */
+  function funnel(category, slotKey, dm) {
+    // guard: קטגוריה לא-מוכרת → תוצאה ריקה (מונע שחיתות-state מקריאה עתידית שגויה)
+    if (!D.SHIFT_CAT_BY_KEY[category]) return { category, slotKey, dm, stages: [], chosen: null, startCount: 0 };
+    const all = D.DOCTORS; // DOCTORS הוא חלק מהחוזה (קריאה מותרת)
+    const stages = [];
+    let kept = all;
+
+    // ❶ הרשאה (⚠ placeholder — כלל-ותק)
+    let dropped = [];
+    let survivors = kept.filter((doc) => {
+      const ok = D.eligibilityDefault(doc, category);
+      if (!ok) dropped.push({ id: doc.id, reason: "לא מוסמך (ותק)" });
+      return ok;
+    });
+    stages.push({ key: "eligible", label: "הרשאה", kept: survivors.map((d) => d.id), dropped, isPlaceholder: true });
+    kept = survivors;
+
+    // ❷ זמינות — rosterForDate (התפר לנוכחות: חופש/מילואים/מחלה חוסם)
+    dropped = [];
+    const presentIds = new Set(D.rosterForDate(dm).map((d) => d.id));
+    survivors = kept.filter((doc) => {
+      const ok = presentIds.has(doc.id);
+      if (!ok) {
+        const st = D.STATUS_BY_KEY[D.dayStatusKey(doc.id, dm)]; // guard: קוד לא-מוכר → "לא זמין"
+        dropped.push({ id: doc.id, reason: st ? st.label : "לא זמין" });
+      }
+      return ok;
+    });
+    stages.push({
+      key: "available",
+      label: "זמינות היום",
+      kept: survivors.map((d) => d.id),
+      dropped,
+      isPlaceholder: false,
+    });
+    kept = survivors;
+
+    // ❸ מנוחה אחרי לילה — מי שעשה ב-restAfterNight הימים הקודמים שיבוץ causesRest (⚠ placeholder)
+    dropped = [];
+    const restDays = D.SCHED_RULES.restAfterNight || 1;
+    const resters = new Set();
+    for (let k = 1; k <= restDays; k++) {
+      D.shiftsForDay(D.addDays(dm, -k))
+        .filter((s) => {
+          const c = D.SHIFT_CAT_BY_KEY[s.category];
+          return c && c.causesRest;
+        })
+        .forEach((s) => resters.add(s.doctorId));
+    }
+    survivors = kept.filter((doc) => {
+      const resting = resters.has(doc.id);
+      if (resting) dropped.push({ id: doc.id, reason: "תורנות אתמול (מנוחה)" });
+      return !resting;
+    });
+    stages.push({
+      key: "rested",
+      label: "מנוחה אחרי לילה",
+      kept: survivors.map((d) => d.id),
+      dropped,
+      isPlaceholder: true,
+    });
+    kept = survivors;
+
+    // ❹ בקשות-להימנע (block)
+    dropped = [];
+    survivors = kept.filter((doc) => {
+      const req = D.SCHED_REQUESTS.find((r) => r.doctorId === doc.id && r.dm === dm && r.kind === "block");
+      if (req) dropped.push({ id: doc.id, reason: "בקשה: " + (req.note || "חסימה") });
+      return !req;
+    });
+    stages.push({
+      key: "requests",
+      label: "בקשות-להימנע",
+      kept: survivors.map((d) => d.id),
+      dropped,
+      isPlaceholder: false,
+    });
+    kept = survivors;
+
+    // ❺ ההוגן ביותר — עומס-נמוך (⚠ placeholder: מבוסס YTD-מזויף + חלון-הוגנות לא-מוגדר).
+    // tie-break (id) לדטרמיניזם.
+    const loadOf = (doc) => fairScore(doc.id, category, D.shiftCountInMonth(doc.id, category, dm));
+    const sorted = kept.slice().sort((a, b) => loadOf(a) - loadOf(b) || a.id - b.id);
+    const chosen = sorted.length ? sorted[0].id : null;
+    stages.push({
+      key: "fair",
+      label: "ההוגן ביותר",
+      kept: sorted.map((d) => d.id),
+      dropped: [],
+      isPlaceholder: true,
+      chosenId: chosen,
+    });
+
+    return { category, slotKey, dm, stages, chosen, startCount: all.length };
+  }
+
+  /* planAutoSchedule — ממלא רק משבצות-ריקות. מונה-עומס-חי (monthLoad) מסובב רופאים
+     תוך-כדי-הריצה (אחרת רופא אחד מציף את כל החודש). אוכף תקרת-חודש. לא כופל רופא באותו יום. */
+  function planAutoSchedule(category, dm, scope) {
+    if (!D.SHIFT_CAT_BY_KEY[category]) return []; // guard קטגוריה לא-מוכרת
+    const days = scope === "month" ? D.daysOfMonth(dm) : [dm];
+    const plan = [];
+    const monthLoad = new Map(); // doctorId -> שיבוצי-החודש (חי, מתעדכן בריצה)
+    const m = Math.floor(dm / 100);
+    D.state.shifts.forEach((s) => {
+      if (s.category === category && Math.floor(s.dm / 100) === m)
+        monthLoad.set(s.doctorId, (monthLoad.get(s.doctorId) || 0) + 1);
+    });
+    const cap =
+      category === "torenut"
+        ? D.SCHED_RULES.maxTorenutPerMonth
+        : category === "konanut"
+          ? D.SCHED_RULES.maxKonanutPerMonth
+          : Infinity;
+    // מנוחה תוך-כדי-ריצה: רופא ששובץ causesRest ביום d חסום ל-restAfterNight הימים שמסביב.
+    // restBlock מזורע גם משיבוצים-קיימים (ידני/seed) בשני הכיוונים — כדי שריצה ביום d לא
+    // תתנגש עם שיבוץ-קבוע ביום d±1 (ה-funnel בודק רק אחורה, ומ-state שעוד לא עודכן בריצה).
+    const restDays = D.SHIFT_CAT_BY_KEY[category].causesRest ? D.SCHED_RULES.restAfterNight || 1 : 0;
+    const restBlock = new Map(); // dm -> Set(doctorId) חסומים-למנוחה
+    const blockAround = (centerDm, id) => {
+      for (let k = 1; k <= restDays; k++) {
+        [D.addDays(centerDm, k), D.addDays(centerDm, -k)].forEach((bd) => {
+          if (!restBlock.has(bd)) restBlock.set(bd, new Set());
+          restBlock.get(bd).add(id);
+        });
+      }
+    };
+    if (restDays > 0) {
+      D.state.shifts.forEach((s) => {
+        const c = D.SHIFT_CAT_BY_KEY[s.category];
+        if (c && c.causesRest) blockAround(s.dm, s.doctorId); // שיבוצים-קיימים → חוסמים את הימים הסמוכים
+      });
+    }
+
+    days.forEach((d) => {
+      const usedToday = new Set(D.shiftsForDay(d).map((s) => s.doctorId)); // יום-אחד-לכל-רופא (חוצה-לוחות, מכוון)
+      const restedOut = restBlock.get(d); // נחים בגלל בחירת-ריצה מיום קודם
+      D.slotKeysFor(category, d).forEach((slotKey) => {
+        if (D.shiftAt(category, slotKey, d)) return; // מאוייש (ידני/קודם) — דלג
+        const f = funnel(category, slotKey, d);
+        const survivors = f.stages[f.stages.length - 1].kept; // עברו את כל האילוצים הקשיחים
+        // דירוג זהה ל-funnel (fairScore) → המלצת-המודאל = תוצאת-הריצה למשבצת-ריקה ראשונה.
+        const ranked = survivors
+          .filter((id) => !usedToday.has(id) && (monthLoad.get(id) || 0) < cap && !(restedOut && restedOut.has(id)))
+          .sort(
+            (a, b) =>
+              fairScore(a, category, monthLoad.get(a) || 0) - fairScore(b, category, monthLoad.get(b) || 0) || a - b,
+          );
+        const pick = ranked[0];
+        if (pick != null) {
+          usedToday.add(pick);
+          monthLoad.set(pick, (monthLoad.get(pick) || 0) + 1);
+          for (let k = 1; k <= restDays; k++) {
+            const bd = D.addDays(d, k);
+            if (!restBlock.has(bd)) restBlock.set(bd, new Set());
+            restBlock.get(bd).add(pick);
+          }
+          plan.push({ category, slotKey, dm: d, doctorId: pick });
+        }
+      });
+    });
+    return plan;
+  }
+
+  /* ============================================================
+     VIEW-STATE (מקומי — לא בחוזה) + RENDER
+     ⚠ D.view.anchor הוא ציר-הזמן המשותף — דילוג-יום כאן מזיז גם את הקונסולה (מכוון).
+     ============================================================ */
+  const schedState = {
+    mode: "month", // 'month' | 'day'
+    category: "torenut",
+    visibleSlots: { torenut: D.TORENUT_CODES.slice(0, 5), konanut: D.KONANUT_CODES.slice(0, 5), session: null },
+    funnelFor: null, // {category,slotKey,dm} | null
+  };
+
+  // עמודות-מטריצה לקטגוריה: visibleSlots או (ססיות) כל החדרים הייחודיים של החודש.
+  function matrixCols(category, dm) {
+    if (category === "session") {
+      const set = new Set();
+      D.daysOfMonth(dm).forEach((d) => D.slotKeysFor(category, d).forEach((s) => set.add(s)));
+      return [...set];
+    }
+    return schedState.visibleSlots[category] || [];
+  }
+
+  function shortName(id) {
+    const d = D.DOC_BY_ID[id];
+    return d ? d.name.replace("ד״ר ", "") : "—";
+  }
+  // escape ל-HTML attribute — slotKey עלול להכיל גרש-כפול (חדר 'טנ"צ') ששובר את ה-attribute.
+  function escAttr(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+  }
+  // מפתח-משבצת מקודד לבטוח-ל-attribute (הדפדפן יפענח חזרה ב-dataset → split('|') תקין).
+  function slotAttr(category, slotKey, dm) {
+    return escAttr(category + "|" + slotKey + "|" + dm);
+  }
+
+  /* ---------- entry render ---------- */
+  function render() {
+    syncSegs();
+    const dayGroup = document.getElementById("schedDayGroup");
+    if (dayGroup) dayGroup.hidden = schedState.mode !== "day";
+    const lab = document.getElementById("schedDayLab");
+    if (lab) lab.textContent = D.HE_DOW[D.dowOf(D.view.anchor)] + " " + D.dmToStr(D.view.anchor);
+    if (schedState.mode === "month") renderMonth();
+    else renderDay();
+    renderNeeds();
+  }
+  function syncSegs() {
+    document
+      .querySelectorAll("#schedModeSeg button")
+      .forEach((b) => b.classList.toggle("on", b.dataset.smode === schedState.mode));
+    document
+      .querySelectorAll("#schedCatSeg button")
+      .forEach((b) => b.classList.toggle("on", b.dataset.scat === schedState.category));
+    const run = document.getElementById("schedRunBtn");
+    if (run) run.textContent = schedState.mode === "month" ? "⚡ הרץ שיבוץ לחודש" : "⚡ הרץ שיבוץ ליום";
+  }
+
+  /* ---------- render: monthly matrix ---------- */
+  function renderMonth() {
+    const host = document.getElementById("schedBody");
+    if (!host) return;
+    const cat = schedState.category;
+    const anchor = D.view.anchor;
+    const cols = matrixCols(cat, anchor);
+    const days = D.daysOfMonth(anchor);
+    const chips = renderSlotChips(cat);
+    const head = "<tr><th class='sched-daycol'>יום</th>" + cols.map((c) => `<th>${c}</th>`).join("") + "</tr>";
+    // יום-בשבוע מחושב מצטברת (מתחיל מהיום-1 ומקדם mod 7) — נמנע מ-dowOf לולאתי per-row.
+    let dow0 = D.dowOf(days[0]);
+    const body = days
+      .map((dm, idx) => {
+        const dlab = D.HE_DOW_SHORT[(dow0 + idx) % 7];
+        const tds = cols.map((slotKey) => schedCell(cat, slotKey, dm)).join("");
+        return `<tr><td class="sched-daycol">${D.dmToStr(dm)} ${dlab}</td>${tds}</tr>`;
+      })
+      .join("");
+    host.innerHTML =
+      `<h3>לוח ${D.SHIFT_CAT_BY_KEY[cat].label} — חודשי <span class="sub">${D.SHIFT_CAT_BY_KEY[cat].sub}</span></h3>` +
+      `<div class="meta sched-demo-note">⚠ בחירת-הרופאים = הוגנות-דמו (מבוסס YTD מזויף · placeholder). לחיצה על תא → המשפך המלא.</div>` +
+      chips +
+      `<div class="tbl-scroll sched-scroll"><table class="tbl sched-matrix"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+  }
+
+  // תא-מטריצה: רופא-משובץ (קליק→משפך) · פנוי (קליק→משפך) · "—" אם אין דרישה (ססיות).
+  function schedCell(category, slotKey, dm) {
+    if (category === "session" && !D.slotKeysFor(category, dm).includes(slotKey)) {
+      return `<td class="sched-none">—</td>`;
+    }
+    const a = D.shiftAt(category, slotKey, dm);
+    if (a) {
+      const present = D.dayStatusKey(a.doctorId, dm) === "present";
+      const cls = !present ? "sched-warn" : a.source === "solver" ? "sched-solver" : "sched-manual";
+      const txt = !present ? "⚠ שובץ אך חסר" : shortName(a.doctorId);
+      return `<td class="sched-cell ${cls}" data-slot="${slotAttr(category, slotKey, dm)}">${txt}</td>`;
+    }
+    return `<td class="sched-cell sched-open" data-slot="${slotAttr(category, slotKey, dm)}">פנוי</td>`;
+  }
+
+  // צ'יפים לבחירת-עמודות (torenut/konanut). ססיות = כל החדרים (אין בורר).
+  function renderSlotChips(category) {
+    if (category === "session")
+      return `<div class="meta sched-chip-note">עמודות = חדרים עם ניתוחי-אחה"צ (נגזר מלוח-הניתוחים)</div>`;
+    const all = category === "torenut" ? D.TORENUT_CODES : D.KONANUT_CODES;
+    const vis = schedState.visibleSlots[category];
+    return (
+      `<div class="chips">` +
+      all
+        .map((c) => {
+          const on = vis.includes(c);
+          return `<span class="chip ${on ? "on" : ""}" data-slottoggle="${c}">${on ? "− " : "+ "}${c}</span>`;
+        })
+        .join("") +
+      `</div>`
+    );
+  }
+
+  /* ---------- render: daily board ---------- */
+  function renderDay() {
+    const host = document.getElementById("schedBody");
+    if (!host) return;
+    const cat = schedState.category;
+    const dm = D.view.anchor;
+    const slots = D.slotKeysFor(cat, dm);
+    const rows = slots.length
+      ? slots.map((slotKey) => dayRow(cat, slotKey, dm)).join("")
+      : `<div class="empty">אין משבצות ${D.SHIFT_CAT_BY_KEY[cat].label} ליום זה</div>`;
+    host.innerHTML =
+      `<h3>לוח ${D.SHIFT_CAT_BY_KEY[cat].label} — ${D.HE_DOW[D.dowOf(dm)]} ${D.dmToStr(dm)} <span class="sub">${D.SHIFT_CAT_BY_KEY[cat].sub}</span></h3>` +
+      `<div class="meta sched-demo-note">⚠ סדר-המועמדים בבורר = הוגנות-דמו (מבוסס YTD מזויף · placeholder). 🔎 מנוע = המשפך המלא.</div>` +
+      `<div class="sched-day">${rows}</div>`;
+  }
+
+  // שורת-יום: קוד · רופא/פנוי · בורר-שיבוץ-מהיר (מועמדי-המשפך) · 🔎 משפך.
+  function dayRow(category, slotKey, dm) {
+    const a = D.shiftAt(category, slotKey, dm);
+    const cands = funnel(category, slotKey, dm).stages.slice(-1)[0].kept; // הוגנות, ממוין
+    const candIds = cands.slice(0, 25);
+    // ודא שהרופא-המשובץ מופיע ב-select גם אם אינו בין 25 המועמדים (חסום/חסר/מדורג-נמוך) → מונע אי-סנכרון.
+    if (a && !candIds.includes(a.doctorId)) candIds.unshift(a.doctorId);
+    const opts =
+      `<option value="">— שבץ —</option>` +
+      candIds
+        .map((id) => {
+          const sel = a && a.doctorId === id ? "selected" : "";
+          return `<option value="${id}" ${sel}>${shortName(id)}</option>`;
+        })
+        .join("");
+    let nameCell;
+    if (a) {
+      const present = D.dayStatusKey(a.doctorId, dm) === "present";
+      nameCell = present
+        ? `<span class="sched-name ${a.source === "solver" ? "is-solver" : "is-manual"}">${shortName(a.doctorId)}</span>`
+        : `<span class="sched-name is-warn">⚠ שובץ אך חסר</span>`;
+    } else {
+      nameCell = `<span class="sched-name is-open">פנוי</span>`;
+    }
+    return `<div class="sched-slot">
+      <span class="sched-code">${slotKey}</span>
+      ${nameCell}
+      <select class="cell-sel" data-dayassign="${slotAttr(category, slotKey, dm)}">${opts}</select>
+      <button class="sched-why" data-slot="${slotAttr(category, slotKey, dm)}">🔎 מנוע</button>
+    </div>`;
+  }
+
+  /* ---------- render: constraint funnel (overlay) ---------- */
+  function renderFunnel(category, slotKey, dm) {
+    const modal = document.getElementById("funnelModal");
+    const overlay = document.getElementById("funnelOverlay");
+    if (!modal || !overlay) return;
+    const f = funnel(category, slotKey, dm);
+    const nums = ["❶", "❷", "❸", "❹", "❺"];
+    const head = `<div class="funnel-head">
+      <div><b>${D.SHIFT_CAT_BY_KEY[category].label}</b> · ${slotKey} · ${D.dmToStr(dm)}</div>
+      <span class="mx" data-funnelclose>×</span></div>`;
+    const startTile = `<div class="funnel-stage"><span class="fn-count">${f.startCount}</span><span class="fn-lab">כל הצוות</span></div>`;
+    const stageTiles = f.stages
+      .map((st, i) => {
+        const ph = st.isPlaceholder ? ` <span class="chip-demo">placeholder</span>` : "";
+        const dropList = st.dropped.length
+          ? `<div class="fn-drop">↓ ירדו ${st.dropped.length}: ` +
+            st.dropped
+              .slice(0, 3)
+              .map((d) => `${shortName(d.id)} <i>(${d.reason})</i>`)
+              .join(" · ") +
+            (st.dropped.length > 3 ? " …" : "") +
+            `</div>`
+          : `<div class="fn-drop fn-none">↓ לא ירד אף אחד</div>`;
+        return `<div class="funnel-arrow">▼</div>
+        <div class="funnel-stage ${st.key === "fair" ? "fn-final" : ""}">
+          <span class="fn-num">${nums[i] || ""}</span>
+          <span class="fn-count">${st.kept.length}</span>
+          <span class="fn-lab">${st.label}${ph}</span>
+          ${dropList}
+        </div>`;
+      })
+      .join("");
+    const result =
+      f.chosen != null
+        ? `<div class="funnel-result"><span class="fn-check">✓</span> נבחר: <b>${shortName(f.chosen)}</b>
+           <button class="btn primary" data-assignchosen="${escAttr(category + "|" + slotKey + "|" + dm + "|" + f.chosen)}">שבץ את הנבחר</button></div>`
+        : `<div class="funnel-result fn-empty">אין מועמד פנוי שעובר את כל האילוצים</div>`;
+    modal.innerHTML = head + `<div class="funnel-body">${startTile}${stageTiles}${result}</div>`;
+    overlay.classList.add("show"); // מנגנון .overlay.show הקיים (כמו dayOverlay)
+  }
+
+  /* ---------- render: "what we need from Idan" + rules placeholders ---------- */
+  function renderNeeds() {
+    const host = document.getElementById("schedNeeds");
+    if (!host) return;
+    const R = D.SCHED_RULES;
+    host.innerHTML = `
+      <h3>⚠ חוקים — placeholder (יוחלפו בנתוני-המחלקה)</h3>
+      <div class="rule-grid">
+        <span class="rule-ph">מנוחה אחרי לילה: ${R.restAfterNight} יום</span>
+        <span class="rule-ph">מקס' תורנויות/חודש: ${R.maxTorenutPerMonth}</span>
+        <span class="rule-ph">מקס' כוננויות/חודש: ${R.maxKonanutPerMonth}</span>
+        <span class="rule-ph">מרווח מינ' בין תורנויות: ${R.minGapDays} ימים (לתצוגה — טרם נאכף)</span>
+        <span class="rule-ph">הרשאה: לפי ותק (מומחה=הכול)</span>
+        <span class="rule-ph">הוגנות: לפי עומס-YTD (חלון לא-מוגדר)</span>
+      </div>
+      <h3 style="margin-top:14px">מה צריך ממך (עידן) כדי להפוך את זה לאמת</h3>
+      <ul class="needs-list">
+        <li>מקס' תורנויות/חודש — מתמחה? מומחה?</li>
+        <li>מקס' כוננויות/חודש · מרווח-מינימלי בין תורנויות</li>
+        <li>אילו קודי-סטטוס חוסמים שיבוץ (כולם? חלק)?</li>
+        <li>חלון-הוגנות — חודשי? מתגלגל?</li>
+        <li>פענוח הקודים: ט.נ.כ · כנ · כטנ · כ.מילדות · ת לב · חצי מיון כיסופים</li>
+        <li>הרשאת-ססיה לפי תת-התמחות (לב מול נוירו)?</li>
+      </ul>`;
+  }
+
+  /* ---------- run auto-schedule (animated fill) ---------- */
+  let _running = false; // guard: מונע ריצה כפולה (double-click על "הרץ שיבוץ")
+  function run() {
+    if (_running) return;
+    const cat = schedState.category;
+    const scope = schedState.mode === "month" ? "month" : "day";
+    const plan = planAutoSchedule(cat, D.view.anchor, scope);
+    if (!plan.length) {
+      Att.attendance.toast("אין משבצות פנויות למילוי 🎉");
+      return;
+    }
+    _running = true;
+    // אנימציית-מילוי: ~30 פריימים סה"כ (batch לפי גודל-התוכנית) — מילוי "לנגד-העיניים"
+    // גם לחודש שלם (355 משבצות) בלי להיתקע 21 שניות. יום (~11) = פריים-לכל-משבצת.
+    const batch = Math.max(1, Math.ceil(plan.length / 30));
+    let i = 0;
+    const tick = () => {
+      for (let k = 0; k < batch && i < plan.length; k++, i++) {
+        const p = plan[i];
+        D.assignShift(p.category, p.slotKey, p.dm, p.doctorId, "solver"); // assignShift לא ידרוס שיבוץ-ידני נעוץ
+      }
+      render();
+      if (i < plan.length) {
+        setTimeout(tick, 45);
+        return;
+      }
+      _running = false;
+      Att.attendance.toast(`שובצו ${plan.length} משבצות (מנוע)`);
+    };
+    tick();
+  }
+
+  /* ---------- handlers (נקראים מ-app.js דרך event-delegation) ---------- */
+  function setMode(m) {
+    schedState.mode = m;
+    render();
+  }
+  function setCategory(c) {
+    schedState.category = c;
+    closeFunnel();
+    render();
+  }
+  function stepDay(dir) {
+    D.setAnchor(D.addDays(D.view.anchor, dir));
+    render();
+  }
+  function toggleSlot(slotKey) {
+    const cat = schedState.category;
+    if (cat === "session") return;
+    const vis = schedState.visibleSlots[cat];
+    schedState.visibleSlots[cat] = vis.includes(slotKey) ? vis.filter((s) => s !== slotKey) : [...vis, slotKey];
+    renderMonth();
+  }
+  function openFunnel(category, slotKey, dm) {
+    schedState.funnelFor = { category, slotKey, dm };
+    renderFunnel(category, slotKey, dm);
+  }
+  function closeFunnel() {
+    schedState.funnelFor = null;
+    const o = document.getElementById("funnelOverlay");
+    if (o) o.classList.remove("show");
+  }
+  function assignChosen(category, slotKey, dm, doctorId) {
+    D.assignShift(category, slotKey, dm, doctorId, "manual");
+    closeFunnel();
+    render();
+  }
+  function assignManual(category, slotKey, dm, doctorId) {
+    if (doctorId) D.assignShift(category, slotKey, dm, doctorId, "manual");
+    else D.clearShift(category, slotKey, dm);
+    render();
+  }
+
+  /* ---------- expose contract ---------- */
+  Att.scheduling = {
+    funnel,
+    planAutoSchedule,
+    render,
+    setMode,
+    setCategory,
+    stepDay,
+    toggleSlot,
+    openFunnel,
+    closeFunnel,
+    assignChosen,
+    assignManual,
+    run,
+  };
+})();
+
+</script>
+    <script>
+"use strict";
+
+/* ============================================================
+   מערכת נוכחות · מחלקת הרדמה — דמו v3
    מודול-עזרה (Att.help) — מצב "❓ עזרה" (#4).
    בדפוס feedback.js: כפתור-צף toggle → שכבת-overlay של תגי-ⓘ
    מרחפים מעל אלמנטים-מרכזיים → קליק על ⓘ → popover-זכוכית
@@ -4237,11 +5528,11 @@ globalThis.Att = globalThis.Att || {};
       boss: "מאתרים חוסר-איזון: אם צוות אחד דליל היום, רואים אותו מיד.",
     },
     {
-      sel: "#fcTitle",
-      anchor: ".panel",
-      title: "תחזית",
-      body: "ממוצע הנוכחים הצפוי לחודש/שבוע, מבוסס על הבקשות שכבר אושרו.",
-      boss: "הצצה קדימה: כמה אנשים צפויים להיות, כדי לתכנן תורנויות מראש.",
+      sel: "#miniCalHost",
+      anchor: "",
+      title: "לוח חודשי",
+      body: "כל יום בחודש עם מספר הנוכחים, צבוע לפי כיסוי (ירוק/כתום/אדום). לחיצה פותחת לוח מלא ומעבר ליום.",
+      boss: "מבט-חודש אחד: רואים מיד אילו ימים דלים-בכוח-אדם, כדי לתכנן מראש.",
     },
     {
       sel: "#absTitle",
@@ -4280,6 +5571,13 @@ globalThis.Att = globalThis.Att || {};
       body: "מעבר בין נוכחות (קונסולת-מזכירות), טבלאות, ומסך-הרופא במובייל.",
       boss: "הכל במקום אחד: מבט-מנהל, טבלה מפורטת, וצד-הרופא — בלשונית.",
     },
+    {
+      sel: "#btnExportPdf",
+      anchor: ".export-bar",
+      title: 'ייצוא דו"ח',
+      body: 'ייצוא דו"ח-היום: PDF להדפסה, או Excel (CSV) לעבודה בגיליון. הורדה למחשב.',
+      boss: "עותק-קשיח בלחיצה — לארכוב, הדפסה, או גיבוי מחוץ-למערכת.",
+    },
 
     /* ----- לשונית-טבלאות ----- */
     {
@@ -4288,6 +5586,13 @@ globalThis.Att = globalThis.Att || {};
       title: "כיסוי חדרים",
       body: "פס-סיכום: כמה חדרים מאוישים, כמה נוכחים לא-שובצו, ואילו חדרים בסיכון.",
       boss: "התראה מהירה: חדר בלי רופא קופץ לעין לפני שזה הופך לבעיה.",
+    },
+    {
+      sel: "#tblStations",
+      anchor: "",
+      title: "תחנות-חוץ היום",
+      body: "התחנות מחוץ-לחדר (NORA, אנגיו, גסטרו…). מדליקים אילו פעילות היום; אדום=טרם-שובץ, ירוק=שובץ.",
+      boss: "ודאות שלא שכחתם אף תחנה: כל אתר-חוץ פעיל צריך להפוך לירוק.",
     },
     {
       sel: "#tblChips",
@@ -4571,6 +5876,240 @@ globalThis.Att = globalThis.Att || {};
 
 /* ============================================================
    מערכת נוכחות · מחלקת הרדמה — דמו v3
+   מודול-לוח-חודשי (Att.calendar) — הערת-בוס #1.
+   מיני-לוח בדשבורד (מחליף את גרף-התחזית) + מודאל לוח-חודש מלא.
+   כל תא = יום + מס'-נוכחים/חסרים, צבוע לפי coverageBand (בריאות-כיסוי).
+   קורא נתונים/גזירה מ-Att.data בלבד (החוזה היחיד). אין state חדש בחוזה —
+   רק state-מקומי קטן למודאל (איזה חודש + נוכחים/חסרים בתוך המודאל).
+   ============================================================ */
+
+globalThis.Att = globalThis.Att || {};
+
+(function () {
+  const D = Att.data;
+  const { countsForDate, coverageBand, daysOfMonth, dowOf, dmToStr, view, HE_MONTH, HE_DOW_SHORT, COVER_GREEN } = D;
+
+  // state-מקומי למודאל בלבד (לא בחוזה): איזה חודש מוצג + מטריקה בתוך המודאל.
+  let modalMonth = null; // 1..12
+  let modalMetric = null; // 'present' | 'absent'
+
+  // תאי-החודש (אמת-קרקע מ-countsForDate). monthNum = 1..12.
+  function monthCells(monthNum) {
+    return daysOfMonth(monthNum * 100 + 1).map((dm) => {
+      const c = countsForDate(dm);
+      return { dm, day: dm % 100, dow: dowOf(dm), present: c.present, absent: c.absent, band: coverageBand(c.present) };
+    });
+  }
+
+  // רשת-לוח: כותרות-ימים + ריקים-מובילים + תאי-ימים. metric קובע את המספר; band קובע את הצבע.
+  function gridHtml(monthNum, metric) {
+    const cells = monthCells(monthNum);
+    const lead = cells.length ? cells[0].dow : 0; // ריקים לפני ה-1 בחודש
+    const dowHead = HE_DOW_SHORT.map((d) => `<div class="cal-dow">${d}</div>`).join("");
+    const blanks = Array.from({ length: lead }, () => `<div class="cal-cell cal-blank"></div>`).join("");
+    const dayCells = cells
+      .map((c) => {
+        const val = metric === "absent" ? c.absent : c.present;
+        const today = c.dm === view.anchor ? " cal-today" : "";
+        return `<div class="cal-cell cal-${c.band}${today}" data-calday="${c.dm}" title="${dmToStr(c.dm)}">
+          <span class="cal-d">${c.day}</span><span class="cal-n">${val}</span></div>`;
+      })
+      .join("");
+    return `<div class="cal-grid">${dowHead}${blanks}${dayCells}</div>`;
+  }
+
+  // מיני-לוח בדשבורד — חודש-העוגן + המטריקה הגלובלית (view.metric). לחיצה → מודאל.
+  function renderMini(host) {
+    if (!host) return;
+    const monthNum = Math.floor(view.anchor / 100);
+    const label = view.metric === "absent" ? "חסרים" : "נוכחים";
+    host.innerHTML =
+      `<h3>לוח חודשי <span class="sub">${HE_MONTH[monthNum]} · ${label} ביום · לחצו להגדלה</span></h3>` +
+      `<div class="cal-mini" data-calopen="1">${gridHtml(monthNum, view.metric)}</div>`;
+  }
+
+  /* ---------- מודאל: לוח-חודש מלא ---------- */
+  function openModal() {
+    modalMonth = Math.floor(view.anchor / 100);
+    modalMetric = view.metric;
+    renderModal();
+    const ov = document.getElementById("calOverlay");
+    if (ov) ov.classList.add("show");
+  }
+  function closeModal() {
+    const ov = document.getElementById("calOverlay");
+    if (ov) ov.classList.remove("show");
+  }
+  function stepMonth(dir) {
+    let m = modalMonth + dir;
+    if (m > 12) m = 1;
+    if (m < 1) m = 12;
+    modalMonth = m;
+    renderModal();
+  }
+  function setModalMetric(metric) {
+    modalMetric = metric;
+    renderModal();
+  }
+  // קליק על יום במודאל → קובע את יום-העוגן, סוגר, וחוזר לדשבורד על אותו יום.
+  function pickDay(dm) {
+    D.setAnchor(dm);
+    closeModal();
+    Att.app.go("console");
+  }
+  function renderModal() {
+    const host = document.getElementById("calModal");
+    if (!host) return;
+    const label = modalMetric === "absent" ? "חסרים" : "נוכחים";
+    host.innerHTML = `
+      <div class="mhead">
+        <div>
+          <div class="mtitle">לוח חודשי · ${HE_MONTH[modalMonth]}</div>
+          <div class="msub">מספר ה${label} בכל יום · לחצו על יום למעבר אליו</div>
+        </div>
+        <span class="mx" data-calclose="1">×</span>
+      </div>
+      <div class="cal-toolbar">
+        <div class="period">
+          <button data-calmonth="-1" aria-label="חודש קודם">‹</button>
+          <span class="lab">${HE_MONTH[modalMonth]}</span>
+          <button data-calmonth="1" aria-label="חודש הבא">›</button>
+        </div>
+        <div class="miniseg metric">
+          <button data-calmetric="present" class="${modalMetric === "present" ? "on" : ""}">נוכחים</button>
+          <button data-calmetric="absent" class="${modalMetric === "absent" ? "on abs" : ""}">חסרים</button>
+        </div>
+      </div>
+      <div class="cal-big">${gridHtml(modalMonth, modalMetric)}</div>
+      <div class="cal-legend">
+        <span><i class="cal-dot cal-green"></i> תקין (≥ ${COVER_GREEN})</span>
+        <span><i class="cal-dot cal-orange"></i> גבולי</span>
+        <span><i class="cal-dot cal-red"></i> תת-תקן</span>
+      </div>`;
+  }
+
+  /* ---------- expose contract ---------- */
+  Att.calendar = { renderMini, openModal, closeModal, stepMonth, setModalMetric, pickDay };
+})();
+
+</script>
+    <script>
+"use strict";
+
+/* ============================================================
+   מערכת נוכחות · מחלקת הרדמה — דמו v3
+   מודול-ייצוא (Att.export) — הערת-בוס #4.
+   PDF דרך מנוע-ההדפסה של הדפדפן (פריסה נקייה) · Excel דרך CSV תואם-עברית (UTF-8 BOM).
+   אפס-ספריות, file://-safe. דו"ח = היום-הנבחר (view.anchor).
+   הורדה-למחשב בלבד; שליחה-אוטומטית/מייל = production (backend).
+   ============================================================ */
+
+globalThis.Att = globalThis.Att || {};
+
+(function () {
+  const D = Att.data;
+  const { countsForDate, DOCTORS, STATUS_BY_KEY, dayStatusKey, roomAssignmentFor, dmToStr, dowOf, HE_DOW, view } = D;
+
+  // שורות-הדו"ח: כל הרופאים → שם · סוג · צוות · סטטוס · שיבוץ (חדר/תחנה).
+  function reportRows(dm) {
+    return DOCTORS.map((d) => {
+      const key = dayStatusKey(d.id, dm);
+      const present = key === "present";
+      const a = roomAssignmentFor(d.id, dm);
+      const assign = present && a ? (a.kind === "room" ? a.room : a.place) : "—";
+      return {
+        name: d.name,
+        role: d.kind,
+        team: "צוות " + d.team,
+        status: present ? "נוכח" : STATUS_BY_KEY[key].label,
+        assign,
+      };
+    });
+  }
+
+  /* ---------- Excel (CSV, UTF-8 BOM → עברית נפתחת ישר באקסל) ---------- */
+  function csvCell(v) {
+    const s = String(v == null ? "" : v);
+    return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function exportCSV() {
+    const dm = view.anchor;
+    const c = countsForDate(dm);
+    const lines = [
+      ['דו"ח נוכחות — מחלקת הרדמה'],
+      ["תאריך", HE_DOW[dowOf(dm)] + " " + dmToStr(dm)],
+      ["נוכחים", c.present, "חסרים", c.absent, 'סה"כ', D.TOTAL_DOCTORS],
+      [],
+      ["שם", "סוג", "צוות", "סטטוס", "שיבוץ"],
+      ...reportRows(dm).map((r) => [r.name, r.role, r.team, r.status, r.assign]),
+    ];
+    const csv = lines.map((line) => line.map(csvCell).join(",")).join("\r\n");
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    download(blob, "נוכחות-" + dmToStr(dm).replace(".", "-") + ".csv");
+    if (Att.attendance && Att.attendance.toast) Att.attendance.toast("הקובץ ירד · Excel/CSV");
+  }
+  function download(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      a.remove();
+      URL.revokeObjectURL(url);
+    }, 120);
+  }
+
+  /* ---------- PDF (מנוע-ההדפסה של הדפדפן → "שמור כ-PDF") ---------- */
+  function exportPDF() {
+    if (document.body.classList.contains("printing")) return; // מונע הצטברות מאזיני-afterprint בקליקים-חוזרים
+    const dm = view.anchor;
+    buildPrintArea(dm);
+    document.body.classList.add("printing");
+    const cleanup = () => {
+      document.body.classList.remove("printing");
+      window.removeEventListener("afterprint", cleanup);
+    };
+    window.addEventListener("afterprint", cleanup);
+    window.print();
+    // גיבוי-ניקוי: חלק מהדפדפנים לא יורים afterprint באופן אמין.
+    setTimeout(cleanup, 1500);
+  }
+  function buildPrintArea(dm) {
+    let area = document.getElementById("printArea");
+    if (!area) {
+      area = document.createElement("div");
+      area.id = "printArea";
+      document.body.appendChild(area);
+    }
+    const c = countsForDate(dm);
+    const rows = reportRows(dm);
+    area.innerHTML = `
+      <h1>דו"ח נוכחות — מחלקת הרדמה</h1>
+      <div class="pr-sub">${HE_DOW[dowOf(dm)]} ${dmToStr(dm)} · נוכחים ${c.present} · חסרים ${c.absent} · סה"כ ${D.TOTAL_DOCTORS}</div>
+      <table class="pr-tbl">
+        <thead><tr><th>שם</th><th>סוג</th><th>צוות</th><th>סטטוס</th><th>שיבוץ</th></tr></thead>
+        <tbody>${rows
+          .map(
+            (r) =>
+              `<tr><td>${r.name}</td><td>${r.role}</td><td>${r.team}</td><td>${r.status}</td><td>${r.assign}</td></tr>`,
+          )
+          .join("")}</tbody>
+      </table>
+      <div class="pr-foot">הופק מתוך מערכת-הנוכחות · ${dmToStr(dm)} · נתוני דמו</div>`;
+  }
+
+  /* ---------- expose contract ---------- */
+  Att.export = { exportCSV, exportPDF };
+})();
+
+</script>
+    <script>
+"use strict";
+
+/* ============================================================
+   מערכת נוכחות · מחלקת הרדמה — דמו v3
    מודול-האפליקציה (Att.app) — boot + router + שכבת-shims.
    נטען אחרון (אחרי data/attendance/tables/profile/feedback).
 
@@ -4590,7 +6129,7 @@ globalThis.Att = globalThis.Att || {};
   const A = Att.attendance;
 
   // כל ה-sections שה-router מנהל. profile = drill-in (לא בניווט-העליון).
-  const VIEWS = ["console", "tables", "profile", "doctor"];
+  const VIEWS = ["console", "tables", "profile", "doctor", "schedule"];
 
   /* ---------- router ---------- */
   // go(view): מסמן את כפתור-הניווט, מציג section אחד ומסתיר את השאר, ואז מצייר.
@@ -4613,6 +6152,7 @@ globalThis.Att = globalThis.Att || {};
     if (v === "console") A.renderAll();
     else if (v === "tables") Att.tables.render();
     else if (v === "profile") Att.profile.rerender();
+    else if (v === "schedule") Att.scheduling.render();
     // doctor = DOM סטטי (טופס) — נצבע בעת ה-boot (myReqs), אין מה לצייר-מחדש כאן.
   }
 
@@ -4703,6 +6243,17 @@ globalThis.Att = globalThis.Att || {};
           T.openProfile(Number(lnk.dataset.openprofile));
           return;
         }
+        // תחנות-חוץ (הערת-בוס #2+#3): הפעלת-תחנה / כיבוי-תחנה
+        const stOn = e.target.closest("[data-stationtoggle]");
+        if (stOn) {
+          T.activateStation(stOn.dataset.stationtoggle);
+          return;
+        }
+        const stOff = e.target.closest("[data-stationoff]");
+        if (stOff) {
+          T.deactivateStation(stOff.dataset.stationoff);
+          return;
+        }
       });
       // שינוי-בוררים: שיבוץ-חדר / שיבוץ-מחוץ-לחדר
       tablesSec.addEventListener("change", (e) => {
@@ -4716,6 +6267,12 @@ globalThis.Att = globalThis.Att || {};
           T.assignOut(Number(out.dataset.assignoutside), out.value);
           return;
         }
+        // תחנות-חוץ (הערת-בוס #2+#3): שיבוץ-רופא-לתחנה דרך הבורר שבצ'יפ
+        const stSel = e.target.closest("[data-stationassign]");
+        if (stSel) {
+          T.assignStation(stSel.dataset.stationassign, stSel.value);
+          return;
+        }
       });
       // חיפוש debounced — ה-input קבוע מחוץ ל-innerHTML-המתחלף (#tblSearch).
       const search = document.getElementById("tblSearch");
@@ -4724,9 +6281,109 @@ globalThis.Att = globalThis.Att || {};
       }
     }
 
-    // Esc → סגירת מודאל-הכיסוי (שחזור התנהגות v2).
+    /* ----- לוח-חודשי (הערת-בוס #1) + סרגל-ייצוא (הערת-בוס #4) ----- */
+    const miniCalHost = document.getElementById("miniCalHost");
+    if (miniCalHost) {
+      miniCalHost.addEventListener("click", () => Att.calendar.openModal());
+    }
+    const calOverlay = document.getElementById("calOverlay");
+    if (calOverlay) {
+      calOverlay.addEventListener("click", (e) => {
+        if (e.target === calOverlay || e.target.closest("[data-calclose]")) {
+          Att.calendar.closeModal();
+          return;
+        }
+        const mon = e.target.closest("[data-calmonth]");
+        if (mon) {
+          Att.calendar.stepMonth(Number(mon.dataset.calmonth));
+          return;
+        }
+        const met = e.target.closest("[data-calmetric]");
+        if (met) {
+          Att.calendar.setModalMetric(met.dataset.calmetric);
+          return;
+        }
+        const day = e.target.closest("[data-calday]");
+        if (day) {
+          Att.calendar.pickDay(Number(day.dataset.calday));
+          return;
+        }
+      });
+    }
+    const btnPdf = document.getElementById("btnExportPdf");
+    if (btnPdf) btnPdf.addEventListener("click", () => Att.export.exportPDF());
+    const btnXls = document.getElementById("btnExportXls");
+    if (btnXls) btnXls.addEventListener("click", () => Att.export.exportCSV());
+
+    /* ----- לשונית-השיבוץ: delegation נקי (בלי inline-onclick חדשים) ----- */
+    const schedSec = document.getElementById("schedule");
+    if (schedSec) {
+      const S = Att.scheduling;
+      schedSec.addEventListener("click", (e) => {
+        const mode = e.target.closest("[data-smode]");
+        if (mode) {
+          S.setMode(mode.dataset.smode);
+          return;
+        }
+        const cat = e.target.closest("[data-scat]");
+        if (cat) {
+          S.setCategory(cat.dataset.scat);
+          return;
+        }
+        const step = e.target.closest("[data-sstep]");
+        if (step) {
+          S.stepDay(Number(step.dataset.sstep));
+          return;
+        }
+        const chip = e.target.closest("[data-slottoggle]");
+        if (chip) {
+          S.toggleSlot(chip.dataset.slottoggle);
+          return;
+        }
+        const run = e.target.closest("#schedRunBtn");
+        if (run) {
+          S.run();
+          return;
+        }
+        const slot = e.target.closest("[data-slot]");
+        if (slot) {
+          const [c, k, d] = slot.dataset.slot.split("|");
+          S.openFunnel(c, k, Number(d));
+          return;
+        }
+      });
+      schedSec.addEventListener("change", (e) => {
+        const sel = e.target.closest("[data-dayassign]");
+        if (sel) {
+          const [c, k, d] = sel.dataset.dayassign.split("|");
+          S.assignManual(c, k, Number(d), sel.value ? Number(sel.value) : null);
+        }
+      });
+    }
+    // funnelOverlay: סגירה (X / רקע) + "שבץ את הנבחר". dayOverlay שומר את ה-onclick שלו (לא לאחד).
+    const funnelOverlay = document.getElementById("funnelOverlay");
+    if (funnelOverlay) {
+      funnelOverlay.addEventListener("click", (e) => {
+        if (e.target === funnelOverlay || e.target.closest("[data-funnelclose]")) {
+          Att.scheduling.closeFunnel();
+          return;
+        }
+        const ac = e.target.closest("[data-assignchosen]");
+        if (ac) {
+          const [c, k, d, id] = ac.dataset.assignchosen.split("|");
+          Att.scheduling.assignChosen(c, k, Number(d), Number(id));
+          return;
+        }
+      });
+    }
+
+    // Esc → סגירת מודאל-הכיסוי + מודאל-המשפך (שחזור התנהגות v2 + שיבוץ).
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") Att.attendance.closeDayReport();
+      if (e.key === "Escape") {
+        Att.attendance.closeDayReport();
+        Att.scheduling.closeFunnel();
+        Att.calendar.closeModal();
+      }
     });
   }
 
